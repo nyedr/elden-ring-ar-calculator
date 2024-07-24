@@ -1,6 +1,5 @@
 // Don't leave any white space after the first ` otherwise the headers won't be read properly
-const calcCorrectGraphIDCSV = 
-`Name,Physical,Magic,Fire,Lightning,Holy,AttackElementCorrect ID
+export const calcCorrectGraphIDCSV = `Name,Physical,Magic,Fire,Lightning,Holy,AttackElementCorrect ID
 Dagger,0,0,0,0,0,10000
 Heavy Dagger,1,0,0,0,0,10000
 Keen Dagger,2,0,0,0,0,10000

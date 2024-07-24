@@ -1,6 +1,5 @@
 // Don't leave any white space after the first ` otherwise the headers won't be read properly
-const extraDataCSV =
-`Name,Weapon Name,Affinity (Dropdown),Affinity,Max Upgrade,Required (Str),Required (Dex),Required (Int),Required (Fai),Required (Arc),Physical Damage Type,Weight,Base Poise Attack,Weapon Type
+export const extraDataCSV = `Name,Weapon Name,Affinity (Dropdown),Affinity,Max Upgrade,Required (Str),Required (Dex),Required (Int),Required (Fai),Required (Arc),Physical Damage Type,Weight,Base Poise Attack,Weapon Type
 Dagger,Dagger,None,None,25,5,9,0,0,0,Slash/Pierce,1.5,3,Dagger
 Heavy Dagger,Dagger,Heavy,Heavy,25,5,9,0,0,0,Slash/Pierce,1.5,3,Dagger
 Keen Dagger,Dagger,Keen,Keen,25,5,9,0,0,0,Slash/Pierce,1.5,3,Dagger
