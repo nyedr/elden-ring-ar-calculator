@@ -1,6 +1,3 @@
-import { useState } from "react";
-import { Weapon } from "../lib/data/weapon";
-
 import weaponCSVData from "@/lib/data/csv/index";
 
 import { parseCSV } from "@/lib/utils";
@@ -13,7 +10,6 @@ import {
   WeaponIdCorrectGraph,
 } from "@/lib/data/weapon-result-types";
 import {
-  damageAttributeKeys,
   DamageType,
   damageTypes,
   FlatPassive,
@@ -21,15 +17,13 @@ import {
   passiveTypes,
   Scaling,
 } from "@/lib/data/weapon-data";
+import { Weapon } from "./weapon";
 
-const useWeapons = () => {
+const getWeapons = () => {
   const { weapons: weaponsData, weaponsCount: weaponsCountData } =
     setWeaponsData();
 
-  const [weapons, setWeapons] = useState<Weapon[]>(
-    weaponsData ?? ([] as Weapon[])
-  );
-  const [weaponsCount, setWeaponsCount] = useState(weaponsCountData);
+  const weapons: Weapon[] = weaponsData ?? ([] as Weapon[]);
 
   function setWeaponsData() {
     let { weapons, weaponsCount } = setWeaponExtraData();
@@ -233,8 +227,6 @@ const useWeapons = () => {
 
       weapon.scaling = {} as Record<DamageType, Scaling>;
 
-      console.log(weaponElementScalingFlags);
-
       damageTypes.forEach((element) => {
         weapon.scaling[element] = {
           ...weapon.scaling[element],
@@ -279,22 +271,20 @@ const useWeapons = () => {
 
   const weaponsMap = new Map(weapons.map((weapon) => [weapon.name, weapon]));
 
-  const find = (weaponName: string) => {
+  const findWeapon = (weaponName: string) => {
     return weaponsMap.get(weaponName);
   };
 
-  const findAll = (weaponNames: string[]) => {
+  const findAllWeapons = (weaponNames: string[]) => {
     return weaponNames.map((weaponName) => weaponsMap.get(weaponName));
   };
 
   return {
     weapons,
-    weaponsCount,
-    setWeaponsCount,
-    find,
-    findAll,
-    setWeapons,
+    weaponsCount: weapons.length,
+    findWeapon,
+    findAllWeapons,
   };
 };
 
-export default useWeapons;
+export default getWeapons;

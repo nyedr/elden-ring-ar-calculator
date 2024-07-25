@@ -26,26 +26,35 @@ export type Attributes = {
   [key in (typeof attributes)[number]]: number;
 };
 
-export interface CharacterProps {
-  attributes: Attributes;
-}
-
 export interface Character {
   attributes: Attributes;
   level: number;
 }
 
-export default function useCharacter({ attributes }: CharacterProps) {
-  const [character, setCharacter] = useState<Character>({
-    attributes,
-    level: 1,
-  });
+export function getCharacterLevel(attributes: Attributes): number {
+  let statSum = Object.values(attributes).reduce((acc, val) => acc + val, 0);
 
-  function getCharacterLevel(attributes: Attributes): number {
-    let statSum = Object.values(attributes).reduce((acc, val) => acc + val, 0);
+  return statSum - 79;
+}
 
-    return statSum - 79;
-  }
+const defaultAttributes: Attributes = {
+  Vig: 10,
+  Min: 10,
+  End: 10,
+  Str: 10,
+  Dex: 10,
+  Int: 10,
+  Fai: 10,
+  Arc: 10,
+};
+
+const defaultCharacter: Character = {
+  attributes: defaultAttributes,
+  level: getCharacterLevel(defaultAttributes),
+};
+
+export default function useCharacter() {
+  const [character, setCharacter] = useState<Character>(defaultCharacter);
 
   function setCharacterAttribute(attribute: keyof Attributes, value: number) {
     const newCharacterLevel = getCharacterLevel({

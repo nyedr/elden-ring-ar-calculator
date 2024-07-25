@@ -1,30 +1,32 @@
 "use client";
 
-import useWeapons from "@/hooks/useWeapons";
-import { parseCSV } from "@/lib/utils";
-import weaponCSVData from "@/lib/data/csv";
 import useCharacter from "@/hooks/useCharacter";
+import CharacterStats from "@/components/character-stats";
+import getWeapons from "@/lib/data/getWeapons";
+import { useMemo, useState } from "react";
+import { Weapon } from "@/lib/data/weapon";
+import { ComboboxItem, WeaponSearch } from "@/components/weapon-search";
 
 export default function Home() {
-  const character = useCharacter({
-    attributes: {
-      Str: 10,
-      Dex: 10,
-      Int: 10,
-      Fai: 10,
-      Arc: 10,
-      End: 10,
-      Min: 10,
-      Vig: 10,
-    },
-  });
-  const { weapons, find } = useWeapons();
+  const { character, setCharacterAttribute } = useCharacter();
+  const weaponsData = useMemo(() => getWeapons(), []);
+  const [selectedWeapons, setSelectedWeapons] = useState<Weapon[] | null>([]);
+
+  const weaponOptions: ComboboxItem[] = weaponsData.weapons.map((weapon) => ({
+    value: weapon.weaponName,
+    label: weapon.weaponName,
+  }));
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <pre className="bg-secondary p-5 rounded-lg w-full">
-        <code>{JSON.stringify(weapons[0], null, 2)}</code>
-      </pre>
+    <main className="max-w-[1420px] px-5 lg:px-0 mx-auto w-full py-4 max-[800px]:px-[calc(10vw/2)]">
+      <div className="flex sm:flex-row flex-col justify-center w-full px-5 gap-5 items-center sm:justify-between">
+        <CharacterStats {...{ character, setCharacterAttribute }} />
+        <WeaponSearch
+          findWeapon={weaponsData.findWeapon}
+          items={weaponOptions}
+          setSelectedWeapons={setSelectedWeapons}
+        />
+      </div>
     </main>
   );
 }

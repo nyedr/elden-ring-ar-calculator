@@ -1,4 +1,12 @@
-import { LucideProps, Loader2, type Icon as LucideIcon } from "lucide-react";
+import {
+  LucideProps,
+  Loader2,
+  type Icon as LucideIcon,
+  Plus,
+  Minus,
+  ChartLine,
+  BookOpen,
+} from "lucide-react";
 import react from "react";
 
 export type Icon = react.ForwardRefExoticComponent<
@@ -8,6 +16,10 @@ export type Icon = react.ForwardRefExoticComponent<
 export const Icons: Record<string, Icon | ((arg: LucideProps) => JSX.Element)> =
   {
     loader: Loader2,
+    plus: Plus,
+    minus: Minus,
+    chart: ChartLine,
+    book: BookOpen,
     gitHub: (props: LucideProps) => (
       <svg viewBox="0 0 438.549 438.549" {...props}>
         <path
