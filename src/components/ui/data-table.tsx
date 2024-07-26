@@ -74,6 +74,8 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
+  // TODO: Table not changing page size
+
   table.getState().pagination.pageSize = DEFAULT_TABLE_PAGE_SIZE;
 
   return (

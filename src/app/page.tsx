@@ -15,8 +15,11 @@ import {
   passiveTypes,
   weaponTypes,
 } from "@/lib/data/weapon-data";
-import { AttackRating } from "@/lib/data/attackRating";
-import { calculateWeaponDamage } from "@/lib/calc/damage";
+import {
+  calculateScaledDamageForType,
+  calculateWeaponDamage,
+} from "@/lib/calc/damage";
+import { Button } from "@/components/ui/button";
 
 export const sortByOptions = [
   ...passiveTypes.slice(),
@@ -54,9 +57,6 @@ export default function Home() {
   });
 
   const filterAndSortWeapons = () => {
-    console.log("Running filter and sort");
-    console.log("Weapons data", weaponsData.weapons.slice(0, 5));
-
     const weapons = initialWeaponsData.weapons.filter((weapon) => {
       const weaponType = weapon.weaponType;
       const damageTypes = weapon.levels[weapon.maxUpgradeLevel];
@@ -72,7 +72,6 @@ export default function Home() {
         weaponFilter.selectedPassiveEffects.some((effect) =>
           passiveEffects.includes(effect as PassiveType)
         );
-      console.log("isPassiveEffectSelected", isPassiveEffectSelected);
 
       return (
         isWeaponTypeSelected && isDamageTypeSelected && isPassiveEffectSelected
@@ -111,8 +110,6 @@ export default function Home() {
       return 0;
     });
 
-    console.log(weapons.slice(0, 5));
-
     return setWeaponsData((prev) => ({ ...prev, weapons }));
   };
 
@@ -128,8 +125,32 @@ export default function Home() {
     label: weapon.weaponName,
   }));
 
+  const testFunction = () => {
+    const weapon = weaponsData.weapons[0];
+    const weaponAr = calculateWeaponDamage(
+      character,
+      weapon,
+      weapon.maxUpgradeLevel
+    );
+
+    console.log(
+      weapon,
+      "Scaled Physical AR:",
+      calculateScaledDamageForType(
+        character,
+        weapon,
+        weapon.maxUpgradeLevel,
+        "Physical",
+        weaponAr.weapon.levels[weapon.maxUpgradeLevel].Physical
+      ),
+      "Total AR:",
+      Math.floor(weaponAr.getAr)
+    );
+  };
+
   return (
     <main className="flex flex-col gap-10 items-center max-w-[1420px] px-5 lg:px-0 mx-auto w-full py-4 max-[800px]:px-[calc(10vw/2)]">
+      {/* <Button onClick={testFunction}>Test</Button> */}
       <div className="flex sm:flex-row flex-col justify-center h-full w-full gap-5 sm:justify-between">
         <CharacterStats {...{ character, setCharacterAttribute }} />
         <WeaponsFilterControl

@@ -28,17 +28,19 @@ export const passiveTypes = [
 ] as const;
 export type PassiveType = (typeof passiveTypes)[number];
 
-export interface DamageAttribute {
-  Str: number;
-  Dex: number;
-  Int: number;
-  Fai: number;
-  Arc: number;
-}
+export const damageAttribute = {
+  Str: "Strength",
+  Dex: "Dexterity",
+  Int: "Intelligence",
+  Fai: "Faith",
+  Arc: "Arcane",
+} as const;
 
-export const damageAttributeKeys = Object.keys(
-  <DamageAttribute>{}
-) as (keyof DamageAttribute)[];
+export const damageAttributeKeys = ["Str", "Dex", "Int", "Fai", "Arc"] as const;
+
+export type DamageAttribute = {
+  [K in keyof typeof damageAttribute]: number;
+};
 
 export type AttributeKey = keyof DamageAttribute;
 

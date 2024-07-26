@@ -2,6 +2,7 @@ import { Character } from "@/hooks/useCharacter";
 import { AttackRating } from "../data/attackRating";
 import { Weapon } from "../data/weapon";
 import {
+  AttributeKey,
   DamageAttribute,
   damageAttributeKeys,
   DamageType,
@@ -44,6 +45,13 @@ export function calculateScaledPassiveEffect(
   }
 }
 
+const damageTypeScalesWithAttribute = (
+  weapon: Weapon,
+  damageType: DamageType,
+  attribute: AttributeKey
+) => {
+  return weapon.scaling[damageType][attribute] === 1;
+};
 // weaponDamage is the damage of a certain type that the weapon puts out at that level
 export function calculateScaledDamageForType(
   character: Character,
@@ -55,7 +63,7 @@ export function calculateScaledDamageForType(
   let scaledDamage = 0;
   if (weaponDamage > 0) {
     damageAttributeKeys.forEach((attribute) => {
-      if (weapon.damageTypeScalesWithAttribute(damageType, attribute)) {
+      if (damageTypeScalesWithAttribute(weapon, damageType, attribute)) {
         if (meetsWeaponRequirement(weapon, attribute, character)) {
           let scalingValue = weapon.levels[level][attribute];
           let scalingCurve = weapon.scaling[damageType].curve;
@@ -63,6 +71,7 @@ export function calculateScaledDamageForType(
             scalingCurve,
             character.attributes[attribute]
           );
+
           scaledDamage += scalingPercentage * scalingValue * weaponDamage;
         } else {
           scaledDamage = weaponDamage * -0.4;
@@ -72,6 +81,25 @@ export function calculateScaledDamageForType(
   }
   return scaledDamage;
 }
+
+// function calculateScaledDamageForType(character, weapon, level, damageType, weaponDamage) {
+//   let scaledDamage = 0;
+//   if (weaponDamage > 0) {
+//       Character.damageAttributes.forEach((attribute) => {
+//           if (weapon.damageTypeScalesWithAttribute(damageType, attribute)) {
+//               if (character.meetsWeaponRequirement(weapon, attribute)) {
+//                   let scalingValue = weapon.levels[level][attribute];
+//                   let scalingCurve = weapon.scaling[damageType].curve;
+//                   let scalingPercentage = calcScalingPercentage(scalingCurve, character[attribute]);
+//                   scaledDamage += (scalingPercentage * scalingValue * weaponDamage);
+//               } else {
+//                   scaledDamage = weaponDamage * -0.4;
+//               }
+//           }
+//       });
+//   }
+//   return scaledDamage;
+// }
 
 export function calculateSpellScaling(
   character: Character,

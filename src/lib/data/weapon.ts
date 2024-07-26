@@ -56,13 +56,6 @@ export class Weapon {
     this.requirements = props.requirements;
   }
 
-  damageTypeScalesWithAttribute(
-    damageType: DamageType,
-    attribute: AttributeKey
-  ): boolean {
-    return this.scaling[damageType][attribute] === 1;
-  }
-
   formatScaling(
     attribute: AttributeKey,
     level: number,
