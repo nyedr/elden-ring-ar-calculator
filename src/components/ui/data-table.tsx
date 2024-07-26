@@ -74,9 +74,9 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
-  // TODO: Table not changing page size
-
-  table.getState().pagination.pageSize = DEFAULT_TABLE_PAGE_SIZE;
+  React.useEffect(() => {
+    table.setPageSize(DEFAULT_TABLE_PAGE_SIZE);
+  }, [table]);
 
   return (
     <div className="w-full space-y-4">
