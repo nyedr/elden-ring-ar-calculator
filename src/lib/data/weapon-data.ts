@@ -112,3 +112,13 @@ export const weaponTypes = [
   { name: "Medium Shield", class: "shield" },
   { name: "Greatshield", class: "shield" },
 ];
+
+// turn the weaponTypes array into an object with the weapon class as the key
+// and the names as the values in an array
+export const weaponTypesObject = weaponTypes.reduce((acc, weapon) => {
+  if (!acc[weapon.class]) {
+    acc[weapon.class] = [];
+  }
+  acc[weapon.class].push(weapon.name);
+  return acc;
+}, {} as Record<string, string[]>);

@@ -5,7 +5,7 @@ export const attributesData = [
   { id: "Min", min: 9, damage: false, name: "Mind" },
   { id: "End", min: 8, damage: false, name: "Endurance" },
   { id: "Str", min: 8, damage: true, name: "Strength" },
-  { id: "Dex", min: 10, damage: true, name: "Dexterity" },
+  { id: "Dex", min: 8, damage: true, name: "Dexterity" },
   { id: "Int", min: 7, damage: true, name: "Intelligence" },
   { id: "Fai", min: 6, damage: true, name: "Faith" },
   { id: "Arc", min: 7, damage: true, name: "Arcane" },

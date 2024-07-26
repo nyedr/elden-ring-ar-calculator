@@ -26,11 +26,13 @@ export interface ComboboxItem {
   label: string;
 }
 
-interface WeaponSearchProps {
+export interface WeaponSearchProps {
   items: ComboboxItem[];
   setSelectedWeapons: React.Dispatch<React.SetStateAction<Weapon[] | null>>;
   findWeapon: (weaponName: string) => Weapon | undefined;
 }
+
+const DROPDOWN_ITEMS_SHOWN_LIMIT = 40;
 
 export function WeaponSearch({
   items,
@@ -44,6 +46,15 @@ export function WeaponSearch({
     item.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const addSelectedWeapon = (weaponName: string) => {
+    const weapon = findWeapon(weaponName);
+    if (weapon) {
+      setSelectedWeapons((prev) => [...(prev || []), weapon]);
+    } else {
+      console.error(`Weapon "${weaponName}" not found.`);
+    }
+  };
+
   return (
     <div className="flex items-center gap-3 w-full">
       <Popover open={open} onOpenChange={setOpen}>
@@ -52,7 +63,7 @@ export function WeaponSearch({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[300px] justify-between"
+            className="w-full justify-between"
           >
             {value
               ? items.find((item) => item.value === value)?.label
@@ -60,46 +71,52 @@ export function WeaponSearch({
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
+        <PopoverContent className="w-[--radix-popover-trigger-width] max-h-[--radix-popover-content-available-height] p-0">
           <Command>
             <CommandInput
               value={searchQuery}
               onValueChange={(search: string) => setSearchQuery(search)}
-              placeholder="Search framework..."
+              placeholder="Search weapon..."
             />
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No weapon found.</CommandEmpty>
             <CommandGroup>
               <CommandList>
-                {filteredItems.slice(0, 20).map((item) => (
-                  <CommandItem
-                    key={item.value}
-                    value={item.value}
-                    onSelect={(currentValue: string) => {
-                      setValue(currentValue === value ? "" : currentValue);
-                      setOpen(false);
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === item.value ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {item.label}
-                  </CommandItem>
-                ))}
+                {filteredItems
+                  .slice(0, DROPDOWN_ITEMS_SHOWN_LIMIT)
+                  .map((item) => (
+                    <CommandItem
+                      key={item.value}
+                      value={item.value}
+                      onSelect={(currentValue: string) => {
+                        setValue(currentValue === value ? "" : currentValue);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          value === item.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {item.label}
+                    </CommandItem>
+                  ))}
               </CommandList>
             </CommandGroup>
           </Command>
         </PopoverContent>
       </Popover>
-      <Button variant="ghost">
+      <Button
+        onClick={() => addSelectedWeapon(value)}
+        size="icon"
+        variant="ghost"
+      >
         <Icons.plus className="h-4 w-4" />
       </Button>
-      <Button variant="ghost">
+      <Button size="icon" variant="ghost">
         <Icons.chart className="h-4 w-4" />
       </Button>
-      <Button variant="ghost">
+      <Button size="icon" variant="ghost">
         <Icons.book className="h-4 w-4" />
       </Button>
     </div>

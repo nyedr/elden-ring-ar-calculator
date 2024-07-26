@@ -3,6 +3,8 @@ import { Attributes, attributesData, Character } from "@/hooks/useCharacter";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
+import { Slider } from "./ui/slider";
+import { Icons } from "./icons";
 
 interface CharacterStatsProps {
   character: Character;
@@ -37,18 +39,6 @@ export default function CharacterStats({
               {attributeMetadata.name}
             </Label>
             <div className="flex items-center gap-3 w-full">
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => {
-                  const value = character.attributes[key as keyof Attributes];
-                  setCharacterAttribute(key as keyof Attributes, value - 1);
-                }}
-              >
-                -
-              </Button>
-
-              {/* TODO: Fix input's trailing zero */}
               <Input
                 type="number"
                 name={key}
@@ -59,30 +49,47 @@ export default function CharacterStats({
                 max={99}
                 min={attributeMetadata.min}
               />
-              {/* <Slider
+              <Button
+                variant="ghost"
+                type="button"
+                size="icon"
+                onClick={() => {
+                  const value = character.attributes[key as keyof Attributes];
+                  setCharacterAttribute(key as keyof Attributes, value - 1);
+                }}
+              >
+                <Icons.minus className="h-5 w-5" />
+              </Button>
+
+              {/* TODO: Fix input's trailing zero */}
+              <Slider
                 name={key}
-                onChange={handleCharacterStatChange}
+                onValueChange={(value) => {
+                  setCharacterAttribute(key as keyof Attributes, value[0]);
+                }}
                 defaultValue={[value]}
+                value={[value]}
                 max={99}
                 min={attributeMetadata.min}
                 step={1}
-                className="w-full"
-              /> */}
+                className={`w-full after:content-[${99}] after:text-xs after:absolute after:right-0 after:mr-2 after:block`}
+              />
               <Button
                 type="button"
+                size="icon"
                 variant="ghost"
                 onClick={() => {
                   const value = character.attributes[key as keyof Attributes];
                   setCharacterAttribute(key as keyof Attributes, value + 1);
                 }}
               >
-                +
+                <Icons.plus className="h-5 w-5" />
               </Button>
             </div>
           </div>
         );
       })}
-      <h1 className="text-xl font-medium">Level: {character.level}</h1>
+      <h1 className="text-2xl font-medium">Level: {character.level}</h1>
     </form>
   );
 }

@@ -59,10 +59,24 @@
   }
 }
 
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+html,
+body {
+  height: 100%;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+@layer utilities {
+  .radix-popover-content-width-same-as-its-trigger {
+    width: var(--radix-popover-trigger-width);
+    max-height: var(--radix-popover-content-available-height);
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
 
 @layer base {

@@ -42,6 +42,9 @@ export class AttackRating {
 
   formatPassives() {
     return Object.keys(this.passiveTypes)
+      .filter(
+        (passiveType) => this.passiveTypes[passiveType as PassiveType] > 0
+      )
       .map((passiveType) => {
         return this.formatPassive(passiveType as PassiveType);
       })
