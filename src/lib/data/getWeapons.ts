@@ -87,9 +87,6 @@ const getWeapons = () => {
 
       let weapon = weapons[i];
 
-      // TODO: Check if this is necessary
-      // weapon.levels = [weapon.maxUpgradeLevel + 1];
-
       for (let l = 0; l <= weapon.maxUpgradeLevel; l++) {
         weapon.levels[l] = {
           ...weapon.levels[l],

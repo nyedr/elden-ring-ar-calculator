@@ -41,11 +41,11 @@ export default function WeaponsTable({
       enableHiding: false,
     },
     {
-      accessorKey: "weaponName",
+      accessorKey: "name",
       header: () => {
         return <span>Name</span>;
       },
-      cell: ({ row }) => <span>{row.original.weaponName}</span>,
+      cell: ({ row }) => <span>{row.original.name}</span>,
     },
     {
       accessorKey: "affinity",
@@ -58,7 +58,6 @@ export default function WeaponsTable({
       cell: ({ row }) => <span>{row.original.weaponType}</span>,
     },
     {
-      // TODO: Change how the level displayed is chosen
       accessorKey: "maxUpgradeLevel",
       header: () => <span>Lvl</span>,
       cell: ({ row }) => <span>{row.original.maxUpgradeLevel}</span>,
@@ -78,6 +77,7 @@ export default function WeaponsTable({
         </span>
       ),
     },
+    // TODO: Add spell scaling column
     {
       accessorKey: "Physical",
       header: () => <span>Phys</span>,
@@ -210,13 +210,11 @@ export default function WeaponsTable({
     },
   ];
 
-  // TODO: Table not reacting to character changes
-
   return (
     <div className="w-full space-y-10">
       <DataTable
         filterBy={{
-          accessorKey: "weaponName",
+          accessorKey: "name",
           label: "weapon name",
         }}
         columns={weaponsColumns}

@@ -22,7 +22,6 @@ export class AttackRating {
     this.spellScaling = 0;
     this.damages = {} as Record<DamageType, Damage>;
 
-    // TODO: Check if this is correct
     damageTypes.forEach((damageType) => {
       this.damages[damageType] = {
         weapon: 0,

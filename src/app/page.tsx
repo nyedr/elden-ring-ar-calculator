@@ -15,10 +15,8 @@ import {
   passiveTypes,
   weaponTypes,
 } from "@/lib/data/weapon-data";
-import {
-  calculateScaledDamageForType,
-  calculateWeaponDamage,
-} from "@/lib/calc/damage";
+import { calculateWeaponDamage } from "@/lib/calc/damage";
+import { fitlerWeapons, sortWeapons } from "@/lib/calc/filter";
 import { Button } from "@/components/ui/button";
 
 export const sortByOptions = [
@@ -30,7 +28,7 @@ export const sortByOptions = [
 
 export type SortByOption = (typeof sortByOptions)[number];
 
-interface WeaponFilter {
+export interface WeaponFilter {
   selectedWeaponTypes: string[];
   selectedDamageTypes: string[];
   selectedPassiveEffects: string[];
@@ -57,60 +55,17 @@ export default function Home() {
   });
 
   const filterAndSortWeapons = () => {
-    const weapons = initialWeaponsData.weapons.filter((weapon) => {
-      const weaponType = weapon.weaponType;
-      const damageTypes = weapon.levels[weapon.maxUpgradeLevel];
-      const passiveEffects = weapon.passiveEffects.map((effect) => effect);
+    const filteredWeapons = fitlerWeapons(weaponsData.weapons, weaponFilter);
+    const sortedAndFilteredWeapons = sortWeapons(
+      filteredWeapons,
+      character,
+      weaponFilter.sortBy
+    );
 
-      const isWeaponTypeSelected =
-        weaponFilter.selectedWeaponTypes.includes(weaponType);
-      const isDamageTypeSelected = weaponFilter.selectedDamageTypes.some(
-        (damageType) => damageTypes[damageType as DamageType] > 0
-      );
-      const isPassiveEffectSelected =
-        weaponFilter.selectedPassiveEffects.includes("None") ||
-        weaponFilter.selectedPassiveEffects.some((effect) =>
-          passiveEffects.includes(effect as PassiveType)
-        );
-
-      return (
-        isWeaponTypeSelected && isDamageTypeSelected && isPassiveEffectSelected
-      );
-    });
-
-    weapons.sort((a, b) => {
-      const sortBy = weaponFilter.sortBy;
-
-      const aAttackRating = calculateWeaponDamage(
-        character,
-        a,
-        a.maxUpgradeLevel
-      );
-      const bAttackRating = calculateWeaponDamage(
-        character,
-        b,
-        b.maxUpgradeLevel
-      );
-
-      if (sortBy === "AR") {
-        return bAttackRating.getAr - aAttackRating.getAr;
-      }
-
-      if (sortBy === "Spell scaling") {
-        return bAttackRating.spellScaling - aAttackRating.spellScaling;
-      }
-
-      if (passiveTypes.includes(sortBy as PassiveType)) {
-        return (
-          b.levels[b.maxUpgradeLevel][sortBy] -
-          a.levels[a.maxUpgradeLevel][sortBy]
-        );
-      }
-
-      return 0;
-    });
-
-    return setWeaponsData((prev) => ({ ...prev, weapons }));
+    return setWeaponsData((prev) => ({
+      ...prev,
+      weapons: sortedAndFilteredWeapons,
+    }));
   };
 
   const setSelectedWeaponTypes = (selectedWeaponTypes: string[]) =>
@@ -119,38 +74,16 @@ export default function Home() {
     setWeaponFilter((prev) => ({ ...prev, selectedDamageTypes }));
   const setSelectedPassiveEffects = (selectedPassiveEffects: string[]) =>
     setWeaponFilter((prev) => ({ ...prev, selectedPassiveEffects }));
+  const setSortBy = (sortBy: SortByOption) =>
+    setWeaponFilter((prev) => ({ ...prev, sortBy }));
 
   const weaponOptions: ComboboxItem[] = weaponsData.weapons.map((weapon) => ({
     value: weapon.weaponName,
     label: weapon.weaponName,
   }));
 
-  const testFunction = () => {
-    const weapon = weaponsData.weapons[0];
-    const weaponAr = calculateWeaponDamage(
-      character,
-      weapon,
-      weapon.maxUpgradeLevel
-    );
-
-    console.log(
-      weapon,
-      "Scaled Physical AR:",
-      calculateScaledDamageForType(
-        character,
-        weapon,
-        weapon.maxUpgradeLevel,
-        "Physical",
-        weaponAr.weapon.levels[weapon.maxUpgradeLevel].Physical
-      ),
-      "Total AR:",
-      Math.floor(weaponAr.getAr)
-    );
-  };
-
   return (
     <main className="flex flex-col gap-10 items-center max-w-[1420px] px-5 lg:px-0 mx-auto w-full py-4 max-[800px]:px-[calc(10vw/2)]">
-      {/* <Button onClick={testFunction}>Test</Button> */}
       <div className="flex sm:flex-row flex-col justify-center h-full w-full gap-5 sm:justify-between">
         <CharacterStats {...{ character, setCharacterAttribute }} />
         <WeaponsFilterControl
@@ -166,6 +99,7 @@ export default function Home() {
             selectedPassiveEffects: weaponFilter.selectedPassiveEffects,
             selectedWeaponTypes: weaponFilter.selectedWeaponTypes,
             filterAndSortWeapons,
+            setSortBy,
           }}
         />
       </div>

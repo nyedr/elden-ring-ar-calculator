@@ -15,7 +15,7 @@ import {
 } from "./ui/select";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import { sortByOptions } from "@/app/page";
+import { SortByOption, sortByOptions } from "@/app/page";
 
 export interface WeaponsFilterControlProps extends WeaponSearchProps {
   selectedWeaponTypes: string[];
@@ -25,6 +25,7 @@ export interface WeaponsFilterControlProps extends WeaponSearchProps {
   selectedPassiveEffects: string[];
   setSelectedPassiveEffects: (selectedPassiveEffects: string[]) => void;
   filterAndSortWeapons: () => void;
+  setSortBy: (sortBy: SortByOption) => void;
 }
 
 export default function WeaponsFilterControl({
@@ -38,6 +39,7 @@ export default function WeaponsFilterControl({
   selectedPassiveEffects,
   setSelectedPassiveEffects,
   filterAndSortWeapons,
+  setSortBy,
 }: WeaponsFilterControlProps) {
   return (
     <div className="w-full flex flex-col gap-4 justify-start">
@@ -63,7 +65,7 @@ export default function WeaponsFilterControl({
       />
 
       <Label>Sort by</Label>
-      <Select defaultValue="AR">
+      <Select onValueChange={setSortBy} defaultValue="AR">
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Sort by..." />
         </SelectTrigger>
