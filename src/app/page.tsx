@@ -8,22 +8,14 @@ import { Weapon } from "@/lib/data/weapon";
 import { ComboboxItem } from "@/components/weapon-search";
 import WeaponsFilterControl from "@/components/weapons-filter-control";
 import WeaponsTable from "@/components/weapons-table";
-import {
-  DamageType,
-  damageTypes,
-  PassiveType,
-  passiveTypes,
-  weaponTypes,
-} from "@/lib/data/weapon-data";
-import { calculateWeaponDamage } from "@/lib/calc/damage";
+import { damageTypes, passiveTypes, weaponTypes } from "@/lib/data/weapon-data";
 import { fitlerWeapons, sortWeapons } from "@/lib/calc/filter";
-import { Button } from "@/components/ui/button";
 
 export const sortByOptions = [
   ...passiveTypes.slice(),
   ...damageTypes.slice(),
   "AR",
-  "Spell scaling",
+  "Spell Scaling",
 ] as const;
 
 export type SortByOption = (typeof sortByOptions)[number];

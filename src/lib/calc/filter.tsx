@@ -58,7 +58,7 @@ export const sortWeapons = (
       return bAttackRating.getAr - aAttackRating.getAr;
     }
 
-    if (sortBy === "Spell scaling") {
+    if (sortBy === "Spell Scaling") {
       const primarySort =
         bAttackRating.spellScaling - aAttackRating.spellScaling;
       if (primarySort !== 0) return primarySort;

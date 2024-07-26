@@ -6,18 +6,6 @@ import { Character } from "@/hooks/useCharacter";
 import { DataTable } from "./ui/data-table";
 import { scalingRating } from "@/lib/calc/scaling";
 
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Button } from "./ui/button";
-
 interface WeaponsTableProps {
   character: Character;
   weapons: Weapon[];
@@ -77,7 +65,26 @@ export default function WeaponsTable({
         </span>
       ),
     },
-    // TODO: Add spell scaling column
+    {
+      accessorKey: "spellScaling",
+      header: () => <span>SS</span>,
+      cell: ({ row }) => (
+        <span>
+          {Math.floor(
+            calculateWeaponDamage(
+              character,
+              row.original,
+              row.original.maxUpgradeLevel
+            ).spellScaling
+          )}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "weight",
+      header: () => <span>Wt</span>,
+      cell: ({ row }) => <span>{row.original.weight}</span>,
+    },
     {
       accessorKey: "Physical",
       header: () => <span>Phys</span>,
