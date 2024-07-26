@@ -39,7 +39,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
 };
 
 type InputProps = Omit<
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.input>,
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>,
   "value" | "onChange" | "type"
 > & {
   /**

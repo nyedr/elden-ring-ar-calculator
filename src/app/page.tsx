@@ -12,7 +12,7 @@ import { damageTypes, passiveTypes, weaponTypes } from "@/lib/data/weapon-data";
 import { fitlerWeapons, sortWeapons } from "@/lib/calc/filter";
 import Header from "@/components/header";
 
-export const sortByOptions = [
+const sortByOptions = [
   ...passiveTypes.slice(),
   ...damageTypes.slice(),
   "AR",

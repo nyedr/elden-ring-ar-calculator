@@ -15,7 +15,7 @@ import {
 } from "./ui/select";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import { SortByOption, sortByOptions } from "@/app/page";
+import { SortByOption } from "@/app/page";
 
 export interface WeaponsFilterControlProps extends WeaponSearchProps {
   selectedWeaponTypes: string[];
@@ -71,7 +71,12 @@ export default function WeaponsFilterControl({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {sortByOptions.map((option) => (
+            {[
+              ...passiveTypes.slice(),
+              ...damageTypes.slice(),
+              "AR",
+              "Spell Scaling",
+            ].map((option) => (
               <SelectItem key={option} value={option}>
                 {option}
               </SelectItem>
