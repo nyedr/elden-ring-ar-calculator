@@ -128,9 +128,6 @@ export default function MultiSelectDropdown({
     </div>
   );
 
-  // TODO: Select should stay focused when clicking on the dropdown
-  // Only close when clicking outside of the dropdown
-
   return (
     <DropdownMenu open={open}>
       <DropdownMenuTrigger onClick={() => setOpen(true)} asChild>
