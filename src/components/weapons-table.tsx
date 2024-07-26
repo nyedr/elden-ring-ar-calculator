@@ -218,7 +218,7 @@ export default function WeaponsTable({
   ];
 
   return (
-    <div className="w-full space-y-10">
+    <div className="w-full  py-10">
       <DataTable
         filterBy={{
           accessorKey: "name",

@@ -10,6 +10,7 @@ import WeaponsFilterControl from "@/components/weapons-filter-control";
 import WeaponsTable from "@/components/weapons-table";
 import { damageTypes, passiveTypes, weaponTypes } from "@/lib/data/weapon-data";
 import { fitlerWeapons, sortWeapons } from "@/lib/calc/filter";
+import Header from "@/components/header";
 
 export const sortByOptions = [
   ...passiveTypes.slice(),
@@ -75,7 +76,8 @@ export default function Home() {
   }));
 
   return (
-    <main className="flex flex-col gap-10 items-center max-w-[1420px] px-5 lg:px-0 mx-auto w-full py-4 max-[800px]:px-[calc(10vw/2)]">
+    <main className="flex flex-col gap-4 items-center max-w-[1420px] px-5 lg:px-0 mx-auto w-full py-4 max-[800px]:px-[calc(10vw/2)]">
+      <Header />
       <div className="flex sm:flex-row flex-col justify-center h-full w-full gap-5 sm:justify-between">
         <CharacterStats {...{ character, setCharacterAttribute }} />
         <WeaponsFilterControl

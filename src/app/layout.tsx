@@ -3,7 +3,6 @@ import "@/styles/globals.css";
 import { Inter as FontSans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -24,7 +23,6 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ThemeToggle />
           {children}
           <TailwindIndicator />
         </ThemeProvider>

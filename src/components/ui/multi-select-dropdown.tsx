@@ -9,6 +9,14 @@ import {
 import { Button } from "./button";
 import { Icons } from "../icons";
 import { Badge } from "./badge";
+import {
+  ForwardRefExoticComponent,
+  RefAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { DropdownMenuContentProps } from "@radix-ui/react-dropdown-menu";
 
 interface BaseMultiSelectDropdownProps {
   selectedItems: string[];
@@ -62,6 +70,28 @@ export default function MultiSelectDropdown({
   title,
   items,
 }: MultiSelectDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const selectContentRef = useRef(null);
+
+  useEffect(() => {
+    /**
+     * Alert if clicked on outside of element
+     */
+
+    function handleClickOutside(event: MouseEvent) {
+      if (!selectContentRef.current) return;
+      // @ts-ignore
+      setOpen(selectContentRef.current.contains(event.target));
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [selectContentRef]);
+
   const WeaponTypeBadge = ({ type }: { type: string }) => {
     return (
       <Badge className="flex bg-secondary text-primary hover:opacity-70 hover:bg-secondary items-center gap-2 py-1">
@@ -102,8 +132,8 @@ export default function MultiSelectDropdown({
   // Only close when clicking outside of the dropdown
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu open={open}>
+      <DropdownMenuTrigger onClick={() => setOpen(true)} asChild>
         <Button
           variant="outline"
           size="default"
@@ -120,6 +150,7 @@ export default function MultiSelectDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
+        ref={selectContentRef}
         className="w-full max-h-80 overflow-y-scroll "
       >
         {sections
