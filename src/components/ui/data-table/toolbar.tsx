@@ -1,7 +1,7 @@
 "use client";
 
 import { Cross2Icon } from "@radix-ui/react-icons";
-import { Table } from "@tanstack/react-table";
+import { ColumnFilter, Table } from "@tanstack/react-table";
 
 import { Button } from "../button";
 import { Input } from "../input";
@@ -12,6 +12,8 @@ export interface DataTableToolbarProps<TData> {
   filterBy: {
     accessorKey: string;
     label: string;
+    // This parameter dictates how deep the filter should go
+    depth?: number;
   };
 }
 
@@ -32,9 +34,7 @@ export function Toolbar<TData>({
               ?.getFilterValue() as string) ?? ""
           }
           onChange={(event) => {
-            table
-              .getColumn(filterBy.accessorKey)
-              ?.setFilterValue(event.target.value);
+            // TODO: Fix weapon filtering
           }}
           className="h-10 w-[180px] lg:w-[270px]"
         />

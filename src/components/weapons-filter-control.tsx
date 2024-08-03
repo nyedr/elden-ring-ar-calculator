@@ -1,6 +1,6 @@
 import {
   damageTypes,
-  passiveTypes,
+  statusEffects,
   weaponTypesObject,
 } from "@/lib/data/weapon-data";
 import MultiSelectDropdown from "./ui/multi-select-dropdown";
@@ -22,8 +22,8 @@ export interface WeaponsFilterControlProps extends WeaponSearchProps {
   setSelectedWeaponTypes: (selectedWeaponTypes: string[]) => void;
   selectedDamageTypes: string[];
   setSelectedDamageTypes: (selectedDamageTypes: string[]) => void;
-  selectedPassiveEffects: string[];
-  setSelectedPassiveEffects: (selectedPassiveEffects: string[]) => void;
+  selectedStatusEffects: string[];
+  setSelectedStatusEffects: (selectedStatusEffects: string[]) => void;
   filterAndSortWeapons: () => void;
   setSortBy: (sortBy: SortByOption) => void;
 }
@@ -36,8 +36,8 @@ export default function WeaponsFilterControl({
   setSelectedWeaponTypes,
   selectedDamageTypes,
   setSelectedDamageTypes,
-  selectedPassiveEffects,
-  setSelectedPassiveEffects,
+  selectedStatusEffects,
+  setSelectedStatusEffects,
   filterAndSortWeapons,
   setSortBy,
 }: WeaponsFilterControlProps) {
@@ -50,6 +50,7 @@ export default function WeaponsFilterControl({
         setSelectedItems={setSelectedWeaponTypes}
         sections={weaponTypesObject}
       />
+
       <MultiSelectDropdown
         title="Damage types filter"
         selectedItems={selectedDamageTypes}
@@ -58,12 +59,13 @@ export default function WeaponsFilterControl({
       />
 
       <MultiSelectDropdown
-        title="Passive effects filter"
-        selectedItems={selectedPassiveEffects}
-        setSelectedItems={setSelectedPassiveEffects}
-        items={[...passiveTypes.slice(), "None"]}
+        title="Status effects filter"
+        selectedItems={selectedStatusEffects}
+        setSelectedItems={setSelectedStatusEffects}
+        items={[...statusEffects.slice(), "None"]}
       />
 
+      {/* TODO: Remove sort by select by directly implementing the sorting to the table component. */}
       <Label>Sort by</Label>
       <Select onValueChange={setSortBy} defaultValue="AR">
         <SelectTrigger className="w-full">
@@ -72,7 +74,7 @@ export default function WeaponsFilterControl({
         <SelectContent>
           <SelectGroup>
             {[
-              ...passiveTypes.slice(),
+              ...statusEffects.slice(),
               ...damageTypes.slice(),
               "AR",
               "Spell Scaling",

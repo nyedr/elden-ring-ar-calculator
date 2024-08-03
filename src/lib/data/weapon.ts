@@ -3,7 +3,7 @@ import {
   DamageType,
   Scaling,
   WeaponLevel,
-  PassiveType,
+  StatusEffect,
   AttributeKey,
 } from "./weapon-data";
 
@@ -17,7 +17,7 @@ export interface WeaponProps {
   canCastSpells?: boolean;
   scaling?: Record<DamageType, Scaling>;
   levels?: WeaponLevel[];
-  passiveEffects?: PassiveType[];
+  statusEffects?: StatusEffect[];
   weight: number;
   requirements: { [K in AttributeKey]: number };
   poiseAttack: number;
@@ -33,7 +33,7 @@ export class Weapon {
   canCastSpells: boolean;
   scaling: Record<DamageType, Scaling>;
   levels: WeaponLevel[];
-  passiveEffects: PassiveType[];
+  statusEffects: StatusEffect[];
   weight: number;
   requirements: { [K in AttributeKey]: number };
   poiseAttack: number;
@@ -51,7 +51,7 @@ export class Weapon {
       props.weaponType === "Sacred Seal";
     this.scaling = props.scaling ?? ({} as Record<DamageType, Scaling>);
     this.levels = props.levels ?? [];
-    this.passiveEffects = props.passiveEffects ?? [];
+    this.statusEffects = props.statusEffects ?? [];
     this.weight = props.weight;
     this.requirements = props.requirements;
   }

@@ -4,13 +4,16 @@ import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
+  GroupingState,
   SortingState,
   VisibilityState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getGroupedRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -26,6 +29,7 @@ import {
 } from "./table";
 import { DataTableToolbarProps, Toolbar } from "./data-table/toolbar";
 import { Pagination } from "./data-table/pagination";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -51,6 +55,7 @@ export function DataTable<TData, TValue>({
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [grouping, setGrouping] = React.useState<GroupingState>([]);
 
   const table = useReactTable({
     data,
@@ -60,18 +65,24 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      grouping,
     },
     enableRowSelection: isSelectable,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onGroupingChange: setGrouping,
+    enableGrouping: true,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+    debugTable: true,
   });
 
   React.useEffect(() => {
@@ -80,7 +91,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full space-y-4">
-      {filterBy && <Toolbar filterBy={filterBy} table={table} />}
+      {/* {filterBy && <Toolbar filterBy={filterBy} table={table} />} */}
       <div className="border rounded-md">
         <Table>
           <TableHeader>
@@ -88,7 +99,14 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        "border border-secondary text-center",
+                        header.column.columnDef.meta?.headerClassName ?? ""
+                      )}
+                      colSpan={header.colSpan}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -109,7 +127,17 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell className="py-2" key={cell.id}>
+                    <TableCell
+                      className={cn(
+                        "py-2",
+                        cell.column.columnDef.meta?.cellClassName,
+                        cell.getIsGrouped() &&
+                          cell.column.getGroupedIndex() === 0
+                          ? "border-t border-secondary"
+                          : ""
+                      )}
+                      key={cell.id}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

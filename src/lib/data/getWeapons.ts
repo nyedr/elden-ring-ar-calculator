@@ -14,7 +14,7 @@ import {
   damageTypes,
   FlatPassive,
   flatPassives,
-  passiveTypes,
+  statusEffects,
   Scaling,
 } from "@/lib/data/weapon-data";
 import { Weapon } from "./weapon";
@@ -140,9 +140,9 @@ const getWeapons = () => {
     level: number,
     weaponPassive: WeaponPassive
   ) {
-    passiveTypes.forEach((passiveType) => {
+    statusEffects.forEach((statusEffect) => {
       if (
-        passiveType === "Scarlet Rot" &&
+        statusEffect === "Scarlet Rot" &&
         weapon.name === "Cold Antspur Rapier"
       ) {
         let rot = 0;
@@ -169,15 +169,15 @@ const getWeapons = () => {
             rot = 0; // Rot increases upto level 5 then drops to 0 just for this weapon !?!?
         }
 
-        weapon.levels[level][passiveType] = rot;
-      } else if (flatPassives.includes(passiveType as FlatPassive)) {
-        weapon.levels[level][passiveType] = parseInt(
-          weaponPassive[`${passiveType} +0` as keyof WeaponPassive] as string
+        weapon.levels[level][statusEffect] = rot;
+      } else if (flatPassives.includes(statusEffect as FlatPassive)) {
+        weapon.levels[level][statusEffect] = parseInt(
+          weaponPassive[`${statusEffect} +0` as keyof WeaponPassive] as string
         );
       } else {
-        weapon.levels[level][passiveType] = parseInt(
+        weapon.levels[level][statusEffect] = parseInt(
           weaponPassive[
-            `${passiveType} +${level}` as keyof WeaponPassive
+            `${statusEffect} +${level}` as keyof WeaponPassive
           ] as string
         );
       }
@@ -187,8 +187,8 @@ const getWeapons = () => {
   }
 
   function setPassiveEffects(weapon: Weapon) {
-    weapon.passiveEffects = passiveTypes.filter((passiveType) => {
-      return weapon.levels[0][passiveType] > 0;
+    weapon.statusEffects = statusEffects.filter((statusEffect) => {
+      return weapon.levels[0][statusEffect] > 0;
     });
 
     return weapon;

@@ -8,6 +8,13 @@ export type ElementalDamageType = (typeof elementalDamageTypes)[number];
 
 export const damageTypes = ["Physical", ...elementalDamageTypes] as const;
 export type DamageType = (typeof damageTypes)[number];
+export const damageTypeToImageName = {
+  Physical: "standardAffinity",
+  Magic: "magicAffinity",
+  Fire: "fireAffinity",
+  Lightning: "lightningAffinity",
+  Holy: "sacredAffinity",
+};
 
 // Passive effects that have a constant value regardless of weapon level or character attribute values
 export const flatPassives = ["Scarlet Rot", "Madness", "Sleep"] as const;
@@ -21,12 +28,20 @@ export type LeveledPassive = (typeof leveledPassives)[number];
 export const scaledPassives = ["Poison", "Blood"] as const;
 export type ScaledPassive = (typeof scaledPassives)[number];
 
-export const passiveTypes = [
+export const statusEffects = [
   ...flatPassives,
   ...leveledPassives,
   ...scaledPassives,
 ] as const;
-export type PassiveType = (typeof passiveTypes)[number];
+export type StatusEffect = (typeof statusEffects)[number];
+export const statusEffectToImageName = {
+  "Scarlet Rot": "scarletRotStatus",
+  Madness: "madnessStatus",
+  Sleep: "sleepStatus",
+  Frost: "frostStatus",
+  Poison: "poisonStatus",
+  Blood: "bleedStatus",
+} as const;
 
 export const damageAttribute = {
   Str: "Strength",

@@ -9,6 +9,11 @@ const fontSans = FontSans({
   variable: "--font-sans",
 });
 
+export const metedata = {
+  title: "Elden Ring Damage Calculator",
+  description: "A weapon damage calculator for Elden Ring",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

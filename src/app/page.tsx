@@ -8,12 +8,16 @@ import { Weapon } from "@/lib/data/weapon";
 import { ComboboxItem } from "@/components/weapon-search";
 import WeaponsFilterControl from "@/components/weapons-filter-control";
 import WeaponsTable from "@/components/weapons-table";
-import { damageTypes, passiveTypes, weaponTypes } from "@/lib/data/weapon-data";
+import {
+  damageTypes,
+  statusEffects,
+  weaponTypes,
+} from "@/lib/data/weapon-data";
 import { fitlerWeapons, sortWeapons } from "@/lib/calc/filter";
 import Header from "@/components/header";
 
 const sortByOptions = [
-  ...passiveTypes.slice(),
+  ...statusEffects.slice(),
   ...damageTypes.slice(),
   "AR",
   "Spell Scaling",
@@ -24,13 +28,13 @@ export type SortByOption = (typeof sortByOptions)[number];
 export interface WeaponFilter {
   selectedWeaponTypes: string[];
   selectedDamageTypes: string[];
-  selectedPassiveEffects: string[];
+  selectedStatusEffects: string[];
   sortBy: SortByOption;
 }
 
 const defaultWeaponTypesSelected = weaponTypes.map((type) => type.name);
 const defaultDamageTypesSelected = damageTypes.slice();
-const defaultPassiveEffectsSelected = [...passiveTypes.slice(), "None"];
+const defaultStatusEffectsSelected = [...statusEffects.slice(), "None"];
 
 export default function Home() {
   const { character, setCharacterAttribute } = useCharacter();
@@ -43,7 +47,7 @@ export default function Home() {
   const [weaponFilter, setWeaponFilter] = useState<WeaponFilter>({
     selectedWeaponTypes: defaultWeaponTypesSelected,
     selectedDamageTypes: defaultDamageTypesSelected,
-    selectedPassiveEffects: defaultPassiveEffectsSelected,
+    selectedStatusEffects: defaultStatusEffectsSelected,
     sortBy: "AR",
   });
 
@@ -65,8 +69,8 @@ export default function Home() {
     setWeaponFilter((prev) => ({ ...prev, selectedWeaponTypes }));
   const setSelectedDamageTypes = (selectedDamageTypes: string[]) =>
     setWeaponFilter((prev) => ({ ...prev, selectedDamageTypes }));
-  const setSelectedPassiveEffects = (selectedPassiveEffects: string[]) =>
-    setWeaponFilter((prev) => ({ ...prev, selectedPassiveEffects }));
+  const setSelectedStatusEffects = (selectedStatusEffects: string[]) =>
+    setWeaponFilter((prev) => ({ ...prev, selectedStatusEffects }));
   const setSortBy = (sortBy: SortByOption) =>
     setWeaponFilter((prev) => ({ ...prev, sortBy }));
 
@@ -87,10 +91,10 @@ export default function Home() {
             setSelectedWeapons,
             setSelectedWeaponTypes,
             setSelectedDamageTypes,
-            setSelectedPassiveEffects,
+            setSelectedStatusEffects,
             sortByOptions,
             selectedDamageTypes: weaponFilter.selectedDamageTypes,
-            selectedPassiveEffects: weaponFilter.selectedPassiveEffects,
+            selectedStatusEffects: weaponFilter.selectedStatusEffects,
             selectedWeaponTypes: weaponFilter.selectedWeaponTypes,
             filterAndSortWeapons,
             setSortBy,

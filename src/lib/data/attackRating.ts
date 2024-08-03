@@ -1,5 +1,10 @@
 import { Weapon } from "./weapon";
-import { DamageType, damageTypes, PassiveType } from "./weapon-data";
+import {
+  DamageAttribute,
+  DamageType,
+  damageTypes,
+  StatusEffect,
+} from "./weapon-data";
 
 export interface Damage {
   weapon: number;
@@ -12,8 +17,13 @@ export class AttackRating {
   level: number;
   protected totalAR: number;
   damages: { [K in DamageType]: Damage };
-  passiveTypes: Record<PassiveType, number>;
+  statusEffects: {
+    [K in StatusEffect]: number;
+  };
   spellScaling: number;
+  requirementsMet: {
+    -readonly [K in keyof DamageAttribute]: boolean;
+  };
 
   constructor(weapon: Weapon, level: number) {
     this.weapon = weapon;
@@ -29,23 +39,31 @@ export class AttackRating {
         total: 0,
       };
     });
-    this.passiveTypes = {} as Record<PassiveType, number>;
+    this.statusEffects = {} as Record<StatusEffect, number>;
+    this.requirementsMet = {
+      Str: false,
+      Dex: false,
+      Int: false,
+      Fai: false,
+      Arc: false,
+    };
   }
 
-  formatPassive(passiveType: PassiveType) {
-    let passiveTypeLabel = passiveType === "Scarlet Rot" ? "Rot" : passiveType;
-    return `${passiveTypeLabel} (${Math.floor(
-      this.passiveTypes[passiveType]
+  formatPassive(statusEffect: StatusEffect) {
+    let statusEffectLabel =
+      statusEffect === "Scarlet Rot" ? "Rot" : statusEffect;
+    return `${statusEffectLabel} (${Math.floor(
+      this.statusEffects[statusEffect]
     )})`;
   }
 
   formatPassives() {
-    return Object.keys(this.passiveTypes)
+    return Object.keys(this.statusEffects)
       .filter(
-        (passiveType) => this.passiveTypes[passiveType as PassiveType] > 0
+        (statusEffect) => this.statusEffects[statusEffect as StatusEffect] > 0
       )
-      .map((passiveType) => {
-        return this.formatPassive(passiveType as PassiveType);
+      .map((statusEffect) => {
+        return this.formatPassive(statusEffect as StatusEffect);
       })
       .join(", ");
   }

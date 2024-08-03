@@ -5,8 +5,8 @@ import { calculateWeaponDamage } from "./damage";
 import {
   DamageType,
   damageTypes,
-  PassiveType,
-  passiveTypes,
+  StatusEffect,
+  statusEffects,
 } from "../data/weapon-data";
 
 export const fitlerWeapons = (
@@ -16,21 +16,21 @@ export const fitlerWeapons = (
   const filteredWeapons = weapons.filter((weapon) => {
     const weaponType = weapon.weaponType;
     const damageTypes = weapon.levels[weapon.maxUpgradeLevel];
-    const passiveEffects = weapon.passiveEffects.map((effect) => effect);
+    const statusEffects = weapon.statusEffects.map((effect) => effect);
 
     const isWeaponTypeSelected =
       weaponFilter.selectedWeaponTypes.includes(weaponType);
     const isDamageTypeSelected = weaponFilter.selectedDamageTypes.some(
       (damageType) => damageTypes[damageType as DamageType] > 0
     );
-    const isPassiveEffectSelected =
-      weaponFilter.selectedPassiveEffects.includes("None") ||
-      weaponFilter.selectedPassiveEffects.some((effect) =>
-        passiveEffects.includes(effect as PassiveType)
+    const isStatusEffectsSelected =
+      weaponFilter.selectedStatusEffects.includes("None") ||
+      weaponFilter.selectedStatusEffects.some((effect) =>
+        statusEffects.includes(effect as StatusEffect)
       );
 
     return (
-      isWeaponTypeSelected && isDamageTypeSelected && isPassiveEffectSelected
+      isWeaponTypeSelected && isDamageTypeSelected && isStatusEffectsSelected
     );
   });
 
@@ -65,7 +65,7 @@ export const sortWeapons = (
       return bAttackRating.getAr - aAttackRating.getAr;
     }
 
-    if (passiveTypes.includes(sortBy as PassiveType)) {
+    if (statusEffects.includes(sortBy as StatusEffect)) {
       const primarySort =
         b.levels[b.maxUpgradeLevel][sortBy] -
         a.levels[a.maxUpgradeLevel][sortBy];
