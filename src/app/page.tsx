@@ -11,30 +11,24 @@ import WeaponsTable from "@/components/weapons-table";
 import {
   damageTypes,
   statusEffects,
+  weaponAffinities,
   weaponTypes,
 } from "@/lib/data/weapon-data";
-import { fitlerWeapons, sortWeapons } from "@/lib/calc/filter";
+import {
+  filterWeapons,
+  SortByOption,
+  sortByOptions,
+  sortWeapons,
+  WeaponFilter,
+} from "@/lib/calc/filter";
 import Header from "@/components/header";
-
-const sortByOptions = [
-  ...statusEffects.slice(),
-  ...damageTypes.slice(),
-  "AR",
-  "Spell Scaling",
-] as const;
-
-export type SortByOption = (typeof sortByOptions)[number];
-
-export interface WeaponFilter {
-  selectedWeaponTypes: string[];
-  selectedDamageTypes: string[];
-  selectedStatusEffects: string[];
-  sortBy: SortByOption;
-}
+import { Button } from "@/components/ui/button";
+import { calculateWeaponDamage } from "@/lib/calc/damage";
 
 const defaultWeaponTypesSelected = weaponTypes.map((type) => type.name);
 const defaultDamageTypesSelected = damageTypes.slice();
 const defaultStatusEffectsSelected = [...statusEffects.slice(), "None"];
+const defaultWeaponAffinitiesSelected = [...weaponAffinities.slice()];
 
 export default function Home() {
   const { character, setCharacterAttribute } = useCharacter();
@@ -48,11 +42,13 @@ export default function Home() {
     selectedWeaponTypes: defaultWeaponTypesSelected,
     selectedDamageTypes: defaultDamageTypesSelected,
     selectedStatusEffects: defaultStatusEffectsSelected,
+    selectedWeaponAffinities: defaultWeaponAffinitiesSelected,
     sortBy: "AR",
+    toggleSortBy: false,
   });
 
   const filterAndSortWeapons = () => {
-    const filteredWeapons = fitlerWeapons(weaponsData.weapons, weaponFilter);
+    const filteredWeapons = filterWeapons(weaponsData.weapons, weaponFilter);
     const sortedAndFilteredWeapons = sortWeapons(
       filteredWeapons,
       character,
@@ -65,12 +61,34 @@ export default function Home() {
     }));
   };
 
+  const sortWeaponsTable = (sortByOption: SortByOption) => {
+    const toggleSortBy =
+      weaponFilter.sortBy === sortByOption ? !weaponFilter.toggleSortBy : false;
+
+    setWeaponsData((prev) => ({
+      ...prev,
+      weapons: sortWeapons(
+        weaponsData.weapons,
+        character,
+        sortByOption,
+        toggleSortBy
+      ),
+    }));
+
+    setWeaponFilter((prev) => ({
+      ...prev,
+      sortBy: sortByOption,
+      toggleSortBy,
+    }));
+  };
   const setSelectedWeaponTypes = (selectedWeaponTypes: string[]) =>
     setWeaponFilter((prev) => ({ ...prev, selectedWeaponTypes }));
   const setSelectedDamageTypes = (selectedDamageTypes: string[]) =>
     setWeaponFilter((prev) => ({ ...prev, selectedDamageTypes }));
   const setSelectedStatusEffects = (selectedStatusEffects: string[]) =>
     setWeaponFilter((prev) => ({ ...prev, selectedStatusEffects }));
+  const setSelectedWeaponAffinities = (selectedWeaponAffinities: string[]) =>
+    setWeaponFilter((prev) => ({ ...prev, selectedWeaponAffinities }));
   const setSortBy = (sortBy: SortByOption) =>
     setWeaponFilter((prev) => ({ ...prev, sortBy }));
 
@@ -92,16 +110,22 @@ export default function Home() {
             setSelectedWeaponTypes,
             setSelectedDamageTypes,
             setSelectedStatusEffects,
+            setSelectedWeaponAffinities,
             sortByOptions,
             selectedDamageTypes: weaponFilter.selectedDamageTypes,
             selectedStatusEffects: weaponFilter.selectedStatusEffects,
             selectedWeaponTypes: weaponFilter.selectedWeaponTypes,
+            selectedWeaponAffinities: weaponFilter.selectedWeaponAffinities,
             filterAndSortWeapons,
             setSortBy,
           }}
         />
       </div>
-      <WeaponsTable character={character} weapons={weaponsData.weapons} />
+      <WeaponsTable
+        sortWeaponsTable={sortWeaponsTable}
+        character={character}
+        weapons={weaponsData.weapons}
+      />
     </main>
   );
 }

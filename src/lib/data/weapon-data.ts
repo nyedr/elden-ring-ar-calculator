@@ -51,6 +51,40 @@ export const damageAttribute = {
   Arc: "Arcane",
 } as const;
 
+// Standard
+// Heavy
+// Keen
+// Quality
+// Magic
+// Frost
+// Flame
+// Fire
+// Flame Art
+// Golden
+// Lightning
+// Sacred
+// Occult
+// Poison
+// Blood
+// Occult
+
+export const weaponAffinities = [
+  "Standard",
+  "Heavy",
+  "keen",
+  "Quality",
+  "Magic",
+  "Frost",
+  "Fire",
+  "Flame Art",
+  "Lightning",
+  "Sacred",
+  "Poison",
+  "Blood",
+  "Occult",
+] as const;
+export type WeaponAffinity = (typeof weaponAffinities)[number];
+
 export const damageAttributeKeys = ["Str", "Dex", "Int", "Fai", "Arc"] as const;
 
 export type DamageAttribute = {

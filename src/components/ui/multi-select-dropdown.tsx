@@ -9,14 +9,7 @@ import {
 import { Button } from "./button";
 import { Icons } from "../icons";
 import { Badge } from "./badge";
-import {
-  ForwardRefExoticComponent,
-  RefAttributes,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { DropdownMenuContentProps } from "@radix-ui/react-dropdown-menu";
+import { useEffect, useRef, useState } from "react";
 
 interface BaseMultiSelectDropdownProps {
   selectedItems: string[];
@@ -33,6 +26,10 @@ interface SectionsDefinedProps extends BaseMultiSelectDropdownProps {
   sections: Record<string, string[]>;
   items?: never;
 }
+
+// TODO: Modify the MultiSelectDropdown component to have a toggle button that selects/deselects all items in the dropdown
+// The dropdown items should also be able to accept icon names to be extracted from the Icons component
+// Remove the complicated conditional type logic and create a singular union type for the props
 
 type MultiSelectDropdownProps = ItemsDefinedProps | SectionsDefinedProps;
 
@@ -135,7 +132,7 @@ export default function MultiSelectDropdown({
           variant="outline"
           size="default"
           onClick={(e) => e.stopPropagation()}
-          className="w-full flex flex-wrap h-auto text-start items-center justify-start gap-1"
+          className="w-full hover:shadow-lg hover:bg-background flex flex-wrap h-auto text-start items-center justify-start gap-1"
         >
           {selectedItems.length
             ? selectedItems.map((selectedItem) => (

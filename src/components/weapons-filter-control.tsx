@@ -1,21 +1,12 @@
 import {
-  damageTypes,
   statusEffects,
+  weaponAffinities,
   weaponTypesObject,
 } from "@/lib/data/weapon-data";
 import MultiSelectDropdown from "./ui/multi-select-dropdown";
 import { WeaponSearch, WeaponSearchProps } from "./weapon-search";
-import {
-  SelectTrigger,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectValue,
-} from "./ui/select";
 import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { SortByOption } from "@/app/page";
+import { SortByOption } from "@/lib/calc/filter";
 
 export interface WeaponsFilterControlProps extends WeaponSearchProps {
   selectedWeaponTypes: string[];
@@ -24,6 +15,8 @@ export interface WeaponsFilterControlProps extends WeaponSearchProps {
   setSelectedDamageTypes: (selectedDamageTypes: string[]) => void;
   selectedStatusEffects: string[];
   setSelectedStatusEffects: (selectedStatusEffects: string[]) => void;
+  selectedWeaponAffinities: string[];
+  setSelectedWeaponAffinities: (selectedWeaponAffinities: string[]) => void;
   filterAndSortWeapons: () => void;
   setSortBy: (sortBy: SortByOption) => void;
 }
@@ -36,6 +29,8 @@ export default function WeaponsFilterControl({
   setSelectedWeaponTypes,
   selectedDamageTypes,
   setSelectedDamageTypes,
+  selectedWeaponAffinities,
+  setSelectedWeaponAffinities,
   selectedStatusEffects,
   setSelectedStatusEffects,
   filterAndSortWeapons,
@@ -51,12 +46,12 @@ export default function WeaponsFilterControl({
         sections={weaponTypesObject}
       />
 
-      <MultiSelectDropdown
+      {/* <MultiSelectDropdown
         title="Damage types filter"
         selectedItems={selectedDamageTypes}
         setSelectedItems={setSelectedDamageTypes}
         items={damageTypes.slice()}
-      />
+      /> */}
 
       <MultiSelectDropdown
         title="Status effects filter"
@@ -65,30 +60,15 @@ export default function WeaponsFilterControl({
         items={[...statusEffects.slice(), "None"]}
       />
 
-      {/* TODO: Remove sort by select by directly implementing the sorting to the table component. */}
-      <Label>Sort by</Label>
-      <Select onValueChange={setSortBy} defaultValue="AR">
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Sort by..." />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {[
-              ...statusEffects.slice(),
-              ...damageTypes.slice(),
-              "AR",
-              "Spell Scaling",
-            ].map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+      <MultiSelectDropdown
+        title="Affinities filter"
+        selectedItems={selectedWeaponAffinities}
+        setSelectedItems={setSelectedWeaponAffinities}
+        items={weaponAffinities.slice()}
+      />
 
       <Button onClick={filterAndSortWeapons} size="lg" className="w-full">
-        Search weapons
+        Filter weapons
       </Button>
     </div>
   );

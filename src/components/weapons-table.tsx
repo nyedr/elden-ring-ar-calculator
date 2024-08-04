@@ -1,7 +1,5 @@
 import { Weapon } from "@/lib/data/weapon";
-import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "./ui/checkbox";
-import { calculateWeaponDamage } from "@/lib/calc/damage";
 import { Character } from "@/hooks/useCharacter";
 import { DataTable } from "./ui/data-table";
 import { scalingRating } from "@/lib/calc/scaling";
@@ -9,21 +7,30 @@ import { AttackRating } from "@/lib/data/attackRating";
 import Image from "next/image";
 import {
   damageAttributeKeys,
+  DamageType,
   damageTypeToImageName,
   statusEffectToImageName,
 } from "@/lib/data/weapon-data";
-import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
+import { ColumnDef } from "@tanstack/react-table";
+import { cn } from "@/lib/utils";
+import {
+  calculateWeaponDamage,
+  isDamageTypeAffectedByUnmetRequirements,
+} from "@/lib/calc/damage";
+import { SortByOption } from "@/lib/calc/filter";
 
 interface WeaponsTableProps {
   character: Character;
   weapons: Weapon[];
+  sortWeaponsTable: (sortByOption: SortByOption) => void;
 }
 
 export default function WeaponsTable({
   character,
   weapons,
+  sortWeaponsTable,
 }: WeaponsTableProps) {
   const weaponsColumns: ColumnDef<AttackRating>[] = [
     {
@@ -50,19 +57,38 @@ export default function WeaponsTable({
         {
           accessorKey: "weaponName",
           header: () => {
-            return <span>Name</span>;
+            return (
+              <Button
+                variant="ghost"
+                onClick={() => sortWeaponsTable("weaponName")}
+                size="sm"
+                className="px-2"
+              >
+                Name
+              </Button>
+            );
           },
           cell: ({ row }) => <span>{row.original.weapon.weaponName}</span>,
           meta: {
             cellClassName: "border border-secondary",
-            headerClassName: "text-start",
+            headerClassName: "text-start px-2",
           },
         },
         // TODO: Move level to select
         // TODO: Make the display of spell scaling dependent on if there is any with it in the weapons array
         {
           accessorKey: "spellScaling",
-          header: () => <span title="Spell Scaling">SS</span>,
+          header: () => (
+            <Button
+              variant="ghost"
+              onClick={() => sortWeaponsTable("Spell Scaling")}
+              size="sm"
+              title="Spell Scaling"
+              className="px-2"
+            >
+              SS
+            </Button>
+          ),
           cell: ({ row }) => (
             <span>
               {Math.floor(row.original.spellScaling) || (
@@ -72,19 +98,17 @@ export default function WeaponsTable({
           ),
           meta: {
             cellClassName: "border border-secondary text-center",
+            headerClassName: "py-0 px-2",
           },
         },
         {
           accessorKey: "weight",
-          header: ({ column, table, header }) => (
-            // TODO: Fix table sorting
+          header: () => (
             <Button
               variant="ghost"
-              onClick={() => {
-                console.log(column.getSortIndex(), column.getIsSorted());
-                column.toggleSorting(column.getIsSorted() === "asc");
-              }}
+              onClick={() => sortWeaponsTable("weight")}
               size="sm"
+              className="px-2"
             >
               Wt
             </Button>
@@ -92,6 +116,7 @@ export default function WeaponsTable({
           cell: ({ row }) => <span>{row.original.weapon.weight}</span>,
           meta: {
             cellClassName: "border border-secondary text-center",
+            headerClassName: "py-0 px-2",
           },
         },
       ],
@@ -105,17 +130,33 @@ export default function WeaponsTable({
             return {
               accessorKey: damageType,
               header: () => (
-                <Image
-                  alt={damageType}
-                  title={`${damageType} Attack`}
-                  width={24}
-                  height={24}
-                  src={`/${imageName}.webp`}
-                  className="mx-auto"
-                />
+                <Button
+                  variant="ghost"
+                  onClick={() => sortWeaponsTable(damageType as SortByOption)}
+                  size="sm"
+                  className="px-2"
+                >
+                  <Image
+                    alt={damageType}
+                    title={`${damageType} Attack`}
+                    width={24}
+                    height={24}
+                    src={`/${imageName}.webp`}
+                    className="mx-auto"
+                  />
+                </Button>
               ),
               cell: ({ row }) => (
-                <span>
+                <span
+                  className={
+                    isDamageTypeAffectedByUnmetRequirements(
+                      row.original,
+                      damageType as DamageType
+                    )
+                      ? "text-red-500"
+                      : ""
+                  }
+                >
                   {Math.floor(
                     row.original.damages[
                       damageType as keyof typeof damageTypeToImageName
@@ -127,18 +168,39 @@ export default function WeaponsTable({
               ),
               meta: {
                 cellClassName: "text-center",
+                headerClassName: "py-0 px-2",
               },
             } as ColumnDef<AttackRating>;
           }
         ),
         {
           accessorKey: "attackRating",
-          header: () => <span>Total</span>,
+          header: () => (
+            <Button
+              variant="ghost"
+              onClick={() => sortWeaponsTable("AR")}
+              size="sm"
+              className="px-2"
+            >
+              Total
+            </Button>
+          ),
           cell: ({ row }) => (
-            <span className="font-bold">{Math.floor(row.original.getAr)}</span>
+            <span
+              className={cn(
+                "font-semibold",
+                Object.values(row.original.requirementsMet).filter(Boolean)
+                  .length !== 5
+                  ? "text-red-500"
+                  : ""
+              )}
+            >
+              {Math.floor(row.original.getAr)}
+            </span>
           ),
           meta: {
             cellClassName: "text-center border-r border-secondary",
+            headerClassName: "py-0 px-2",
           },
         },
       ],
@@ -151,7 +213,16 @@ export default function WeaponsTable({
         ...damageAttributeKeys.map((attribute) => {
           return {
             accessorKey: attribute,
-            header: () => <span>{attribute}</span>,
+            header: () => (
+              <Button
+                variant="ghost"
+                onClick={() => sortWeaponsTable(attribute as SortByOption)}
+                size="sm"
+                className="px-2"
+              >
+                {attribute}
+              </Button>
+            ),
             cell: ({ row }) => {
               const scaling =
                 row.original.weapon.levels[row.original.weapon.maxUpgradeLevel][
@@ -175,6 +246,7 @@ export default function WeaponsTable({
             },
             meta: {
               cellClassName: cn("text-center"),
+              headerClassName: "py-0 px-2",
             },
           } as ColumnDef<AttackRating>;
         }),
@@ -183,25 +255,31 @@ export default function WeaponsTable({
 
     {
       accessorKey: "statusEffects",
-      // TODO: Change to icons with hover tooltip, each effect should have its own column
       header: () => <span>Status Effects</span>,
       columns: [
         ...Object.keys(statusEffectToImageName).map((statusEffect, index) => {
           return {
             accessorKey: statusEffect,
             header: () => (
-              <Image
-                alt={statusEffect}
-                title={statusEffect}
-                width={24}
-                height={24}
-                src={`/${
-                  statusEffectToImageName[
-                    statusEffect as keyof typeof statusEffectToImageName
-                  ]
-                }.webp`}
-                className="mx-auto"
-              />
+              <Button
+                variant="ghost"
+                onClick={() => sortWeaponsTable(statusEffect as SortByOption)}
+                size="sm"
+                className="p-2"
+              >
+                <Image
+                  alt={statusEffect}
+                  title={statusEffect}
+                  width={24}
+                  height={24}
+                  src={`/${
+                    statusEffectToImageName[
+                      statusEffect as keyof typeof statusEffectToImageName
+                    ]
+                  }.webp`}
+                  className="mx-auto"
+                />
+              </Button>
             ),
             cell: ({ row }) => (
               <span>
@@ -217,6 +295,7 @@ export default function WeaponsTable({
                 "text-center",
                 index === 0 ? "border-l border-secondary" : ""
               ),
+              headerClassName: "py-0 px-2",
             },
           } as ColumnDef<AttackRating>;
         }),

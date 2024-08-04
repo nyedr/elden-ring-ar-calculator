@@ -45,13 +45,41 @@ export function calculateScaledStatusEffect(
   }
 }
 
-const damageTypeScalesWithAttribute = (
+export const damageTypeScalesWithAttribute = (
   weapon: Weapon,
   damageType: DamageType,
   attribute: AttributeKey
 ) => {
   return weapon.scaling[damageType][attribute] === 1;
 };
+
+export const isDamageTypeAffectedByUnmetRequirements = (
+  attackRating: AttackRating,
+  damageType: DamageType
+) => {
+  // Create an array of all the attributes that are not met
+  const unmetRequirements: AttributeKey[] = Object.entries(
+    attackRating.requirementsMet
+  )
+    .filter(([, v]) => !v)
+    .map(([k]) => k as AttributeKey);
+
+  // Check if the damage type scales with any of the unmet requirements
+  for (const unmetRequirement of unmetRequirements) {
+    if (
+      damageTypeScalesWithAttribute(
+        attackRating.weapon,
+        damageType,
+        unmetRequirement
+      )
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 // weaponDamage is the damage of a certain type that the weapon puts out at that level
 export function calculateScaledDamageForType(
   character: Character,
