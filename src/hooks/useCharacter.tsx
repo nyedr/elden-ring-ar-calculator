@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const attributesData = [
   { id: "Vig", min: 9, damage: false, name: "Vigor" },
@@ -33,7 +33,6 @@ export interface Character {
 
 export function getCharacterLevel(attributes: Attributes): number {
   let statSum = Object.values(attributes).reduce((acc, val) => acc + val, 0);
-
   return statSum - 79;
 }
 
@@ -54,13 +53,34 @@ const defaultCharacter: Character = {
 };
 
 export default function useCharacter() {
-  const [character, setCharacter] = useState<Character>(defaultCharacter);
+  const [character, setCharacter] = useState<Character>(() => {
+    if (typeof window === "undefined") {
+      return defaultCharacter;
+    }
+    const savedAttributes = localStorage.getItem("characterAttributes");
+    if (savedAttributes) {
+      const parsedAttributes: Attributes = JSON.parse(savedAttributes);
+      return {
+        attributes: parsedAttributes,
+        level: getCharacterLevel(parsedAttributes),
+      };
+    }
+    return defaultCharacter;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(
+      "characterAttributes",
+      JSON.stringify(character.attributes)
+    );
+  }, [character.attributes]);
 
   function setCharacterAttribute(attribute: keyof Attributes, value: number) {
     const newCharacterLevel = getCharacterLevel({
       ...character.attributes,
       [attribute]: value,
     });
+
     setCharacter({
       ...character,
       attributes: { ...character.attributes, [attribute]: value },

@@ -28,8 +28,10 @@ export interface ComboboxItem {
 
 export interface WeaponSearchProps {
   items: ComboboxItem[];
-  setSelectedWeapons: React.Dispatch<React.SetStateAction<Weapon[] | null>>;
+  setSelectedWeapons: React.Dispatch<React.SetStateAction<Weapon[]>>;
   findWeapon: (weaponName: string) => Weapon | undefined;
+  setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
+  updateWeaponInfo: (weaponName: string) => void;
 }
 
 const DROPDOWN_ITEMS_SHOWN_LIMIT = 40;
@@ -38,6 +40,8 @@ export function WeaponSearch({
   items,
   findWeapon,
   setSelectedWeapons,
+  setSelectedChartWeapon,
+  updateWeaponInfo,
 }: WeaponSearchProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
@@ -113,10 +117,22 @@ export function WeaponSearch({
       >
         <Icons.plus className="h-4 w-4" />
       </Button>
-      <Button size="icon" variant="ghost">
+      <Button
+        onClick={() => {
+          const selectedWeapon = findWeapon(value);
+          console.log(value, selectedWeapon);
+          setSelectedChartWeapon(selectedWeapon || null);
+        }}
+        size="icon"
+        variant="ghost"
+      >
         <Icons.chart className="h-4 w-4" />
       </Button>
-      <Button size="icon" variant="ghost">
+      <Button
+        onClick={() => updateWeaponInfo(value)}
+        size="icon"
+        variant="ghost"
+      >
         <Icons.book className="h-4 w-4" />
       </Button>
     </div>

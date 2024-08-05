@@ -12,7 +12,6 @@ import {
 
 export interface WeaponFilter {
   selectedWeaponTypes: string[];
-  selectedDamageTypes: string[];
   selectedStatusEffects: string[];
   selectedWeaponAffinities: string[];
   sortBy: SortByOption;
@@ -21,7 +20,6 @@ export interface WeaponFilter {
 
 export const sortByOptions = [
   ...statusEffects.slice(),
-  ...damageTypes.slice(),
   ...damageAttributeKeys.slice(),
   "AR",
   "Spell Scaling",
@@ -31,27 +29,21 @@ export const sortByOptions = [
 
 export type SortByOption = (typeof sortByOptions)[number];
 
-// TODO: Implement weapon filtering by weapon affinity
 export const filterWeapons = (
   weapons: Weapon[],
   weaponFilter: WeaponFilter
 ) => {
   const {
     selectedWeaponTypes,
-    selectedDamageTypes,
     selectedStatusEffects,
     selectedWeaponAffinities,
   } = weaponFilter;
 
   return weapons.filter((weapon) => {
     const weaponType = weapon.weaponType;
-    const damageTypes = weapon.levels[weapon.maxUpgradeLevel];
     const statusEffects = weapon.statusEffects.map((effect) => effect);
 
     const isWeaponTypeSelected = selectedWeaponTypes.includes(weaponType);
-    const isDamageTypeSelected = selectedDamageTypes.some(
-      (damageType) => damageTypes[damageType as DamageType] > 0
-    );
     const isStatusEffectsSelected =
       selectedStatusEffects.includes("None") ||
       selectedStatusEffects.some((effect) =>
@@ -64,7 +56,6 @@ export const filterWeapons = (
 
     return (
       isWeaponTypeSelected &&
-      isDamageTypeSelected &&
       isStatusEffectsSelected &&
       isWeaponAffinitySelected
     );

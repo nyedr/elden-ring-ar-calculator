@@ -3,13 +3,12 @@
 import useCharacter from "@/hooks/useCharacter";
 import CharacterStats from "@/components/character-stats";
 import getWeapons from "@/lib/data/getWeapons";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Weapon } from "@/lib/data/weapon";
 import { ComboboxItem } from "@/components/weapon-search";
 import WeaponsFilterControl from "@/components/weapons-filter-control";
 import WeaponsTable from "@/components/weapons-table";
 import {
-  damageTypes,
   statusEffects,
   weaponAffinities,
   weaponTypes,
@@ -22,46 +21,64 @@ import {
   WeaponFilter,
 } from "@/lib/calc/filter";
 import Header from "@/components/header";
-import { Button } from "@/components/ui/button";
-import { calculateWeaponDamage } from "@/lib/calc/damage";
+import SelectedWeaponsChart from "@/components/selected-weapons-chart";
+import { getWeaponsLevelsData } from "@/lib/utils";
+import { useDebouncedValue } from "@/hooks/useDebounceValue";
+import WeaponChart from "@/components/weapon-chart";
+import WeaponInfo from "@/components/weapon-info";
 
 const defaultWeaponTypesSelected = weaponTypes.map((type) => type.name);
-const defaultDamageTypesSelected = damageTypes.slice();
 const defaultStatusEffectsSelected = [...statusEffects.slice(), "None"];
 const defaultWeaponAffinitiesSelected = [...weaponAffinities.slice()];
 
 export default function Home() {
   const { character, setCharacterAttribute } = useCharacter();
 
-  // Memoize the initial weapons data
   const initialWeaponsData = useMemo(() => getWeapons(), []);
 
   const [weaponsData, setWeaponsData] = useState(initialWeaponsData);
-  const [selectedWeapons, setSelectedWeapons] = useState<Weapon[] | null>([]);
+  const [selectedWeapons, setSelectedWeapons] = useState<Weapon[]>([]);
   const [weaponFilter, setWeaponFilter] = useState<WeaponFilter>({
     selectedWeaponTypes: defaultWeaponTypesSelected,
-    selectedDamageTypes: defaultDamageTypesSelected,
     selectedStatusEffects: defaultStatusEffectsSelected,
     selectedWeaponAffinities: defaultWeaponAffinitiesSelected,
     sortBy: "AR",
     toggleSortBy: false,
   });
+  const [selectedChartWeapon, setSelectedChartWeapon] = useState<Weapon | null>(
+    null
+  );
+  const [weaponInfo, setWeaponInfo] = useState<Weapon | null>(null);
+  const [isWeaponInfoOpen, setIsWeaponInfoOpen] = useState(false);
 
-  const filterAndSortWeapons = () => {
-    const filteredWeapons = filterWeapons(weaponsData.weapons, weaponFilter);
-    const sortedAndFilteredWeapons = sortWeapons(
-      filteredWeapons,
+  const updateWeaponInfo = (weaponName: string) => {
+    const weapon = weaponsData.findWeapon(weaponName);
+    if (weapon) {
+      setWeaponInfo(weapon);
+      setIsWeaponInfoOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    sortWeaponsTable(weaponFilter.sortBy, false);
+  }, [character.attributes]);
+
+  const setFilteredWeapons = () => {
+    const sortedWeapons = sortWeapons(
+      initialWeaponsData.weapons,
       character,
-      weaponFilter.sortBy
+      weaponFilter.sortBy,
+      weaponFilter.toggleSortBy
     );
+    const filteredWeapons = filterWeapons(sortedWeapons, weaponFilter);
 
-    return setWeaponsData((prev) => ({
+    setWeaponsData((prev) => ({
       ...prev,
-      weapons: sortedAndFilteredWeapons,
+      weapons: filteredWeapons,
     }));
   };
 
-  const sortWeaponsTable = (sortByOption: SortByOption) => {
+  const sortWeaponsTable = (sortByOption: SortByOption, toggle = true) => {
     const toggleSortBy =
       weaponFilter.sortBy === sortByOption ? !weaponFilter.toggleSortBy : false;
 
@@ -71,20 +88,18 @@ export default function Home() {
         weaponsData.weapons,
         character,
         sortByOption,
-        toggleSortBy
+        toggle ? toggleSortBy : weaponFilter.toggleSortBy
       ),
     }));
 
     setWeaponFilter((prev) => ({
       ...prev,
       sortBy: sortByOption,
-      toggleSortBy,
+      toggleSortBy: toggle ? toggleSortBy : weaponFilter.toggleSortBy,
     }));
   };
   const setSelectedWeaponTypes = (selectedWeaponTypes: string[]) =>
     setWeaponFilter((prev) => ({ ...prev, selectedWeaponTypes }));
-  const setSelectedDamageTypes = (selectedDamageTypes: string[]) =>
-    setWeaponFilter((prev) => ({ ...prev, selectedDamageTypes }));
   const setSelectedStatusEffects = (selectedStatusEffects: string[]) =>
     setWeaponFilter((prev) => ({ ...prev, selectedStatusEffects }));
   const setSelectedWeaponAffinities = (selectedWeaponAffinities: string[]) =>
@@ -102,29 +117,61 @@ export default function Home() {
       <Header />
       <div className="flex sm:flex-row flex-col justify-center h-full w-full gap-5 sm:justify-between">
         <CharacterStats {...{ character, setCharacterAttribute }} />
+        {weaponInfo ? (
+          <WeaponInfo
+            character={character}
+            isWeaponInfoOpen={isWeaponInfoOpen}
+            setIsWeaponInfoOpen={setIsWeaponInfoOpen}
+            weapon={weaponInfo}
+          />
+        ) : null}
         <WeaponsFilterControl
           {...{
             findWeapon: weaponsData.findWeapon,
             items: weaponOptions,
             setSelectedWeapons,
             setSelectedWeaponTypes,
-            setSelectedDamageTypes,
             setSelectedStatusEffects,
             setSelectedWeaponAffinities,
             sortByOptions,
-            selectedDamageTypes: weaponFilter.selectedDamageTypes,
             selectedStatusEffects: weaponFilter.selectedStatusEffects,
             selectedWeaponTypes: weaponFilter.selectedWeaponTypes,
             selectedWeaponAffinities: weaponFilter.selectedWeaponAffinities,
-            filterAndSortWeapons,
+            setSelectedChartWeapon,
+            setFilteredWeapons,
             setSortBy,
+            updateWeaponInfo,
           }}
         />
       </div>
+      {selectedWeapons.length ? (
+        <SelectedWeaponsChart
+          clearSelectedWeapons={() => setSelectedWeapons([])}
+          data={getWeaponsLevelsData(character, selectedWeapons)}
+        />
+      ) : null}
+      {selectedChartWeapon ? (
+        <WeaponChart
+          character={character}
+          removeSelectedChartWeapon={() => setSelectedChartWeapon(null)}
+          selectedChartWeapon={selectedChartWeapon}
+        />
+      ) : null}
+      {/* <pre className="p-2 rounded-md bg-secondary my-3 w-full">
+        <code className="w-full">
+          {JSON.stringify(
+            getWeaponsLevelsData(character, selectedWeapons),
+            null,
+            2
+          )}
+        </code>
+      </pre> */}
       <WeaponsTable
+        selectedWeapons={selectedWeapons}
         sortWeaponsTable={sortWeaponsTable}
-        character={character}
-        weapons={weaponsData.weapons}
+        character={useDebouncedValue(character)}
+        weapons={useDebouncedValue(weaponsData.weapons)}
+        setSelectedWeapons={setSelectedWeapons}
       />
     </main>
   );

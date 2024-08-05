@@ -25,12 +25,16 @@ interface WeaponsTableProps {
   character: Character;
   weapons: Weapon[];
   sortWeaponsTable: (sortByOption: SortByOption) => void;
+  selectedWeapons: Weapon[];
+  setSelectedWeapons: React.Dispatch<React.SetStateAction<Weapon[]>>;
 }
 
 export default function WeaponsTable({
   character,
   weapons,
   sortWeaponsTable,
+  setSelectedWeapons,
+  selectedWeapons,
 }: WeaponsTableProps) {
   const weaponsColumns: ColumnDef<AttackRating>[] = [
     {
@@ -42,8 +46,23 @@ export default function WeaponsTable({
           id: "select",
           cell: ({ row }) => (
             <Checkbox
-              checked={row.getIsSelected()}
-              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              checked={
+                row.getIsSelected() ||
+                !!selectedWeapons.find(
+                  (weapon) =>
+                    weapon.weaponName === row.original.weapon.weaponName
+                )
+              }
+              onCheckedChange={(value) => {
+                if (value) {
+                  setSelectedWeapons((prev) => [...prev, row.original.weapon]);
+                } else {
+                  setSelectedWeapons((prev) =>
+                    prev.filter((weapon) => weapon !== row.original.weapon)
+                  );
+                }
+                row.toggleSelected(!!value);
+              }}
               aria-label="Select row"
             />
           ),
@@ -134,11 +153,11 @@ export default function WeaponsTable({
                   variant="ghost"
                   onClick={() => sortWeaponsTable(damageType as SortByOption)}
                   size="sm"
+                  title={`${damageType} Attack`}
                   className="px-2"
                 >
                   <Image
                     alt={damageType}
-                    title={`${damageType} Attack`}
                     width={24}
                     height={24}
                     src={`/${imageName}.webp`}
@@ -265,11 +284,11 @@ export default function WeaponsTable({
                 variant="ghost"
                 onClick={() => sortWeaponsTable(statusEffect as SortByOption)}
                 size="sm"
+                title={statusEffect}
                 className="p-2"
               >
                 <Image
                   alt={statusEffect}
-                  title={statusEffect}
                   width={24}
                   height={24}
                   src={`/${
@@ -308,7 +327,7 @@ export default function WeaponsTable({
   });
 
   return (
-    <div className="w-full  py-10">
+    <div className="w-full py-10">
       <DataTable
         filterBy={{
           accessorKey: "weaponName",

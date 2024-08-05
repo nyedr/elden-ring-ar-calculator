@@ -5,24 +5,41 @@ import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
+import { Label } from "./label";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string;
   isPrivateable?: boolean;
   containerClass?: string;
+  label?: string;
+  labelClass?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { className, type, errorMessage, isPrivateable, containerClass, ...props },
+    {
+      className,
+      type,
+      errorMessage,
+      isPrivateable,
+      labelClass,
+      containerClass,
+      ...props
+    },
     ref
   ) => {
     const [isPrivate, setIsPrivate] = useState(true);
 
     return (
       <div className={cn(containerClass, "relative peer")}>
+        {props.label && (
+          <Label className={cn("text-sm", labelClass)} htmlFor={props.id}>
+            {props.label}
+          </Label>
+        )}
         <input
+          id={props.id}
           type={
             isPrivateable
               ? type === "password" && !isPrivate

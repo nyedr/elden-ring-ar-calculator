@@ -266,7 +266,9 @@ const getWeapons = () => {
     return weapons;
   }
 
-  const weaponsMap = new Map(weapons.map((weapon) => [weapon.name, weapon]));
+  const weaponsMap = new Map(
+    weapons.map((weapon) => [weapon.weaponName, weapon])
+  );
 
   const findWeapon = (weaponName: string) => {
     return weaponsMap.get(weaponName);
