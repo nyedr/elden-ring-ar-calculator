@@ -1,7 +1,6 @@
 import {
   LucideProps,
   Loader2,
-  type Icon as LucideIcon,
   Plus,
   Minus,
   ChartLine,

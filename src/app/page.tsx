@@ -168,11 +168,6 @@ export default function Home() {
         />
       ) : null}
 
-      {/* <pre className="p-2 rounded-md bg-secondary my-3 w-full">
-        <code className="w-full">
-          {JSON.stringify(weaponsData.findWeapon("Rivers of Blood"), null, 2)}
-        </code>
-      </pre> */}
       <WeaponsTable
         updateWeaponInfo={updateWeaponInfo}
         selectedWeapons={selectedWeapons}

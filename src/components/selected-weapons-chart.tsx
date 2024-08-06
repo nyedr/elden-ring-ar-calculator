@@ -11,6 +11,8 @@ interface WeaponArGraphProps {
   removeSelectedWeapon: (weaponName: string) => void;
 }
 
+// TODO: Weapons with spell scaling should be compared by their spell scaling
+
 export default function SelectedWeaponsChart({
   data,
   clearSelectedWeapons,

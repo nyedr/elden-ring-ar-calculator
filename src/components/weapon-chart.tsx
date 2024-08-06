@@ -38,6 +38,8 @@ const getWeaponARBreakdownData = (
   };
 };
 
+// TODO: Weapons with spell scaling should be compared by their spell scaling
+
 export default function WeaponChart({
   selectedChartWeapon,
   removeSelectedChartWeapon,

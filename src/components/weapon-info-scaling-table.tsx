@@ -56,9 +56,7 @@ export default function WeaponScalingTable({
               key={index}
             >
               {scaling ? (
-                `${scalingRating(scaling)} (${Math.floor(
-                  +scaling.toFixed(2) * 100
-                )})`
+                `${scalingRating(scaling)} (${Math.floor(scaling * 100)})`
               ) : (
                 <Icons.minus className="text-secondary w-4 h-4" />
               )}

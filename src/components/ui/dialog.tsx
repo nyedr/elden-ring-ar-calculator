@@ -31,7 +31,6 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 interface ExtendedDialogContentProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
-  // Add any additional props here
   onXClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 

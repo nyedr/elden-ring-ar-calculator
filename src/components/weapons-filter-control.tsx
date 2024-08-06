@@ -1,7 +1,7 @@
 import {
   statusEffects,
   weaponAffinities,
-  weaponTypeDropdownItems,
+  weaponTypes,
 } from "@/lib/data/weapon-data";
 import { ComboboxItem, WeaponSearch, WeaponSearchProps } from "./weapon-search";
 import { Button } from "./ui/button";
@@ -95,6 +95,11 @@ export default function WeaponsFilterControl({
   setFilteredWeapons,
   updateWeaponInfo,
 }: WeaponsFilterControlProps) {
+  const weaponTypeDropdownOptions = weaponTypes.map(({ name }) => ({
+    label: name,
+    value: name,
+  }));
+
   return (
     <div className="w-full flex flex-col gap-2 justify-start">
       <WeaponSearch
@@ -115,7 +120,7 @@ export default function WeaponsFilterControl({
         Weapon Types
       </Label>
       <MultiSelect
-        options={weaponTypeDropdownItems}
+        options={weaponTypeDropdownOptions}
         onValueChange={setSelectedWeaponTypes}
         defaultValue={selectedWeaponTypes}
         placeholder="Weapon Types"

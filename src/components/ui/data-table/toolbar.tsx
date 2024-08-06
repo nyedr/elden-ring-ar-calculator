@@ -12,8 +12,6 @@ export interface DataTableToolbarProps<TData> {
   filterBy: {
     accessorKey: string;
     label: string;
-    // This parameter dictates how deep the filter should go
-    depth?: number;
   };
 }
 

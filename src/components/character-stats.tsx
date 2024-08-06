@@ -2,7 +2,7 @@ import { Attributes, attributesData, Character } from "@/hooks/useCharacter";
 import { Label } from "./ui/label";
 import { Slider } from "./ui/slider";
 import NumberTextField from "./ui/number-input";
-import { memo, useCallback, useEffect, useState, useRef } from "react";
+import { memo, useEffect, useState, useRef } from "react";
 
 interface CharacterStatsProps {
   character: Character;
@@ -57,44 +57,10 @@ const AttributeInput = memo(function AttributeInput({
   );
 });
 
-export function debounce(func: (...args: any[]) => void, wait: number) {
-  let timeout: NodeJS.Timeout;
-  return function executedFunction(...args: any[]) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
 export default function CharacterStats({
   setCharacterAttribute,
   character,
 }: CharacterStatsProps) {
-  const [sliderValues, setSliderValues] = useState(character.attributes);
-
-  useEffect(() => {
-    setSliderValues(character.attributes);
-  }, [character.attributes]);
-
-  const debouncedSetCharacterAttribute = useCallback(
-    debounce((key: keyof Attributes, value: number) => {
-      setCharacterAttribute(key, value);
-    }, 100),
-    []
-  );
-
-  const handleSliderChange = (key: keyof Attributes, value: number) => {
-    setSliderValues((prevValues) => ({
-      ...prevValues,
-      [key]: value,
-    }));
-
-    debouncedSetCharacterAttribute(key, value);
-  };
-
   return (
     <form className="flex flex-col w-full gap-4">
       {(

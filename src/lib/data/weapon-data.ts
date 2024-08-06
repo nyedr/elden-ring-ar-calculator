@@ -51,23 +51,6 @@ export const damageAttribute = {
   Arc: "Arcane",
 } as const;
 
-// Standard
-// Heavy
-// Keen
-// Quality
-// Magic
-// Frost
-// Flame
-// Fire
-// Flame Art
-// Golden
-// Lightning
-// Sacred
-// Occult
-// Poison
-// Blood
-// Occult
-
 export const weaponAffinities = [
   "Standard",
   "Heavy",
@@ -164,16 +147,3 @@ export const weaponTypes = [
   { name: "Medium Shield", class: "shield" },
   { name: "Greatshield", class: "shield" },
 ];
-
-// turn the weaponTypes array into an array like this
-export interface MultiSelectDropdownItem {
-  label: string;
-  value: string;
-  group?: string;
-}
-
-export const weaponTypeDropdownItems: MultiSelectDropdownItem[] =
-  weaponTypes.map(({ name }) => ({
-    label: name,
-    value: name,
-  }));

@@ -108,7 +108,6 @@ export default function WeaponsTable({
           },
         },
         // TODO: Move level to select
-        // TODO: Make the display of spell scaling dependent on if there is any with it in the weapons array
         {
           accessorKey: "spellScaling",
           header: () => (
@@ -365,7 +364,6 @@ export default function WeaponsTable({
         filterBy={{
           accessorKey: "weaponName",
           label: "weapon name",
-          depth: 1,
         }}
         columns={weaponsColumns}
         data={weaponAttackRatings}
