@@ -17,14 +17,18 @@ import { Button } from "../button";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  selectedItemsCounts?: number;
 }
 
-export function Pagination<TData>({ table }: DataTablePaginationProps<TData>) {
+export function Pagination<TData>({
+  table,
+  selectedItemsCounts,
+}: DataTablePaginationProps<TData>) {
   return (
     <div className="flex items-center justify-between px-2">
       <div className="hidden sm:block flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
+        {selectedItemsCounts || table.getFilteredSelectedRowModel().rows.length}{" "}
+        of {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
       <div className="flex items-center sm:w-auto w-full sm:justify-normal justify-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">

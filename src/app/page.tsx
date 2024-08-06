@@ -107,10 +107,19 @@ export default function Home() {
   const setSortBy = (sortBy: SortByOption) =>
     setWeaponFilter((prev) => ({ ...prev, sortBy }));
 
-  const weaponOptions: ComboboxItem[] = weaponsData.weapons.map((weapon) => ({
-    value: weapon.weaponName,
-    label: weapon.weaponName,
-  }));
+  const weaponSearchOptions: ComboboxItem[] = initialWeaponsData.weapons.map(
+    (weapon) => ({
+      value: weapon.weaponName,
+      label: weapon.weaponName,
+    })
+  );
+
+  const removeSelectedWeaponByName = (weaponName: string) => {
+    const updatedSelectedWeapons = selectedWeapons.filter(
+      (weapon) => weapon.weaponName !== weaponName
+    );
+    setSelectedWeapons(updatedSelectedWeapons);
+  };
 
   return (
     <main className="flex flex-col gap-4 items-center max-w-[1420px] px-5 lg:px-0 mx-auto w-full py-4 max-[800px]:px-[calc(10vw/2)]">
@@ -128,7 +137,7 @@ export default function Home() {
         <WeaponsFilterControl
           {...{
             findWeapon: weaponsData.findWeapon,
-            items: weaponOptions,
+            weaponSearchOptions,
             setSelectedWeapons,
             setSelectedWeaponTypes,
             setSelectedStatusEffects,
@@ -144,12 +153,6 @@ export default function Home() {
           }}
         />
       </div>
-      {selectedWeapons.length ? (
-        <SelectedWeaponsChart
-          clearSelectedWeapons={() => setSelectedWeapons([])}
-          data={getWeaponsLevelsData(character, selectedWeapons)}
-        />
-      ) : null}
       {selectedChartWeapon ? (
         <WeaponChart
           character={character}
@@ -157,21 +160,27 @@ export default function Home() {
           selectedChartWeapon={selectedChartWeapon}
         />
       ) : null}
+      {selectedWeapons.length ? (
+        <SelectedWeaponsChart
+          clearSelectedWeapons={() => setSelectedWeapons([])}
+          data={getWeaponsLevelsData(character, selectedWeapons)}
+          removeSelectedWeapon={removeSelectedWeaponByName}
+        />
+      ) : null}
+
       {/* <pre className="p-2 rounded-md bg-secondary my-3 w-full">
         <code className="w-full">
-          {JSON.stringify(
-            getWeaponsLevelsData(character, selectedWeapons),
-            null,
-            2
-          )}
+          {JSON.stringify(weaponsData.findWeapon("Rivers of Blood"), null, 2)}
         </code>
       </pre> */}
       <WeaponsTable
+        updateWeaponInfo={updateWeaponInfo}
         selectedWeapons={selectedWeapons}
         sortWeaponsTable={sortWeaponsTable}
         character={useDebouncedValue(character)}
         weapons={useDebouncedValue(weaponsData.weapons)}
         setSelectedWeapons={setSelectedWeapons}
+        setSelectedChartWeapon={setSelectedChartWeapon}
       />
     </main>
   );

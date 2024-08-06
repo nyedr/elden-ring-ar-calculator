@@ -11,7 +11,7 @@ import {
   damageTypeToImageName,
   statusEffectToImageName,
 } from "@/lib/data/weapon-data";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Icons } from "./icons";
 import { ColumnDef } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,8 @@ interface WeaponsTableProps {
   sortWeaponsTable: (sortByOption: SortByOption) => void;
   selectedWeapons: Weapon[];
   setSelectedWeapons: React.Dispatch<React.SetStateAction<Weapon[]>>;
+  updateWeaponInfo: (weaponName: string) => void;
+  setSelectedChartWeapon: (weapon: Weapon) => void;
 }
 
 export default function WeaponsTable({
@@ -35,6 +37,8 @@ export default function WeaponsTable({
   sortWeaponsTable,
   setSelectedWeapons,
   selectedWeapons,
+  updateWeaponInfo,
+  setSelectedChartWeapon,
 }: WeaponsTableProps) {
   const weaponsColumns: ColumnDef<AttackRating>[] = [
     {
@@ -47,7 +51,6 @@ export default function WeaponsTable({
           cell: ({ row }) => (
             <Checkbox
               checked={
-                row.getIsSelected() ||
                 !!selectedWeapons.find(
                   (weapon) =>
                     weapon.weaponName === row.original.weapon.weaponName
@@ -87,7 +90,18 @@ export default function WeaponsTable({
               </Button>
             );
           },
-          cell: ({ row }) => <span>{row.original.weapon.weaponName}</span>,
+          cell: ({ row }) => (
+            <span
+              onClick={() => updateWeaponInfo(row.original.weapon.weaponName)}
+              className={buttonVariants({
+                variant: "link",
+                size: "sm",
+                className: "px-0 h-auto cursor-pointer",
+              })}
+            >
+              {row.original.weapon.weaponName}
+            </span>
+          ),
           meta: {
             cellClassName: "border border-secondary",
             headerClassName: "text-start px-2",
@@ -320,6 +334,25 @@ export default function WeaponsTable({
         }),
       ],
     },
+    {
+      id: "info",
+      cell: ({ row }) => (
+        <Button
+          variant="ghost"
+          onClick={() => setSelectedChartWeapon(row.original.weapon)}
+          size="sm"
+          className="px-2"
+        >
+          <Icons.chart className="h-4 w-4" />
+        </Button>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      enableGrouping: true,
+      meta: {
+        cellClassName: "p-1 text-center border border-secondary",
+      },
+    },
   ];
 
   const weaponAttackRatings: AttackRating[] = weapons.map((weapon) => {
@@ -337,6 +370,13 @@ export default function WeaponsTable({
         columns={weaponsColumns}
         data={weaponAttackRatings}
         isSelectable={true}
+        selectedItems={selectedWeapons.map((weapon) => {
+          return calculateWeaponDamage(
+            character,
+            weapon,
+            weapon.maxUpgradeLevel
+          );
+        })}
       />
     </div>
   );

@@ -8,11 +8,13 @@ import DynamicStyledChart, { ChartData } from "./ui/chart";
 interface WeaponArGraphProps {
   data: ChartData;
   clearSelectedWeapons: () => void;
+  removeSelectedWeapon: (weaponName: string) => void;
 }
 
 export default function SelectedWeaponsChart({
   data,
   clearSelectedWeapons,
+  removeSelectedWeapon,
 }: WeaponArGraphProps) {
   const [{ activeSeriesIndex, activeDatumIndex }, setState] = React.useState({
     activeSeriesIndex: -1,
@@ -20,9 +22,9 @@ export default function SelectedWeaponsChart({
   });
 
   return (
-    <div className="h-[400px] w-full flex flex-col">
+    <div className="h-[500px] w-full flex flex-col">
       <Button
-        className="mb-3 p-2 ml-auto"
+        className="p-2 ml-auto"
         size="icon"
         variant="ghost"
         onClick={clearSelectedWeapons}
@@ -35,6 +37,7 @@ export default function SelectedWeaponsChart({
         setState={setState}
         activeDatumIndex={activeDatumIndex}
         activeSeriesIndex={activeSeriesIndex}
+        removeChartItem={removeSelectedWeapon}
       />
     </div>
   );

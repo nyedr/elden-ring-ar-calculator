@@ -1,4 +1,4 @@
-import { Character } from "@/hooks/useCharacter";
+import { Attributes, Character } from "@/hooks/useCharacter";
 import { AttackRating } from "../data/attackRating";
 import { Weapon } from "../data/weapon";
 import {
@@ -17,9 +17,9 @@ import { calcPassiveScalingPercentage, calcScalingPercentage } from "./scaling";
 export function meetsWeaponRequirement(
   weapon: Weapon,
   attribute: keyof DamageAttribute,
-  character: Character
+  attributes: Attributes
 ) {
-  return character.attributes[attribute] >= weapon.requirements[attribute];
+  return attributes[attribute] >= weapon.requirements[attribute];
 }
 
 export function calculateScaledStatusEffect(
@@ -92,7 +92,7 @@ export function calculateScaledDamageForType(
   if (weaponDamage > 0) {
     damageAttributeKeys.forEach((attribute) => {
       if (damageTypeScalesWithAttribute(weapon, damageType, attribute)) {
-        if (meetsWeaponRequirement(weapon, attribute, character)) {
+        if (meetsWeaponRequirement(weapon, attribute, character.attributes)) {
           let scalingValue = weapon.levels[level][attribute];
           let scalingCurve = weapon.scaling[damageType].curve;
           let scalingPercentage = calcScalingPercentage(
@@ -157,7 +157,11 @@ export function calculateWeaponDamage(
   });
 
   damageAttributeKeys.slice().forEach((attribute) => {
-    let meetsRequirement = meetsWeaponRequirement(weapon, attribute, character);
+    let meetsRequirement = meetsWeaponRequirement(
+      weapon,
+      attribute,
+      character.attributes
+    );
     attackRating.requirementsMet[attribute] = meetsRequirement;
   });
 

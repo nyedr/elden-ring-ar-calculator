@@ -19,7 +19,7 @@ const getWeaponARBreakdownData = (
   damageType: DamageType | "Total"
 ) => {
   return {
-    label: `${damageType} AR`,
+    label: `${damageType}`,
     data: weapon.levels.map((_, index) => {
       const attackRating = calculateWeaponDamage(character, weapon, index);
 
@@ -60,22 +60,40 @@ export default function WeaponChart({
       (data) => data.data[selectedChartWeapon.maxUpgradeLevel].secondary > 0
     );
 
+  const colorsByDamageType = {
+    Physical: "#202C39",
+    Magic: "#008DD5",
+    Fire: "#F03A47",
+    Lightning: "#F8C537",
+    Holy: "#ECE4B7",
+  };
+
+  const lineColorsByDamageType = data.map(
+    (data) => colorsByDamageType[data.label as DamageType]
+  );
+
   return (
     <div className="h-[400px] w-full flex flex-col">
-      <Button
-        className="mb-3 p-2 ml-auto"
-        size="icon"
-        variant="ghost"
-        onClick={removeSelectedChartWeapon}
-      >
-        <Icons.x className="w-6 h-6" />
-      </Button>
+      <div className="flex w-full items-center justify-between">
+        <h3 className="text-lg font-semibold">
+          {selectedChartWeapon.weaponName} AR Breakdown
+        </h3>
+        <Button
+          className="p-2 ml-auto"
+          size="icon"
+          variant="ghost"
+          onClick={removeSelectedChartWeapon}
+        >
+          <Icons.x className="w-6 h-6" />
+        </Button>
+      </div>
       <DynamicStyledChart
         data={data}
         elementType="area"
         setState={setState}
         activeDatumIndex={activeDatumIndex}
         activeSeriesIndex={activeSeriesIndex}
+        lineColors={lineColorsByDamageType}
       />
     </div>
   );

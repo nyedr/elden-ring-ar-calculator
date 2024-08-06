@@ -41,18 +41,19 @@ export const filterWeapons = (
 
   return weapons.filter((weapon) => {
     const weaponType = weapon.weaponType;
-    const statusEffects = weapon.statusEffects.map((effect) => effect);
+    const statusEffects = weapon.statusEffects;
 
     const isWeaponTypeSelected = selectedWeaponTypes.includes(weaponType);
     const isStatusEffectsSelected =
-      selectedStatusEffects.includes("None") ||
       selectedStatusEffects.some((effect) =>
         statusEffects.includes(effect as StatusEffect)
-      );
+      ) ||
+      (statusEffects.length === 0 && selectedStatusEffects.includes("None"));
 
-    const isWeaponAffinitySelected = selectedWeaponAffinities.includes(
-      weapon.affinity
-    );
+    const isWeaponAffinitySelected =
+      (weapon.affinity === "-" &&
+        selectedWeaponAffinities.includes("Unique")) ||
+      selectedWeaponAffinities.includes(weapon.affinity);
 
     return (
       isWeaponTypeSelected &&

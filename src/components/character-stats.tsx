@@ -76,13 +76,11 @@ export default function CharacterStats({
   const [sliderValues, setSliderValues] = useState(character.attributes);
 
   useEffect(() => {
-    console.log("Running");
     setSliderValues(character.attributes);
   }, [character.attributes]);
 
   const debouncedSetCharacterAttribute = useCallback(
     debounce((key: keyof Attributes, value: number) => {
-      console.log("Changing", key, value);
       setCharacterAttribute(key, value);
     }, 100),
     []

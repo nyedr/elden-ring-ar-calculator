@@ -11,27 +11,23 @@ import { Icons } from "../icons";
 import { Badge } from "./badge";
 import { useEffect, useRef, useState } from "react";
 
-interface BaseMultiSelectDropdownProps {
+export interface MultiSelectDropdownItem {
+  label: string;
+  value: string;
+  group?: string;
+}
+
+interface MultiSelectDropdownProps {
   selectedItems: string[];
   setSelectedItems: (items: string[]) => void;
   title: string;
-}
-
-interface ItemsDefinedProps extends BaseMultiSelectDropdownProps {
-  items: string[];
-  sections?: never;
-}
-
-interface SectionsDefinedProps extends BaseMultiSelectDropdownProps {
-  sections: Record<string, string[]>;
-  items?: never;
+  items: MultiSelectDropdownItem[];
+  label: string;
 }
 
 // TODO: Modify the MultiSelectDropdown component to have a toggle button that selects/deselects all items in the dropdown
 // The dropdown items should also be able to accept icon names to be extracted from the Icons component
 // Remove the complicated conditional type logic and create a singular union type for the props
-
-type MultiSelectDropdownProps = ItemsDefinedProps | SectionsDefinedProps;
 
 const MultiSelectDropdownItem = ({
   item,
@@ -60,15 +56,34 @@ const MultiSelectDropdownItem = ({
   </DropdownMenuCheckboxItem>
 );
 
+const WeaponTypeBadge = ({ type }: { type: string }) => {
+  return (
+    <Badge className="flex bg-secondary text-primary hover:opacity-70 hover:bg-secondary items-center gap-2 py-1">
+      {type}
+    </Badge>
+  );
+};
+
 export default function MultiSelectDropdown({
-  sections,
   selectedItems,
   setSelectedItems,
   title,
   items,
+  label,
 }: MultiSelectDropdownProps) {
   const [open, setOpen] = useState(false);
   const selectContentRef = useRef(null);
+
+  const isAnyItemGrouped = items.some((item) => item.group);
+
+  // group items by their group property
+  const sections = items.reduce((acc, item) => {
+    if (item.group) {
+      acc[item.group] = acc[item.group] || [];
+      acc[item.group].push(item.value);
+    }
+    return acc;
+  }, {} as Record<string, string[]>);
 
   useEffect(() => {
     /**
@@ -89,40 +104,19 @@ export default function MultiSelectDropdown({
     };
   }, [selectContentRef]);
 
-  const WeaponTypeBadge = ({ type }: { type: string }) => {
-    return (
-      <Badge className="flex bg-secondary text-primary hover:opacity-70 hover:bg-secondary items-center gap-2 py-1">
-        {type}
-      </Badge>
-    );
-  };
-
   const SelectControl = () => (
-    <div className="ml-auto flex gap-3">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="p-2 w-8 h-8"
-        onClick={() => setSelectedItems([])}
-      >
-        <Icons.x className="h-full w-full" />
-      </Button>
-      <Button
-        size="icon"
-        variant="ghost"
-        className="p-2 w-8 h-8"
-        onClick={() => {
-          if (sections) {
-            const allItems = Object.values(sections).flat();
-            setSelectedItems(allItems);
-          } else {
-            setSelectedItems(items);
-          }
-        }}
-      >
-        <Icons.check className="h-3 w-3" />
-      </Button>
-    </div>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="p-2 w-full h-8"
+      onClick={() =>
+        setSelectedItems(
+          selectedItems.length ? [] : items.map((item) => item.value)
+        )
+      }
+    >
+      Toggle All
+    </Button>
   );
 
   return (
@@ -134,6 +128,7 @@ export default function MultiSelectDropdown({
           onClick={(e) => e.stopPropagation()}
           className="w-full hover:shadow-lg hover:bg-background flex flex-wrap h-auto text-start items-center justify-start gap-1"
         >
+          {label}
           {selectedItems.length
             ? selectedItems.map((selectedItem) => (
                 <WeaponTypeBadge type={selectedItem} key={selectedItem} />
@@ -145,9 +140,14 @@ export default function MultiSelectDropdown({
       <DropdownMenuContent
         align="end"
         ref={selectContentRef}
-        className="w-full max-h-80 overflow-y-scroll "
+        className="w-full max-h-80 overflow-y-scroll"
+        style={{
+          minWidth: "200px",
+        }}
       >
-        {sections
+        <SelectControl />
+
+        {isAnyItemGrouped
           ? Object.entries(sections).map(([section, items]) => {
               return (
                 <div key={section}>
@@ -156,9 +156,6 @@ export default function MultiSelectDropdown({
                   )}
                   <DropdownMenuLabel className="capitalize flex items-center">
                     {section}
-                    {section === Object.entries(sections)[0][0] && (
-                      <SelectControl />
-                    )}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {items.map((item) => (
@@ -175,8 +172,8 @@ export default function MultiSelectDropdown({
           : items.map((item, i) => {
               return (
                 <MultiSelectDropdownItem
-                  key={item}
-                  item={item}
+                  key={item.label}
+                  item={item.label}
                   selectedItems={selectedItems}
                   setSelectedItems={setSelectedItems}
                 />

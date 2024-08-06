@@ -47,7 +47,7 @@ export function WeaponSearch({
   const [value, setValue] = React.useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
   const filteredItems = items.filter((item) =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase())
+    item.label.toLowerCase().startsWith(searchQuery.toLowerCase())
   );
 
   const addSelectedWeapon = (weaponName: string) => {
@@ -120,7 +120,6 @@ export function WeaponSearch({
       <Button
         onClick={() => {
           const selectedWeapon = findWeapon(value);
-          console.log(value, selectedWeapon);
           setSelectedChartWeapon(selectedWeapon || null);
         }}
         size="icon"

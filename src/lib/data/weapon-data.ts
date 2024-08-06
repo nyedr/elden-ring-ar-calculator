@@ -82,6 +82,7 @@ export const weaponAffinities = [
   "Poison",
   "Blood",
   "Occult",
+  "Unique",
 ] as const;
 export type WeaponAffinity = (typeof weaponAffinities)[number];
 
@@ -164,12 +165,15 @@ export const weaponTypes = [
   { name: "Greatshield", class: "shield" },
 ];
 
-// turn the weaponTypes array into an object with the weapon class as the key
-// and the names as the values in an array
-export const weaponTypesObject = weaponTypes.reduce((acc, weapon) => {
-  if (!acc[weapon.class]) {
-    acc[weapon.class] = [];
-  }
-  acc[weapon.class].push(weapon.name);
-  return acc;
-}, {} as Record<string, string[]>);
+// turn the weaponTypes array into an array like this
+export interface MultiSelectDropdownItem {
+  label: string;
+  value: string;
+  group?: string;
+}
+
+export const weaponTypeDropdownItems: MultiSelectDropdownItem[] =
+  weaponTypes.map(({ name }) => ({
+    label: name,
+    value: name,
+  }));

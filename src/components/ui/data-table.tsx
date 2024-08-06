@@ -27,9 +27,10 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import { DataTableToolbarProps, Toolbar } from "./data-table/toolbar";
+import { DataTableToolbarProps } from "./data-table/toolbar";
 import { Pagination } from "./data-table/pagination";
 import { cn } from "@/lib/utils";
+import { AttackRating } from "@/lib/data/attackRating";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,6 +38,7 @@ interface DataTableProps<TData, TValue> {
   isLoading?: boolean;
   filterBy?: DataTableToolbarProps<TData>["filterBy"];
   isSelectable?: boolean;
+  selectedItems: TData[];
 }
 
 const DEFAULT_TABLE_PAGE_SIZE = 30;
@@ -47,6 +49,7 @@ export function DataTable<TData, TValue>({
   isLoading,
   filterBy,
   isSelectable = false,
+  selectedItems,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -56,6 +59,17 @@ export function DataTable<TData, TValue>({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [grouping, setGrouping] = React.useState<GroupingState>([]);
+
+  const handleColumnVisibilityChange = (
+    updater: VisibilityState | ((old: VisibilityState) => VisibilityState)
+  ) => {
+    setColumnVisibility((old) => {
+      const newColumnVisibility =
+        updater instanceof Function ? updater(old) : updater;
+      // You can add any additional logic here if needed
+      return newColumnVisibility;
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -71,7 +85,7 @@ export function DataTable<TData, TValue>({
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
+    onColumnVisibilityChange: handleColumnVisibilityChange,
     onGroupingChange: setGrouping,
     enableGrouping: true,
     getCoreRowModel: getCoreRowModel(),
@@ -86,8 +100,33 @@ export function DataTable<TData, TValue>({
   });
 
   React.useEffect(() => {
+    // Set the default page size
     table.setPageSize(DEFAULT_TABLE_PAGE_SIZE);
-  }, [table]);
+
+    // Select the rows that are in the selectedItems array
+    const selectedWeaponNames = selectedItems.map(
+      (item) => (item as AttackRating).weapon.weaponName
+    );
+    table
+      .getRowModel()
+      .rows.forEach(
+        (row) =>
+          selectedWeaponNames.includes(
+            (row.original as AttackRating).weapon.weaponName
+          ) && row.toggleSelected()
+      );
+
+    // Check if any filtered weapons have non-zero spell scaling
+    const hasNonZeroSpellScaling = data.some(
+      (item) => (item as AttackRating).spellScaling !== 0
+    );
+
+    // Update column visibility based on the check
+    handleColumnVisibilityChange((old) => ({
+      ...old,
+      spellScaling: hasNonZeroSpellScaling,
+    }));
+  }, [table, selectedItems, data]);
 
   return (
     <div className="w-full space-y-4">
@@ -161,7 +200,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <Pagination table={table} />
+      <Pagination selectedItemsCounts={selectedItems.length} table={table} />
     </div>
   );
 }

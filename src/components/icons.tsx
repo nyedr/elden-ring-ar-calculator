@@ -8,6 +8,9 @@ import {
   BookOpen,
   X,
   Check,
+  ChevronDown,
+  CircleX,
+  WandSparkles,
 } from "lucide-react";
 import react from "react";
 
@@ -23,7 +26,10 @@ export const Icons: Record<string, Icon | ((arg: LucideProps) => JSX.Element)> =
     chart: ChartLine,
     book: BookOpen,
     x: X,
+    circleX: CircleX,
     check: Check,
+    chevronDown: ChevronDown,
+    wandSparkles: WandSparkles,
     gitHub: (props: LucideProps) => (
       <svg viewBox="0 0 438.549 438.549" {...props}>
         <path

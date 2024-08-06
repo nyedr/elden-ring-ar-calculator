@@ -1,10 +1,9 @@
 import {
   statusEffects,
   weaponAffinities,
-  weaponTypesObject,
+  weaponTypeDropdownItems,
 } from "@/lib/data/weapon-data";
-import MultiSelectDropdown from "./ui/multi-select-dropdown";
-import { WeaponSearch, WeaponSearchProps } from "./weapon-search";
+import { ComboboxItem, WeaponSearch, WeaponSearchProps } from "./weapon-search";
 import { Button } from "./ui/button";
 import { Weapon } from "@/lib/data/weapon";
 import { memo } from "react";
@@ -18,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MultiSelect } from "./ui/multi-select";
+import { Label } from "./ui/label";
 
 interface WeaponLevelInputProps {
   upgradeLevel: number;
@@ -36,7 +37,6 @@ const WeaponLevelInput = memo(function WeaponLevelInput({
   return (
     <div>
       <Select
-        // labelId="upgradeLevelLabel"
         value={String(Math.min(upgradeLevel, maxUpgradeLevel))}
         onValueChange={(val) => onUpgradeLevelChanged(+val)}
       >
@@ -67,7 +67,8 @@ const WeaponLevelInput = memo(function WeaponLevelInput({
   );
 });
 
-export interface WeaponsFilterControlProps extends WeaponSearchProps {
+export interface WeaponsFilterControlProps
+  extends Omit<WeaponSearchProps, "items"> {
   selectedWeaponTypes: string[];
   setSelectedWeaponTypes: (selectedWeaponTypes: string[]) => void;
   selectedStatusEffects: string[];
@@ -77,11 +78,12 @@ export interface WeaponsFilterControlProps extends WeaponSearchProps {
   setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
   setFilteredWeapons: () => void;
   updateWeaponInfo: (weaponName: string) => void;
+  weaponSearchOptions: ComboboxItem[];
 }
 
 export default function WeaponsFilterControl({
   findWeapon,
-  items,
+  weaponSearchOptions,
   setSelectedWeapons,
   selectedWeaponTypes,
   setSelectedWeaponTypes,
@@ -94,38 +96,67 @@ export default function WeaponsFilterControl({
   updateWeaponInfo,
 }: WeaponsFilterControlProps) {
   return (
-    <div className="w-full flex flex-col gap-4 justify-start">
+    <div className="w-full flex flex-col gap-2 justify-start">
       <WeaponSearch
         {...{
           updateWeaponInfo,
           findWeapon,
-          items,
+          items: weaponSearchOptions,
           setSelectedWeapons,
           setSelectedChartWeapon,
         }}
       />
-      <MultiSelectDropdown
-        title="Weapon types filter"
-        selectedItems={selectedWeaponTypes}
-        setSelectedItems={setSelectedWeaponTypes}
-        sections={weaponTypesObject}
+
+      <Label
+        id="weaponTypesLabel"
+        htmlFor="weaponTypes"
+        className="text-sm font-semibold mb-0 mt-2"
+      >
+        Weapon Types
+      </Label>
+      <MultiSelect
+        options={weaponTypeDropdownItems}
+        onValueChange={setSelectedWeaponTypes}
+        defaultValue={selectedWeaponTypes}
+        placeholder="Weapon Types"
       />
 
-      <MultiSelectDropdown
-        title="Status effects filter"
-        selectedItems={selectedStatusEffects}
-        setSelectedItems={setSelectedStatusEffects}
-        items={[...statusEffects.slice(), "None"]}
+      <Label
+        id="statusEffectsLabel"
+        htmlFor="statusEffects"
+        className="text-sm font-semibold mt-1 mb-0"
+      >
+        Status Effects
+      </Label>
+      <MultiSelect
+        id="statusEffects"
+        options={[...statusEffects.slice(), "None"].map((statusEffect) => ({
+          value: statusEffect,
+          label: statusEffect,
+        }))}
+        onValueChange={setSelectedStatusEffects}
+        defaultValue={selectedStatusEffects}
+        placeholder="Status Effects"
       />
 
-      <MultiSelectDropdown
-        title="Affinities filter"
-        selectedItems={selectedWeaponAffinities}
-        setSelectedItems={setSelectedWeaponAffinities}
-        items={weaponAffinities.slice()}
-      />
+      <Label
+        id="weaponAffinitiesLabel"
+        htmlFor="weaponAffinities"
+        className="text-sm font-semibold mt-1 mb-0"
+      >
+        Weapon Affinities
+      </Label>
 
-      <Button onClick={setFilteredWeapons} size="lg" className="w-full">
+      <MultiSelect
+        options={[...weaponAffinities].map((affinity) => ({
+          value: affinity,
+          label: affinity,
+        }))}
+        onValueChange={setSelectedWeaponAffinities}
+        defaultValue={selectedWeaponAffinities}
+        placeholder="Affinities"
+      />
+      <Button onClick={setFilteredWeapons} size="lg" className="w-full mt-4">
         Filter weapons
       </Button>
     </div>

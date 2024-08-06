@@ -1,6 +1,8 @@
 import useDemoConfig from "@/hooks/useDemoConfig";
+import { randomColor } from "@/lib/uiUtils";
+import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AxisOptions, Chart } from "react-charts";
 
 export type ChartData = {
@@ -23,6 +25,8 @@ interface DynamicChartProps {
     }>
   >;
   data: ChartData;
+  removeChartItem?: (name: string) => void;
+  lineColors?: string[];
 }
 
 export default function DynamicStyledChart({
@@ -31,6 +35,8 @@ export default function DynamicStyledChart({
   activeSeriesIndex,
   setState,
   data,
+  removeChartItem,
+  lineColors,
 }: DynamicChartProps) {
   const { interactionMode } = useDemoConfig({
     series: 4,
@@ -39,6 +45,20 @@ export default function DynamicStyledChart({
     show: ["elementType", "interactionMode"],
   });
   const { theme } = useTheme();
+
+  const templateColors = React.useMemo<string[]>(
+    () => data.map(() => randomColor()),
+    [data]
+  );
+
+  const [colors, setColors] = useState<string[]>(templateColors);
+
+  useEffect(() => {
+    setColors((prev) => {
+      const newColors = data.map((_, index) => prev[index] || randomColor());
+      return newColors;
+    });
+  }, [data]);
 
   const primaryAxis = React.useMemo<
     AxisOptions<(typeof data)[number]["data"][number]>
@@ -60,8 +80,37 @@ export default function DynamicStyledChart({
     ],
     [elementType]
   );
+
   return (
-    <div className="flex-[2] max-h-[400px] m-0 sm:m-3 overflow-hidden">
+    <div className="flex-[2] max-h-[500px] relative m-0 sm:m-4">
+      <div className="w-full mb-3 flex flex-wrap items-center gap-3 justify-evenly">
+        {data.map((d, i) => (
+          <div
+            key={i}
+            onClick={() => {
+              if (removeChartItem == null) return;
+              removeChartItem(d.label);
+              setColors((prev) => prev.filter((_, index) => i !== index));
+            }}
+            className={cn(
+              `flex text-sm items-center gap-2 ${
+                removeChartItem ? "cursor-pointer hover:opacity-75" : null
+              } select-none`,
+              i !== activeSeriesIndex && activeSeriesIndex !== -1
+                ? "opacity-30"
+                : ""
+            )}
+          >
+            <div
+              className="w-4 h-4 rounded-full"
+              style={{
+                background: `${lineColors ? lineColors[i] : colors[i]}`,
+              }}
+            />
+            <span>{d.label}</span>
+          </div>
+        ))}
+      </div>
       <Chart
         options={{
           data,
@@ -141,22 +190,33 @@ export default function DynamicStyledChart({
 
           renderSVG: () => (
             <defs>
-              <linearGradient id="0" x1="0" x2="0" y1="1" y2="0">
-                <stop offset="0%" stopColor="#17EAD9" />
-                <stop offset="100%" stopColor="#6078EA" />
-              </linearGradient>
-              <linearGradient id="1" x1="0" x2="0" y1="1" y2="0">
-                <stop offset="0%" stopColor="#ff8f10" />
-                <stop offset="100%" stopColor="#ff3434" />
-              </linearGradient>
-              <linearGradient id="2" x1="0" x2="0" y1="1" y2="0">
-                <stop offset="0%" stopColor="#42E695" />
-                <stop offset="100%" stopColor="#3BB2B8" />
-              </linearGradient>
-              <linearGradient id="3" x1="0" x2="0" y1="1" y2="0">
-                <stop offset="0%" stopColor="#ffb302" />
-                <stop offset="100%" stopColor="#ead700" />
-              </linearGradient>
+              {lineColors
+                ? lineColors.map((color, index) => (
+                    <linearGradient
+                      key={index}
+                      id={`${index}`}
+                      x1="0"
+                      x2="0"
+                      y1="1"
+                      y2="0"
+                    >
+                      <stop offset="0%" stopColor={color} />
+                      <stop offset="100%" stopColor={color} />
+                    </linearGradient>
+                  ))
+                : colors.map((color, index) => (
+                    <linearGradient
+                      key={index}
+                      id={`${index}`}
+                      x1="0"
+                      x2="0"
+                      y1="1"
+                      y2="0"
+                    >
+                      <stop offset="0%" stopColor={color} />
+                      <stop offset="100%" stopColor={color} />
+                    </linearGradient>
+                  ))}
             </defs>
           ),
         }}

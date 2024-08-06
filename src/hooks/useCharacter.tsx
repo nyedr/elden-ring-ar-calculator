@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 export const attributesData = [
   { id: "Vig", min: 9, damage: false, name: "Vigor" },
@@ -53,19 +54,13 @@ const defaultCharacter: Character = {
 };
 
 export default function useCharacter() {
-  const [character, setCharacter] = useState<Character>(() => {
-    if (typeof window === "undefined") {
-      return defaultCharacter;
-    }
-    const savedAttributes = localStorage.getItem("characterAttributes");
-    if (savedAttributes) {
-      const parsedAttributes: Attributes = JSON.parse(savedAttributes);
-      return {
-        attributes: parsedAttributes,
-        level: getCharacterLevel(parsedAttributes),
-      };
-    }
-    return defaultCharacter;
+  const [localAttributes, setLocalAttributes] = useLocalStorage(
+    "characterAttributes",
+    defaultAttributes
+  );
+  const [character, setCharacter] = useState<Character>({
+    attributes: localAttributes,
+    level: getCharacterLevel(localAttributes),
   });
 
   useEffect(() => {
@@ -86,6 +81,8 @@ export default function useCharacter() {
       attributes: { ...character.attributes, [attribute]: value },
       level: newCharacterLevel,
     });
+
+    setLocalAttributes({ ...character.attributes, [attribute]: value });
   }
 
   return {

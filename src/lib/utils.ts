@@ -86,10 +86,9 @@ export const getWeaponsLevelsData = (
   );
 
   const selectedWeaponsData = selectedWeapons.map((weapon) => ({
-    label: `${weapon.weaponName} AR`,
+    label: `${weapon.weaponName}`,
     data: isConsistentLevels
       ? levelsArr.map((level) => {
-          console.log(levelsArr);
           const damage = calculateWeaponDamage(
             character,
             weapon,
