@@ -2,15 +2,16 @@
 
 ## Overview
 
-Welcome to the Elden Ring Weapon Attack Rating Calculator! This application allows you to filter, search, and sort weapon information with a customizable character stat sheet, helping you make the best choices for your character in Elden Ring.
+Welcome to the Elden Ring Weapon Attack Rating Calculator! This application is designed to help you optimize your gameplay by providing detailed information and comparisons of weapon attack ratings. You can search, filter, and sort weapons by various metrics, compare multiple weapons in a line graph, and get a detailed weapon damage type breakdown in a line area graph. The application is mobile-responsive and provides real-time updates based on your customized character stats.
 
 ## Features
 
-- **Weapon Search**: Easily find specific weapons by name or attributes.
-- **Filtering**: Filter weapons based on various criteria such as weapon type and damage type.
-- **Sorting**: Sort weapons by attack rating or any other attribute.
-- **Customizable Character Stat Sheet**: Input your character's stats to see how different weapons will perform.
-- **Detailed Weapon Information**: View detailed information about each weapon, including attack ratings.
+- **Search and Filter Weapons**: Easily find weapons based on name, affinity, weapon type, and passive effects.
+- **Sort Weapons**: Sort weapons by various metrics such as attack rating, scaling, weight, etc.
+- **Compare Weapon Damage**: Compare the damage of multiple weapons in a line graph.
+- **Detailed Damage Breakdown**: Get a detailed weapon damage type breakdown in a line area graph.
+- **Customizable Character Stats**: Input and change your character's stats to see how different weapons perform. The options and damages update in real time.
+- **Mobile Responsive**: The application is fully responsive and works seamlessly on mobile devices.
 
 ## Installation
 
@@ -18,7 +19,7 @@ Welcome to the Elden Ring Weapon Attack Rating Calculator! This application allo
 
    ```sh
    git clone https://github.com/nyedr/elden-ring-ar-calculator.git
-   cd elden-ring-ar-calculator
+   cd elden-ring-weapon-calculator
    ```
 
 2. **Install Dependencies**:
@@ -38,47 +39,23 @@ Welcome to the Elden Ring Weapon Attack Rating Calculator! This application allo
    Open your web browser and navigate to `http://localhost:3000`.
 
 2. **Search and Filter Weapons**:
-   Use the search bar to find weapons by name. Use the filters to narrow down your weapon choices based on type, damage, and more.
+
+   - Use the search bar to find weapons by name.
+   - Use the filters to narrow down your weapon choices based on affinity, weapon type, and passive effects.
 
 3. **Sort Weapons**:
-   Click on the sort by select to sort by that attribute (e.g., attack rating, blood, magic, physical).
+   Click on the column headers in the weapon list to sort by that attribute (e.g., attack rating, scaling).
 
 4. **Customize Character Stats**:
-   Enter your character's stats (Strength, Dexterity, Intelligence, Faith, Arcane) in the character stat sheet to see how each weapon scales with your attributes.
+   Enter your character's stats (Strength, Dexterity, Intelligence, Faith, Arcane) in the character stat sheet to see how each weapon scales with your attributes. The weapon options and damage values update in real time based on your inputs.
 
-## Contributing
+5. **Compare Weapon Damage**:
+   Select multiple weapons to compare their damage in a line graph.
 
-We welcome contributions to the Elden Ring Weapon Attack Rating Calculator! If you have a feature request, bug report, or would like to contribute code, please follow these steps:
-
-1. **Fork the Repository**:
-   Click the "Fork" button at the top of the repository page.
-
-2. **Clone Your Fork**:
-
-   ```sh
-   git clone https://github.com/nyedr/elden-ring-ar-calculator.git
-   cd elden-ring-ar-calculator
-   ```
-
-3. **Create a New Branch**:
-
-   ```sh
-   git checkout -b feature/your-feature-name
-   ```
-
-4. **Make Your Changes**:
-   Implement your feature or bug fix.
-
-5. **Commit and Push**:
-
-   ```sh
-   git add .
-   git commit -m "Add feature: your feature description"
-   git push origin feature/your-feature-name
-   ```
-
-6. **Submit a Pull Request**:
-   Open a pull request on the original repository, describing your changes.
+6. **View Detailed Breakdown**:
+   Click on a weapon's name to view a detailed breakdown of its damage types, scaling, and attack rating.
+7. **View Detailed Damage Breakdown**:
+   Press the graph button at the end of the weapon row to see a damage breakdown by level in the form of a line area graph.
 
 ## License
 

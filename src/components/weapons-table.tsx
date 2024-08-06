@@ -26,7 +26,7 @@ interface WeaponsTableProps {
   weapons: Weapon[];
   sortWeaponsTable: (sortByOption: SortByOption) => void;
   selectedWeapons: Weapon[];
-  setSelectedWeapons: React.Dispatch<React.SetStateAction<Weapon[]>>;
+  setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
   updateWeaponInfo: (weaponName: string) => void;
   setSelectedChartWeapon: (weapon: Weapon) => void;
 }

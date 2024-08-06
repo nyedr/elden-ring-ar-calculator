@@ -121,6 +121,19 @@ export default function Home() {
     setSelectedWeapons(updatedSelectedWeapons);
   };
 
+  const updateSelectedWeapons = (updateFunc: (prev: Weapon[]) => Weapon[]) => {
+    setSelectedWeapons((prev) => {
+      return updateFunc(prev);
+    });
+
+    setSelectedChartWeapon(null);
+  };
+
+  const updateSelectedChartWeapon = (weapon: Weapon | null) => {
+    setSelectedChartWeapon(weapon);
+    setSelectedWeapons([]);
+  };
+
   return (
     <main className="flex flex-col gap-4 items-center max-w-[1420px] px-5 lg:px-0 mx-auto w-full py-4 max-[800px]:px-[calc(10vw/2)]">
       <Header />
@@ -138,7 +151,7 @@ export default function Home() {
           {...{
             findWeapon: weaponsData.findWeapon,
             weaponSearchOptions,
-            setSelectedWeapons,
+            setSelectedWeapons: updateSelectedWeapons,
             setSelectedWeaponTypes,
             setSelectedStatusEffects,
             setSelectedWeaponAffinities,
@@ -146,7 +159,7 @@ export default function Home() {
             selectedStatusEffects: weaponFilter.selectedStatusEffects,
             selectedWeaponTypes: weaponFilter.selectedWeaponTypes,
             selectedWeaponAffinities: weaponFilter.selectedWeaponAffinities,
-            setSelectedChartWeapon,
+            setSelectedChartWeapon: updateSelectedChartWeapon,
             setFilteredWeapons,
             setSortBy,
             updateWeaponInfo,
@@ -174,8 +187,8 @@ export default function Home() {
         sortWeaponsTable={sortWeaponsTable}
         character={useDebouncedValue(character)}
         weapons={useDebouncedValue(weaponsData.weapons)}
-        setSelectedWeapons={setSelectedWeapons}
-        setSelectedChartWeapon={setSelectedChartWeapon}
+        setSelectedWeapons={updateSelectedWeapons}
+        setSelectedChartWeapon={updateSelectedChartWeapon}
       />
     </main>
   );

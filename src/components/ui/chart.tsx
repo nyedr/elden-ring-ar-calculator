@@ -104,7 +104,7 @@ export default function DynamicStyledChart({
             <div
               className="w-4 h-4 rounded-full"
               style={{
-                background: `${lineColors ? lineColors[i] : colors[i]}`,
+                background: `${lineColors == null ? colors[i] : lineColors[i]}`,
               }}
             />
             <span>{d.label}</span>
@@ -190,33 +190,21 @@ export default function DynamicStyledChart({
 
           renderSVG: () => (
             <defs>
-              {lineColors
-                ? lineColors.map((color, index) => (
-                    <linearGradient
-                      key={index}
-                      id={`${index}`}
-                      x1="0"
-                      x2="0"
-                      y1="1"
-                      y2="0"
-                    >
-                      <stop offset="0%" stopColor={color} />
-                      <stop offset="100%" stopColor={color} />
-                    </linearGradient>
-                  ))
-                : colors.map((color, index) => (
-                    <linearGradient
-                      key={index}
-                      id={`${index}`}
-                      x1="0"
-                      x2="0"
-                      y1="1"
-                      y2="0"
-                    >
-                      <stop offset="0%" stopColor={color} />
-                      <stop offset="100%" stopColor={color} />
-                    </linearGradient>
-                  ))}
+              {(lineColors == null ? colors : lineColors).map(
+                (color, index) => (
+                  <linearGradient
+                    key={index}
+                    id={`${index}`}
+                    x1="0"
+                    x2="0"
+                    y1="1"
+                    y2="0"
+                  >
+                    <stop offset="0%" stopColor={color} />
+                    <stop offset="100%" stopColor={color} />
+                  </linearGradient>
+                )
+              )}
             </defs>
           ),
         }}

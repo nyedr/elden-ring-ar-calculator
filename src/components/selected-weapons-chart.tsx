@@ -34,6 +34,7 @@ export default function SelectedWeaponsChart({
         <Icons.x className="w-6 h-6" />
       </Button>
       <DynamicStyledChart
+        lineColors={undefined}
         data={data}
         elementType="line"
         setState={setState}

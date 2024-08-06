@@ -28,7 +28,7 @@ export interface ComboboxItem {
 
 export interface WeaponSearchProps {
   items: ComboboxItem[];
-  setSelectedWeapons: React.Dispatch<React.SetStateAction<Weapon[]>>;
+  setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
   findWeapon: (weaponName: string) => Weapon | undefined;
   setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
   updateWeaponInfo: (weaponName: string) => void;
