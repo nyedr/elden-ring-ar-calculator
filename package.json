@@ -22,7 +22,6 @@
     "@tanstack/react-table": "^8.19.3",
     "@types/papaparse": "^5.3.14",
     "@types/react-resizable": "^3.0.8",
-    "@uidotdev/usehooks": "^2.4.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
