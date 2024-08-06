@@ -13,6 +13,12 @@ Welcome to the Elden Ring Weapon Attack Rating Calculator! This application is d
 - **Customizable Character Stats**: Input and change your character's stats to see how different weapons perform. The options and damages update in real time.
 - **Mobile Responsive**: The application is fully responsive and works seamlessly on mobile devices.
 
+<br />
+<div align="center">
+   
+<img  src='https://i.postimg.cc/TYTTsQ64/elden-ring-ar-calculator-snapshot.png' border='0' alt='Employee-Directory-Scroll-SS'/>
+</div>
+
 ## Installation
 
 1. **Clone the Repository**:
