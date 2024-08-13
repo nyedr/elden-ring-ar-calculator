@@ -5,9 +5,9 @@ import {
   DamageAttribute,
   damageAttributeKeys,
   DamageType,
-  damageTypes,
+  allDamageTypes,
   StatusEffect,
-  statusEffects,
+  allStatusEffects,
 } from "../data/weapon-data";
 
 export interface WeaponFilter {
@@ -19,7 +19,7 @@ export interface WeaponFilter {
 }
 
 export const sortByOptions = [
-  ...statusEffects.slice(),
+  ...allStatusEffects.slice(),
   ...damageAttributeKeys.slice(),
   "AR",
   "Spell Scaling",
@@ -67,18 +67,21 @@ export const sortWeapons = (
   weapons: Weapon[],
   character: Character,
   sortBy: SortByOption,
-  toggleSortBy: boolean = false
+  toggleSortBy: boolean = false,
+  isCharacterTwoHanding: boolean = false
 ) => {
   return weapons.sort((a, b) => {
     const aAttackRating = calculateWeaponDamage(
       character,
       a,
-      a.maxUpgradeLevel
+      a.maxUpgradeLevel,
+      isCharacterTwoHanding
     );
     const bAttackRating = calculateWeaponDamage(
       character,
       b,
-      b.maxUpgradeLevel
+      b.maxUpgradeLevel,
+      isCharacterTwoHanding
     );
 
     const compareValues = (aValue: number, bValue: number) => {
@@ -123,7 +126,7 @@ export const sortWeapons = (
         : compareValues(aAttackRating.getAr, bAttackRating.getAr);
     }
 
-    if (statusEffects.includes(sortBy as StatusEffect)) {
+    if (allStatusEffects.includes(sortBy as StatusEffect)) {
       const primarySort = compareValues(
         a.levels[a.maxUpgradeLevel][sortBy],
         b.levels[b.maxUpgradeLevel][sortBy]
@@ -133,7 +136,7 @@ export const sortWeapons = (
         : compareValues(aAttackRating.getAr, bAttackRating.getAr);
     }
 
-    if (damageTypes.includes(sortBy as DamageType)) {
+    if (allDamageTypes.includes(sortBy as DamageType)) {
       const primarySort = compareValues(
         aAttackRating.damages[sortBy as DamageType].total,
         bAttackRating.damages[sortBy as DamageType].total

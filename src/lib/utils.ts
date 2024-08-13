@@ -18,7 +18,7 @@ export const parseCSV = <T>(csv: string) => {
   }) as Papa.ParseResult<T>;
 };
 
-const specialAndRegularLevelsDict = [
+export const specialAndRegularLevelsDict = [
   [0, 0, "+0 / +0"],
   [1, 0, "+1 / +0"],
   [2, 1, "+2 / +1"],
@@ -75,7 +75,8 @@ const createLevelsArray = (maxWeaponLevels: number[]): LevelsArray => {
 
 export const getWeaponsLevelsData = (
   character: Character,
-  selectedWeapons: Weapon[]
+  selectedWeapons: Weapon[],
+  isCharacterTwoHanding: boolean = false
 ) => {
   const maxWeaponLevels = selectedWeapons.map(
     (weapon) => weapon.maxUpgradeLevel
@@ -92,7 +93,8 @@ export const getWeaponsLevelsData = (
           const damage = calculateWeaponDamage(
             character,
             weapon,
-            level as number
+            level as number,
+            isCharacterTwoHanding
           ).getAr;
           return {
             primary: level,
@@ -106,7 +108,8 @@ export const getWeaponsLevelsData = (
             const damage = calculateWeaponDamage(
               character,
               weapon,
-              isSpecialLevel ? specialLevel : regularLevel
+              isSpecialLevel ? specialLevel : regularLevel,
+              isCharacterTwoHanding
             ).getAr;
             return {
               primary: label,

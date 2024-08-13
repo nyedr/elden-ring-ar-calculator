@@ -21,6 +21,7 @@ export interface WeaponInfoTriggerProps {
   character: Character;
   isWeaponInfoOpen: boolean;
   setIsWeaponInfoOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isCharacterTwoHanding: boolean;
 }
 
 export default function WeaponInfo({
@@ -28,6 +29,7 @@ export default function WeaponInfo({
   character,
   setIsWeaponInfoOpen,
   isWeaponInfoOpen,
+  isCharacterTwoHanding,
 }: WeaponInfoTriggerProps) {
   const [weaponLevel, setWeaponLevel] = useState(weapon.maxUpgradeLevel);
   useEffect(() => {
@@ -37,7 +39,8 @@ export default function WeaponInfo({
   const weaponAttackRating = calculateWeaponDamage(
     character,
     weapon,
-    weaponLevel > weapon.maxUpgradeLevel ? weapon.maxUpgradeLevel : weaponLevel
+    weaponLevel > weapon.maxUpgradeLevel ? weapon.maxUpgradeLevel : weaponLevel,
+    isCharacterTwoHanding
   );
 
   return (

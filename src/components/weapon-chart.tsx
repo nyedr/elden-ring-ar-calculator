@@ -5,23 +5,30 @@ import DynamicStyledChart from "./ui/chart";
 import React from "react";
 import { Character } from "@/hooks/useCharacter";
 import { calculateWeaponDamage } from "@/lib/calc/damage";
-import { DamageType, damageTypes } from "@/lib/data/weapon-data";
+import { DamageType, allDamageTypes } from "@/lib/data/weapon-data";
 
 interface WeaponChartProps {
   selectedChartWeapon: Weapon;
   removeSelectedChartWeapon: () => void;
   character: Character;
+  isCharacterTwoHanding: boolean;
 }
 
 const getWeaponARBreakdownData = (
   character: Character,
   weapon: Weapon,
-  damageType: DamageType | "Total"
+  damageType: DamageType | "Total",
+  isCharacterTwoHanding: boolean = false
 ) => {
   return {
     label: `${damageType}`,
     data: weapon.levels.map((_, index) => {
-      const attackRating = calculateWeaponDamage(character, weapon, index);
+      const attackRating = calculateWeaponDamage(
+        character,
+        weapon,
+        index,
+        isCharacterTwoHanding
+      );
 
       if (damageType === "Total") {
         return {
@@ -44,13 +51,14 @@ export default function WeaponChart({
   selectedChartWeapon,
   removeSelectedChartWeapon,
   character,
+  isCharacterTwoHanding,
 }: WeaponChartProps) {
   const [{ activeSeriesIndex, activeDatumIndex }, setState] = React.useState({
     activeSeriesIndex: -1,
     activeDatumIndex: -1,
   });
 
-  const data = [...damageTypes.slice()]
+  const data = [...allDamageTypes.slice()]
     .map((damageType) =>
       getWeaponARBreakdownData(
         character,
@@ -63,15 +71,15 @@ export default function WeaponChart({
     );
 
   const colorsByDamageType = {
-    Physical: "#202C39",
-    Magic: "#008DD5",
-    Fire: "#F03A47",
-    Lightning: "#F8C537",
-    Holy: "#ECE4B7",
+    [DamageType.Physical]: "#202C39",
+    [DamageType.Magic]: "#008DD5",
+    [DamageType.Fire]: "#F03A47",
+    [DamageType.Lightning]: "#F8C537",
+    [DamageType.Holy]: "#ECE4B7",
   };
 
   const lineColorsByDamageType = data.map(
-    (data) => colorsByDamageType[data.label as DamageType]
+    (data) => colorsByDamageType[data.label as keyof typeof colorsByDamageType]
   );
 
   return (

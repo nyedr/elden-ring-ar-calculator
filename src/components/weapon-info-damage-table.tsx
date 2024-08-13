@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AttackRating, Damage } from "@/lib/data/attackRating";
-import { damageTypes } from "@/lib/data/weapon-data";
+import { allDamageTypes } from "@/lib/data/weapon-data";
 import { Icons } from "./icons";
 
 export interface WeaponAttributes {
@@ -23,13 +23,13 @@ interface WeaponTableProps {
 }
 
 export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
-  const weaponDamages = damageTypes
+  const weaponDamages = allDamageTypes
     .slice()
     .map((type) => attackRating.damages[type].weapon);
-  const weaponScaled = damageTypes
+  const weaponScaled = allDamageTypes
     .slice()
     .map((type) => attackRating.damages[type].scaled);
-  const weaponTotal = damageTypes
+  const weaponTotal = allDamageTypes
     .slice()
     .map((type) => attackRating.damages[type].total);
 

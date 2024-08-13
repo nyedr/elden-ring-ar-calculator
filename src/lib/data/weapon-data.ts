@@ -1,21 +1,3 @@
-export const elementalDamageTypes = [
-  "Magic",
-  "Fire",
-  "Lightning",
-  "Holy",
-] as const;
-export type ElementalDamageType = (typeof elementalDamageTypes)[number];
-
-export const damageTypes = ["Physical", ...elementalDamageTypes] as const;
-export type DamageType = (typeof damageTypes)[number];
-export const damageTypeToImageName = {
-  Physical: "standardAffinity",
-  Magic: "magicAffinity",
-  Fire: "fireAffinity",
-  Lightning: "lightningAffinity",
-  Holy: "sacredAffinity",
-};
-
 // Passive effects that have a constant value regardless of weapon level or character attribute values
 export const flatPassives = ["Scarlet Rot", "Madness", "Sleep"] as const;
 export type FlatPassive = (typeof flatPassives)[number];
@@ -28,20 +10,145 @@ export type LeveledPassive = (typeof leveledPassives)[number];
 export const scaledPassives = ["Poison", "Blood"] as const;
 export type ScaledPassive = (typeof scaledPassives)[number];
 
-export const statusEffects = [
-  ...flatPassives,
-  ...leveledPassives,
-  ...scaledPassives,
-] as const;
-export type StatusEffect = (typeof statusEffects)[number];
+export enum DamageType {
+  Magic = "Magic",
+  Fire = "Fire",
+  Lightning = "Lightning",
+  Holy = "Holy",
+  Physical = "Physical",
+}
+
+export const damageTypeToImageName = {
+  [DamageType.Physical]: "standardAffinity",
+  [DamageType.Magic]: "magicAffinity",
+  [DamageType.Fire]: "fireAffinity",
+  [DamageType.Lightning]: "lightningAffinity",
+  [DamageType.Holy]: "sacredAffinity",
+};
+
+export const allDamageTypes = [
+  DamageType.Physical,
+  DamageType.Magic,
+  DamageType.Fire,
+  DamageType.Lightning,
+  DamageType.Holy,
+];
+
+export const allSimplifiedDamageTypes = [
+  DamageType.Physical,
+  DamageType.Magic,
+  DamageType.Fire,
+  DamageType.Lightning,
+  DamageType.Holy,
+];
+
+export enum StatusEffect {
+  Poison = "Poison",
+  Bleed = "Bleed",
+  Scarlet_Rot = "Scarlet Rot",
+  Frost = "Frost",
+  Sleep = "Sleep",
+  Madness = "Madness",
+}
+
 export const statusEffectToImageName = {
-  "Scarlet Rot": "scarletRotStatus",
-  Madness: "madnessStatus",
-  Sleep: "sleepStatus",
-  Frost: "frostStatus",
-  Poison: "poisonStatus",
-  Blood: "bleedStatus",
+  [StatusEffect.Scarlet_Rot]: "scarletRotStatus",
+  [StatusEffect.Madness]: "madnessStatus",
+  [StatusEffect.Sleep]: "sleepStatus",
+  [StatusEffect.Frost]: "frostStatus",
+  [StatusEffect.Poison]: "poisonStatus",
+  [StatusEffect.Bleed]: "bleedStatus",
 } as const;
+
+export const allStatusEffects = [
+  StatusEffect.Poison,
+  StatusEffect.Bleed,
+  StatusEffect.Scarlet_Rot,
+  StatusEffect.Frost,
+  StatusEffect.Sleep,
+  StatusEffect.Madness,
+];
+
+export interface Poise {
+  base: number;
+  multiplier: number;
+  effective: number;
+  regenDelay: number;
+}
+
+export interface Enemy {
+  id: number;
+  name: string;
+  location: string;
+  healthPoints: number;
+  dlcClearHealthPoints: number | null;
+  defence: {
+    [key in DamageType]: number;
+  };
+  damageNegation: {
+    [key in DamageType]: number;
+  };
+  poise: Poise;
+  resistances: {
+    [key in StatusEffect]: number | "Immune";
+  };
+}
+
+export interface EnemyData {
+  Location: string;
+  Name: string;
+  ID: string;
+  "": string; // Unused field
+  Health: string;
+  dlcClear: string;
+  _1: string; // Unused field
+  Phys: string;
+  Strike: string;
+  Slash: string;
+  Pierce: string;
+  Magic: string;
+  Fire: string;
+  Ltng: string;
+  Holy: string;
+  _2: string; // Unused field
+  Phys_1: string;
+  Strike_1: string;
+  Slash_1: string;
+  Pierce_1: string;
+  Magic_1: string;
+  Fire_1: string;
+  Ltng_1: string;
+  Holy_1: string;
+  _3: string; // Unused field
+  Poison: string;
+  "Scarlet Rot": string;
+  Bleed: string;
+  Frost: string;
+  Sleep: string;
+  Madness: string;
+  Deathblight: string;
+  _4: string; // Unused field
+  Bleed_1: string;
+  Frost_1: string;
+  Sleep_1: string;
+  Madness_1: string;
+  "HP Burn Effect": string;
+  _5: string; // Unused field
+  Base: string;
+  "Incoming Mult": string;
+  Effective: string;
+  "Regen Delay": string;
+  _6: string; // Unused field
+  "Part 1": string;
+  "Part 2": string;
+  "Part 3": string;
+  "Part 4": string;
+  "Part 5": string;
+  "Part 6": string;
+  "Part 7": string;
+  "Part 8": string;
+  "Weak Parts": string;
+}
 
 export const damageAttribute = {
   Str: "Strength",
@@ -81,24 +188,13 @@ export interface Scaling extends DamageAttribute {
   curve: number;
 }
 
-export interface WeaponLevel {
-  Physical: number;
-  Magic: number;
-  Fire: number;
-  Lightning: number;
-  Holy: number;
-  Str: number;
-  Dex: number;
-  Int: number;
-  Fai: number;
-  Arc: number;
-  "Scarlet Rot": number;
-  Madness: number;
-  Sleep: number;
-  Frost: number;
-  Poison: number;
-  Blood: number;
-}
+export type WeaponLevel = {
+  [key in (typeof allDamageTypes)[number]]: number;
+} & {
+  [key in (typeof allStatusEffects)[number]]: number;
+} & {
+  [key in (typeof damageAttributeKeys)[number]]: number;
+};
 
 export const weaponTypes = [
   // ----------------------------------------------- Sword

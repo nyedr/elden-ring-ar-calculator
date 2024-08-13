@@ -23,7 +23,7 @@ import { SortByOption } from "@/lib/calc/filter";
 
 interface WeaponsTableProps {
   character: Character;
-  weapons: Weapon[];
+  weaponAttackRatings: AttackRating[];
   sortWeaponsTable: (sortByOption: SortByOption) => void;
   selectedWeapons: Weapon[];
   setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
@@ -33,7 +33,7 @@ interface WeaponsTableProps {
 
 export default function WeaponsTable({
   character,
-  weapons,
+  weaponAttackRatings,
   sortWeaponsTable,
   setSelectedWeapons,
   selectedWeapons,
@@ -353,10 +353,6 @@ export default function WeaponsTable({
       },
     },
   ];
-
-  const weaponAttackRatings: AttackRating[] = weapons.map((weapon) => {
-    return calculateWeaponDamage(character, weapon, weapon.maxUpgradeLevel);
-  });
 
   return (
     <div className="w-full py-10">

@@ -1,5 +1,5 @@
 import {
-  statusEffects,
+  allStatusEffects,
   weaponAffinities,
   weaponTypes,
 } from "@/lib/data/weapon-data";
@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
 import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
+import { specialAndRegularLevelsDict } from "@/lib/utils";
 
 interface WeaponLevelInputProps {
   upgradeLevel: number;
@@ -67,7 +69,7 @@ const WeaponLevelInput = memo(function WeaponLevelInput({
   );
 });
 
-export interface WeaponsFilterControlProps
+export interface WeaponsTableControlProps
   extends Omit<WeaponSearchProps, "items"> {
   selectedWeaponTypes: string[];
   setSelectedWeaponTypes: (selectedWeaponTypes: string[]) => void;
@@ -79,9 +81,15 @@ export interface WeaponsFilterControlProps
   setFilteredWeapons: () => void;
   updateWeaponInfo: (weaponName: string) => void;
   weaponSearchOptions: ComboboxItem[];
+  isCharacterTwoHanding: boolean;
+  setIsCharacterTwoHanding: (isCharacterTwoHanding: boolean) => void;
+  selectedWeaponLevel: [number, number, string];
+  setSelectedWeaponLevel: (
+    selectedWeaponLevel: [number, number, string]
+  ) => void;
 }
 
-export default function WeaponsFilterControl({
+export default function WeaponsTableControl({
   findWeapon,
   weaponSearchOptions,
   setSelectedWeapons,
@@ -94,7 +102,11 @@ export default function WeaponsFilterControl({
   setSelectedStatusEffects,
   setFilteredWeapons,
   updateWeaponInfo,
-}: WeaponsFilterControlProps) {
+  isCharacterTwoHanding,
+  setIsCharacterTwoHanding,
+  selectedWeaponLevel,
+  setSelectedWeaponLevel,
+}: WeaponsTableControlProps) {
   const weaponTypeDropdownOptions = weaponTypes.map(({ name }) => ({
     label: name,
     value: name,
@@ -135,7 +147,7 @@ export default function WeaponsFilterControl({
       </Label>
       <MultiSelect
         id="statusEffects"
-        options={[...statusEffects.slice(), "None"].map((statusEffect) => ({
+        options={[...allStatusEffects.slice(), "None"].map((statusEffect) => ({
           value: statusEffect,
           label: statusEffect,
         }))}
@@ -161,6 +173,46 @@ export default function WeaponsFilterControl({
         defaultValue={selectedWeaponAffinities}
         placeholder="Affinities"
       />
+
+      <div className="w-full flex items-center justify-evenly gap-4 mt-1">
+        <div className="flex items-center space-x-2">
+          <Label className="whitespace-nowrap" htmlFor="isTwoHanding">
+            Two Handing
+          </Label>
+          <Switch
+            checked={isCharacterTwoHanding}
+            onCheckedChange={() =>
+              setIsCharacterTwoHanding(!isCharacterTwoHanding)
+            }
+            id="isTwoHanding"
+          />
+        </div>
+        <Select
+          value={selectedWeaponLevel[2]}
+          onValueChange={(e) => {
+            const level = specialAndRegularLevelsDict.find(
+              (level) => level[2] === e
+            );
+            if (level) {
+              setSelectedWeaponLevel(level);
+            }
+          }}
+        >
+          <SelectTrigger className="w-[140px]">
+            <SelectValue placeholder="Weapons Level" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px]">
+            <SelectGroup>
+              {specialAndRegularLevelsDict.map((level) => (
+                <SelectItem key={level[2]} value={level[2]}>
+                  {level[2]}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
       <Button onClick={setFilteredWeapons} size="lg" className="w-full mt-4">
         Filter weapons
       </Button>

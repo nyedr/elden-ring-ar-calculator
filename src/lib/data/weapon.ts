@@ -21,6 +21,7 @@ export interface WeaponProps {
   weight: number;
   requirements: { [K in AttributeKey]: number };
   poiseAttack: number;
+  twoHandBonus: boolean;
 }
 
 export class Weapon {
@@ -37,6 +38,7 @@ export class Weapon {
   weight: number;
   requirements: { [K in AttributeKey]: number };
   poiseAttack: number;
+  twoHandBonus: boolean;
 
   constructor(props: WeaponProps) {
     this.name = props.name;
@@ -54,6 +56,7 @@ export class Weapon {
     this.statusEffects = props.statusEffects ?? [];
     this.weight = props.weight;
     this.requirements = props.requirements;
+    this.twoHandBonus = props.twoHandBonus;
   }
 
   formatScaling(

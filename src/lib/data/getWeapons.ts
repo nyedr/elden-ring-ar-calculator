@@ -11,10 +11,10 @@ import {
 } from "@/lib/data/weapon-result-types";
 import {
   DamageType,
-  damageTypes,
+  allDamageTypes,
   FlatPassive,
   flatPassives,
-  statusEffects,
+  allStatusEffects,
   Scaling,
 } from "@/lib/data/weapon-data";
 import { Weapon } from "./weapon";
@@ -61,6 +61,7 @@ const getWeapons = () => {
           Str: +weaponData["Required (Str)"],
         },
         weight: +weaponData.Weight,
+        twoHandBonus: weaponData["2H Str Bonus"] === "Yes",
       });
 
       weapons.push({ ...weapons[i], ...weapon } as Weapon);
@@ -90,19 +91,19 @@ const getWeapons = () => {
       for (let l = 0; l <= weapon.maxUpgradeLevel; l++) {
         weapon.levels[l] = {
           ...weapon.levels[l],
-          Physical: parseFloat(
+          [DamageType.Physical]: parseFloat(
             weaponAttack[`Phys +${l}` as keyof WeaponStats] as string
           ),
-          Magic: parseFloat(
+          [DamageType.Magic]: parseFloat(
             weaponAttack[`Mag +${l}` as keyof WeaponStats] as string
           ),
-          Fire: parseFloat(
+          [DamageType.Fire]: parseFloat(
             weaponAttack[`Fire +${l}` as keyof WeaponStats] as string
           ),
-          Lightning: parseFloat(
+          [DamageType.Lightning]: parseFloat(
             weaponAttack[`Ligh +${l}` as keyof WeaponStats] as string
           ),
-          Holy: parseFloat(
+          [DamageType.Holy]: parseFloat(
             weaponAttack[`Holy +${l}` as keyof WeaponStats] as string
           ),
         };
@@ -140,7 +141,7 @@ const getWeapons = () => {
     level: number,
     weaponPassive: WeaponPassive
   ) {
-    statusEffects.forEach((statusEffect) => {
+    allStatusEffects.forEach((statusEffect) => {
       if (
         statusEffect === "Scarlet Rot" &&
         weapon.name === "Cold Antspur Rapier"
@@ -187,7 +188,7 @@ const getWeapons = () => {
   }
 
   function setPassiveEffects(weapon: Weapon) {
-    weapon.statusEffects = statusEffects.filter((statusEffect) => {
+    weapon.statusEffects = allStatusEffects.filter((statusEffect) => {
       return weapon.levels[0][statusEffect] > 0;
     });
 
@@ -204,6 +205,7 @@ const getWeapons = () => {
 
     for (let i = 0; i < weaponsCount; i++) {
       const weaponElementScalingCurves = elementScalingCurves[i];
+
       const weaponElementScalingPattern =
         weaponElementScalingCurves[`AttackElementCorrect ID`];
       // do name check
@@ -224,7 +226,7 @@ const getWeapons = () => {
 
       weapon.scaling = {} as Record<DamageType, Scaling>;
 
-      damageTypes.forEach((element) => {
+      allDamageTypes.forEach((element) => {
         weapon.scaling[element] = {
           ...weapon.scaling[element],
           curve: parseInt(weaponElementScalingCurves[element]),
