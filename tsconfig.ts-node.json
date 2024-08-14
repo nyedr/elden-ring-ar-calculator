@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false, // Allow ts-node to emit compiled code
+    "module": "commonjs", // Use commonjs for compatibility with Node.js
+    "moduleResolution": "node" // Use classic Node.js resolution
+  }
+}

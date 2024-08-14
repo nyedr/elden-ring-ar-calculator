@@ -16,6 +16,9 @@ export enum DamageType {
   Lightning = "Lightning",
   Holy = "Holy",
   Physical = "Physical",
+  Pierce = "Pierce",
+  Slash = "Slash",
+  Strike = "Strike",
 }
 
 export const damageTypeToImageName = {
@@ -26,7 +29,7 @@ export const damageTypeToImageName = {
   [DamageType.Holy]: "sacredAffinity",
 };
 
-export const allDamageTypes = [
+export const allSimplifiedDamageTypes = [
   DamageType.Physical,
   DamageType.Magic,
   DamageType.Fire,
@@ -34,12 +37,15 @@ export const allDamageTypes = [
   DamageType.Holy,
 ];
 
-export const allSimplifiedDamageTypes = [
+export const allDamageTypes = [
   DamageType.Physical,
   DamageType.Magic,
   DamageType.Fire,
   DamageType.Lightning,
   DamageType.Holy,
+  DamageType.Pierce,
+  DamageType.Slash,
+  DamageType.Strike,
 ];
 
 export enum StatusEffect {
@@ -49,6 +55,7 @@ export enum StatusEffect {
   Frost = "Frost",
   Sleep = "Sleep",
   Madness = "Madness",
+  Death_Blight = "Death Blight",
 }
 
 export const statusEffectToImageName = {
@@ -58,6 +65,7 @@ export const statusEffectToImageName = {
   [StatusEffect.Frost]: "frostStatus",
   [StatusEffect.Poison]: "poisonStatus",
   [StatusEffect.Bleed]: "bleedStatus",
+  [StatusEffect.Death_Blight]: "deathBlightStatus",
 } as const;
 
 export const allStatusEffects = [
@@ -67,88 +75,8 @@ export const allStatusEffects = [
   StatusEffect.Frost,
   StatusEffect.Sleep,
   StatusEffect.Madness,
+  StatusEffect.Death_Blight,
 ];
-
-export interface Poise {
-  base: number;
-  multiplier: number;
-  effective: number;
-  regenDelay: number;
-}
-
-export interface Enemy {
-  id: number;
-  name: string;
-  location: string;
-  healthPoints: number;
-  dlcClearHealthPoints: number | null;
-  defence: {
-    [key in DamageType]: number;
-  };
-  damageNegation: {
-    [key in DamageType]: number;
-  };
-  poise: Poise;
-  resistances: {
-    [key in StatusEffect]: number | "Immune";
-  };
-}
-
-export interface EnemyData {
-  Location: string;
-  Name: string;
-  ID: string;
-  "": string; // Unused field
-  Health: string;
-  dlcClear: string;
-  _1: string; // Unused field
-  Phys: string;
-  Strike: string;
-  Slash: string;
-  Pierce: string;
-  Magic: string;
-  Fire: string;
-  Ltng: string;
-  Holy: string;
-  _2: string; // Unused field
-  Phys_1: string;
-  Strike_1: string;
-  Slash_1: string;
-  Pierce_1: string;
-  Magic_1: string;
-  Fire_1: string;
-  Ltng_1: string;
-  Holy_1: string;
-  _3: string; // Unused field
-  Poison: string;
-  "Scarlet Rot": string;
-  Bleed: string;
-  Frost: string;
-  Sleep: string;
-  Madness: string;
-  Deathblight: string;
-  _4: string; // Unused field
-  Bleed_1: string;
-  Frost_1: string;
-  Sleep_1: string;
-  Madness_1: string;
-  "HP Burn Effect": string;
-  _5: string; // Unused field
-  Base: string;
-  "Incoming Mult": string;
-  Effective: string;
-  "Regen Delay": string;
-  _6: string; // Unused field
-  "Part 1": string;
-  "Part 2": string;
-  "Part 3": string;
-  "Part 4": string;
-  "Part 5": string;
-  "Part 6": string;
-  "Part 7": string;
-  "Part 8": string;
-  "Weak Parts": string;
-}
 
 export const damageAttribute = {
   Str: "Strength",
@@ -189,7 +117,7 @@ export interface Scaling extends DamageAttribute {
 }
 
 export type WeaponLevel = {
-  [key in (typeof allDamageTypes)[number]]: number;
+  [key in (typeof allSimplifiedDamageTypes)[number]]: number;
 } & {
   [key in (typeof allStatusEffects)[number]]: number;
 } & {

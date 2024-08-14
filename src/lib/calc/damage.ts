@@ -6,14 +6,14 @@ import {
   DamageAttribute,
   damageAttributeKeys,
   DamageType,
-  allDamageTypes,
+  allSimplifiedDamageTypes,
   StatusEffect,
   allStatusEffects,
   ScaledPassive,
   scaledPassives,
-  Enemy,
 } from "../data/weapon-data";
 import { calcPassiveScalingPercentage, calcScalingPercentage } from "./scaling";
+import { Enemy } from "../data/enemy-data";
 
 export function meetsWeaponRequirement(
   weapon: Weapon,
@@ -164,7 +164,7 @@ export function calculateWeaponDamage(
     attributes: character.attributes,
   });
 
-  allDamageTypes.forEach((damageType) => {
+  allSimplifiedDamageTypes.forEach((damageType) => {
     let weaponDamage = weapon.levels[level][damageType];
     let scaledDamage = calculateScaledDamageForType(
       adjustedCharacterAttributes,

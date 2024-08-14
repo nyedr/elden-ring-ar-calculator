@@ -5,7 +5,7 @@ import {
   DamageAttribute,
   damageAttributeKeys,
   DamageType,
-  allDamageTypes,
+  allSimplifiedDamageTypes,
   StatusEffect,
   allStatusEffects,
 } from "../data/weapon-data";
@@ -136,7 +136,7 @@ export const sortWeapons = (
         : compareValues(aAttackRating.getAr, bAttackRating.getAr);
     }
 
-    if (allDamageTypes.includes(sortBy as DamageType)) {
+    if (allSimplifiedDamageTypes.includes(sortBy as DamageType)) {
       const primarySort = compareValues(
         aAttackRating.damages[sortBy as DamageType].total,
         bAttackRating.damages[sortBy as DamageType].total

@@ -1,4 +1,4 @@
-import weaponCSVData from "@/lib/data/csv/index";
+import weaponCSVData from "@/lib/data/csv/weapons/index";
 
 import { parseCSV } from "@/lib/utils";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@/lib/data/weapon-result-types";
 import {
   DamageType,
-  allDamageTypes,
+  allSimplifiedDamageTypes,
   FlatPassive,
   flatPassives,
   allStatusEffects,
@@ -226,7 +226,14 @@ const getWeapons = () => {
 
       weapon.scaling = {} as Record<DamageType, Scaling>;
 
-      allDamageTypes.forEach((element) => {
+      allSimplifiedDamageTypes.forEach((element) => {
+        if (
+          element === DamageType.Pierce ||
+          element === DamageType.Slash ||
+          element === DamageType.Strike
+        )
+          return;
+
         weapon.scaling[element] = {
           ...weapon.scaling[element],
           curve: parseInt(weaponElementScalingCurves[element]),

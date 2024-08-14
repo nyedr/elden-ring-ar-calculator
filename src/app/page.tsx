@@ -28,6 +28,7 @@ import WeaponChart from "@/components/weapon-chart";
 import WeaponInfo from "@/components/weapon-info";
 import { calculateWeaponDamage } from "@/lib/calc/damage";
 import { AttackRating } from "@/lib/data/attackRating";
+import { Enemy, NewGame } from "@/lib/data/enemy-data";
 
 const defaultWeaponTypesSelected = weaponTypes.map((type) => type.name);
 const defaultStatusEffectsSelected = [...allStatusEffects.slice(), "None"];
@@ -58,8 +59,9 @@ export default function Home() {
   // TODO: Combine these into one state object?
   const [isCharacterTwoHanding, setIsCharacterTwoHanding] = useState(false);
   const [selectedWeaponLevel, setSelectedWeaponLevel] = useState(
-    specialAndRegularLevelsDict[0]
+    specialAndRegularLevelsDict[specialAndRegularLevelsDict.length - 1]
   );
+  const [enemies, setEnemies] = useState<Enemy[]>([]);
 
   const updateWeaponInfo = (weaponName: string) => {
     const weapon = weaponsData.findWeapon(weaponName);
@@ -219,9 +221,7 @@ export default function Home() {
         />
       ) : null}
       {/* <pre className="w-full p-4 rounded-lg bg-secondary">
-        <code>
-          {JSON.stringify(weaponAttackRatings.map().slice(0, 5), null, 2)}
-        </code>
+        <code>{JSON.stringify(enemies, null, 2)}</code>
       </pre> */}
       <WeaponsTable
         updateWeaponInfo={updateWeaponInfo}

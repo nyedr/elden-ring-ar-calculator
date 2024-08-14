@@ -10,6 +10,7 @@ import {
   ChevronDown,
   CircleX,
   WandSparkles,
+  Infinity
 } from "lucide-react";
 import react from "react";
 
@@ -26,6 +27,7 @@ export const Icons: Record<string, Icon | ((arg: LucideProps) => JSX.Element)> =
     book: BookOpen,
     x: X,
     circleX: CircleX,
+    infinity: Infinity,
     check: Check,
     chevronDown: ChevronDown,
     wandSparkles: WandSparkles,

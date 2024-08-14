@@ -5,7 +5,7 @@ import DynamicStyledChart from "./ui/chart";
 import React from "react";
 import { Character } from "@/hooks/useCharacter";
 import { calculateWeaponDamage } from "@/lib/calc/damage";
-import { DamageType, allDamageTypes } from "@/lib/data/weapon-data";
+import { DamageType, allSimplifiedDamageTypes } from "@/lib/data/weapon-data";
 
 interface WeaponChartProps {
   selectedChartWeapon: Weapon;
@@ -58,7 +58,7 @@ export default function WeaponChart({
     activeDatumIndex: -1,
   });
 
-  const data = [...allDamageTypes.slice()]
+  const data = [...allSimplifiedDamageTypes.slice()]
     .map((damageType) =>
       getWeaponARBreakdownData(
         character,

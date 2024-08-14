@@ -38,7 +38,7 @@ interface DataTableProps<TData, TValue> {
   isLoading?: boolean;
   filterBy?: DataTableToolbarProps<TData>["filterBy"];
   isSelectable?: boolean;
-  selectedItems: TData[];
+  selectedItems?: TData[];
 }
 
 const DEFAULT_TABLE_PAGE_SIZE = 30;
@@ -104,14 +104,14 @@ export function DataTable<TData, TValue>({
     table.setPageSize(DEFAULT_TABLE_PAGE_SIZE);
 
     // Select the rows that are in the selectedItems array
-    const selectedWeaponNames = selectedItems.map(
+    const selectedWeaponNames = selectedItems?.map(
       (item) => (item as AttackRating).weapon.weaponName
     );
     table
       .getRowModel()
       .rows.forEach(
         (row) =>
-          selectedWeaponNames.includes(
+          selectedWeaponNames?.includes(
             (row.original as AttackRating).weapon.weaponName
           ) && row.toggleSelected()
       );
@@ -200,7 +200,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <Pagination selectedItemsCounts={selectedItems.length} table={table} />
+      <Pagination selectedItemsCounts={selectedItems?.length} table={table} />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { Weapon } from "./weapon";
 import {
   DamageAttribute,
   DamageType,
-  allDamageTypes,
+  allSimplifiedDamageTypes,
   StatusEffect,
 } from "./weapon-data";
 
@@ -32,7 +32,7 @@ export class AttackRating {
     this.spellScaling = 0;
     this.damages = {} as Record<DamageType, Damage>;
 
-    allDamageTypes.forEach((damageType) => {
+    allSimplifiedDamageTypes.forEach((damageType) => {
       this.damages[damageType] = {
         weapon: 0,
         scaled: 0,
