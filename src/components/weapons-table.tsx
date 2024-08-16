@@ -19,7 +19,7 @@ import {
   calculateWeaponDamage,
   isDamageTypeAffectedByUnmetRequirements,
 } from "@/lib/calc/damage";
-import { SortByOption } from "@/lib/calc/filter";
+import { SortByOption } from "@/lib/calc/weapons-filter";
 
 interface WeaponsTableProps {
   character: Character;
