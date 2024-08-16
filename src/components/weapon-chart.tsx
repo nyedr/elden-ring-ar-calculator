@@ -11,24 +11,17 @@ interface WeaponChartProps {
   selectedChartWeapon: Weapon;
   removeSelectedChartWeapon: () => void;
   character: Character;
-  isCharacterTwoHanding: boolean;
 }
 
 const getWeaponARBreakdownData = (
   character: Character,
   weapon: Weapon,
-  damageType: DamageType | "Total",
-  isCharacterTwoHanding: boolean = false
+  damageType: DamageType | "Total"
 ) => {
   return {
     label: `${damageType}`,
     data: weapon.levels.map((_, index) => {
-      const attackRating = calculateWeaponDamage(
-        character,
-        weapon,
-        index,
-        isCharacterTwoHanding
-      );
+      const attackRating = calculateWeaponDamage(character, weapon, index);
 
       if (damageType === "Total") {
         return {
@@ -51,7 +44,6 @@ export default function WeaponChart({
   selectedChartWeapon,
   removeSelectedChartWeapon,
   character,
-  isCharacterTwoHanding,
 }: WeaponChartProps) {
   const [{ activeSeriesIndex, activeDatumIndex }, setState] = React.useState({
     activeSeriesIndex: -1,

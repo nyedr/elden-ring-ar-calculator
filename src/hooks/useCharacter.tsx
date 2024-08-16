@@ -31,6 +31,7 @@ export type Attributes = {
 export interface Character {
   attributes: Attributes;
   level: number;
+  isTwoHanding: boolean;
 }
 
 export function getCharacterLevel(attributes: Attributes): number {
@@ -53,6 +54,7 @@ export default function useCharacter() {
   const [character, setCharacter] = useState<Character>({
     attributes: defaultAttributes,
     level: getCharacterLevel(defaultAttributes),
+    isTwoHanding: false,
   });
 
   useEffect(() => {
@@ -78,5 +80,7 @@ export default function useCharacter() {
   return {
     character,
     setCharacterAttribute,
+    setIsTwoHanding: (isTwoHanding: boolean) =>
+      setCharacter({ ...character, isTwoHanding }),
   };
 }

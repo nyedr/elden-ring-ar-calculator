@@ -5,24 +5,23 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./ui/data-table";
 import {
   allDamageTypes,
-  allStatusEffects,
+  damageTypeToImageName,
   StatusEffect,
 } from "@/lib/data/weapon-data";
-import {
-  damageAttributeKeys,
-  DamageType,
-  damageTypeToImageName,
-  statusEffectToImageName,
-} from "@/lib/data/weapon-data";
+import { statusEffectToImageName } from "@/lib/data/weapon-data";
 import Image from "next/image";
 import { cn, numberWithCommas } from "@/lib/utils";
-import { Icons } from "./icons";
+import { Button, buttonVariants } from "./ui/button";
 
 interface EnemiesTableProps {
   enemiesData: Enemy[];
+  setSelectedEnemy: (enemy: Enemy) => void;
 }
 
-export default function EnemiesTable({ enemiesData }: EnemiesTableProps) {
+export default function EnemiesTable({
+  enemiesData,
+  setSelectedEnemy,
+}: EnemiesTableProps) {
   const enemiesColumns: ColumnDef<Enemy>[] = [
     {
       header: "General Info",
@@ -30,67 +29,144 @@ export default function EnemiesTable({ enemiesData }: EnemiesTableProps) {
       enableSorting: false,
       columns: [
         {
-          header: "Name",
+          header: ({ column }) => (
+            <Button
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              variant="ghost"
+              size="sm"
+              className="px-2"
+            >
+              Name
+            </Button>
+          ),
           accessorKey: "name",
-          cell: ({ row }) => <div>{row.original.name}</div>,
+          cell: ({ row }) => (
+            <span
+              onClick={() => setSelectedEnemy(row.original)}
+              className={buttonVariants({
+                variant: "link",
+                size: "sm",
+                className: "px-0 h-auto cursor-pointer",
+              })}
+            >
+              {row.original.name}
+            </span>
+          ),
           meta: {
-            cellClassName: "border border-secondary",
+            cellClassName: "border border-secondary px-0",
             headerClassName: "text-start px-2",
           },
         },
-        // {
-        //   header: "Location",
-        //   accessorKey: "location",
-        //   cell: ({ row }) => <div>{row.original.location}</div>,
-        //   meta: {
-        //     cellClassName: "border border-secondary",
-        //     headerClassName: "text-start px-2",
-        //   },
-        // },
         {
-          header: "Health",
+          header: ({ column }) => (
+            <Button
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              variant="ghost"
+              size="sm"
+              className="px-2"
+            >
+              Health
+            </Button>
+          ),
           accessorKey: "healthPoints",
           cell: ({ row }) => (
             <div>{numberWithCommas(row.original.healthPoints)}</div>
           ),
           meta: {
-            cellClassName: "border border-secondary",
-            headerClassName: "text-start px-2",
+            cellClassName: "border border-secondary text-center",
+            headerClassName: "px-2 text-center",
           },
         },
         {
-          header: "Poise",
+          header: ({ column }) => (
+            <Button
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              variant="ghost"
+              size="sm"
+              className="px-2"
+            >
+              Poise
+            </Button>
+          ),
           accessorKey: "poise",
-          cell: ({ row }) => <div>{row.original.poise.effective}</div>,
+          accessorFn: ({ poise }) => poise.effective,
+          cell: ({ row }) => (
+            <div>{Math.floor(row.original.poise.effective)}</div>
+          ),
           meta: {
-            cellClassName: "border border-secondary",
-            headerClassName: "text-start px-2",
+            cellClassName: "border border-secondary text-center",
+            headerClassName: "px-2 text-center",
           },
         },
         {
-          header: "Flat Def",
+          header: ({ column }) => (
+            <Button
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              variant="ghost"
+              size="sm"
+              className="px-2"
+            >
+              Def
+            </Button>
+          ),
           accessorKey: "defence",
+          accessorFn: ({ defence }) => defence.Physical,
           cell: ({ row }) => <div>{row.original.defence.Physical}</div>,
           meta: {
-            cellClassName: "border border-secondary",
-            headerClassName: "text-start px-2",
+            cellClassName: "border border-secondary text-center",
+            headerClassName: "px-2 text-center",
           },
         },
       ],
       meta: {
-        headerClassName: "text-start px-2",
+        headerClassName: "text-start px-4",
       },
     },
 
     {
-      header: "Negations",
+      header: "Dmg Negations",
       accessorKey: "damageNegation",
       columns: [
         ...allDamageTypes.map(
           (damageType, index) =>
             ({
-              header: damageType,
+              header: ({ column }) => (
+                <Button
+                  onClick={() =>
+                    column.toggleSorting(column.getIsSorted() === "asc")
+                  }
+                  variant="ghost"
+                  size="sm"
+                  className="px-2"
+                  title={damageType}
+                >
+                  {damageTypeToImageName.hasOwnProperty(damageType) ? (
+                    <Image
+                      alt={damageType}
+                      width={24}
+                      height={24}
+                      src={`/${
+                        damageTypeToImageName[
+                          damageType as keyof typeof damageTypeToImageName
+                        ]
+                      }.webp`}
+                      className="mx-auto"
+                    />
+                  ) : (
+                    String(damageType)
+                  )}
+                </Button>
+              ),
               accessorKey: damageType,
+              accessorFn: ({ damageNegation }) => damageNegation[damageType],
               cell: ({ row }) => (
                 <div>{row.original.damageNegation[damageType]}</div>
               ),
@@ -99,49 +175,54 @@ export default function EnemiesTable({ enemiesData }: EnemiesTableProps) {
                   "text-center",
                   index === 0 ? "border-l border-secondary" : ""
                 ),
-                headerClassName: "py-0",
+                headerClassName: "py-0 px-2",
               },
             } as ColumnDef<Enemy>)
         ),
       ],
     },
     {
-      header: "Resistances",
+      header: "Status Resistances",
       accessorKey: "resistances",
       columns: [
         ...Object.keys(statusEffectToImageName).map((statusEffect, index) => {
           const status = statusEffect as StatusEffect;
           return {
             accessorKey: statusEffect,
-            header: () => (
-              <Image
-                alt={statusEffect}
-                width={24}
-                height={24}
+            accessorFn: ({ resistances }) => resistances[status],
+            header: ({ column }) => (
+              <Button
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
+                variant="ghost"
+                className="px-2"
                 title={statusEffect}
-                src={`/${
-                  statusEffectToImageName[
-                    statusEffect as keyof typeof statusEffectToImageName
-                  ]
-                }.webp`}
-                className="mx-auto"
-              />
+                size="sm"
+              >
+                <Image
+                  alt={statusEffect}
+                  width={24}
+                  height={24}
+                  src={`/${
+                    statusEffectToImageName[
+                      statusEffect as keyof typeof statusEffectToImageName
+                    ]
+                  }.webp`}
+                  className="mx-auto"
+                />
+              </Button>
             ),
             cell: ({ row }) => (
               <span>
-                {row.original.resistances[status] === "Immune" ? (
-                  <Icons.infinity className="text-primary mx-auto w-4 h-4" />
-                ) : (
-                  row.original.resistances[status]
-                )}
+                {row.original.resistances[status] === "Immune"
+                  ? "Inf"
+                  : row.original.resistances[status]}
               </span>
             ),
             meta: {
-              cellClassName: cn(
-                "text-center",
-                index === 0 ? "border-l border-secondary" : ""
-              ),
-              headerClassName: "py-0",
+              cellClassName: "text-center",
+              headerClassName: "py-0 px-2",
             },
           } as ColumnDef<Enemy>;
         }),

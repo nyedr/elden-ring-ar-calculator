@@ -18,27 +18,29 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Weapon } from "@/lib/data/weapon";
 import { Icons } from "./icons";
+import { Enemy } from "@/lib/data/enemy-data";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
 import { ComboboxItem } from "./ui/combobox";
 
-export interface WeaponSearchProps {
+export interface EnemySearchProps {
   items: ComboboxItem[];
-  setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
-  findWeapon: (weaponName: string) => Weapon | undefined;
-  setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
-  updateWeaponInfo: (weaponName: string) => void;
+  findEnemy: (enemyName: string) => Enemy | undefined;
+  setSelectedEnemy: React.Dispatch<React.SetStateAction<Enemy | null>>;
+  setIsDamageOnEnemy: React.Dispatch<React.SetStateAction<boolean>>;
+  isDamageOnEnemy: boolean;
 }
 
 const DROPDOWN_ITEMS_SHOWN_LIMIT = 40;
 
-export function WeaponSearch({
+export function EnemySearch({
   items,
-  findWeapon,
-  setSelectedWeapons,
-  setSelectedChartWeapon,
-  updateWeaponInfo,
-}: WeaponSearchProps) {
+  findEnemy,
+  setSelectedEnemy,
+  setIsDamageOnEnemy,
+  isDamageOnEnemy,
+}: EnemySearchProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -46,12 +48,16 @@ export function WeaponSearch({
     item.label.toLowerCase().startsWith(searchQuery.toLowerCase())
   );
 
-  const addSelectedWeapon = (weaponName: string) => {
-    const weapon = findWeapon(weaponName);
-    if (weapon) {
-      setSelectedWeapons((prev) => [...(prev || []), weapon]);
+  const updateSelectedEnemy = (enemyName: string) => {
+    if (!enemyName) {
+      setSelectedEnemy(null);
+      return;
+    }
+    const enemy = findEnemy(enemyName);
+    if (enemy) {
+      setSelectedEnemy(enemy);
     } else {
-      console.error(`Weapon "${weaponName}" not found.`);
+      console.error(`Enemy "${enemyName}" not found.`);
     }
   };
 
@@ -67,7 +73,7 @@ export function WeaponSearch({
           >
             {value
               ? items.find((item) => item.value === value)?.label
-              : "Select weapon"}
+              : "Select Enemy"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -76,9 +82,9 @@ export function WeaponSearch({
             <CommandInput
               value={searchQuery}
               onValueChange={(search: string) => setSearchQuery(search)}
-              placeholder="Search weapon..."
+              placeholder="Search enemy..."
             />
-            <CommandEmpty>No weapon found.</CommandEmpty>
+            <CommandEmpty>No enemy found.</CommandEmpty>
             <CommandGroup>
               <CommandList>
                 {filteredItems
@@ -88,6 +94,7 @@ export function WeaponSearch({
                       key={item.value}
                       value={item.value}
                       onSelect={(currentValue: string) => {
+                        updateSelectedEnemy(currentValue);
                         setValue(currentValue === value ? "" : currentValue);
                         setOpen(false);
                       }}
@@ -106,30 +113,23 @@ export function WeaponSearch({
           </Command>
         </PopoverContent>
       </Popover>
-      <Button
-        onClick={() => addSelectedWeapon(value)}
-        size="icon"
-        variant="ghost"
-      >
-        <Icons.plus className="h-4 w-4" />
-      </Button>
-      <Button
-        onClick={() => {
-          const selectedWeapon = findWeapon(value);
-          setSelectedChartWeapon(selectedWeapon || null);
-        }}
-        size="icon"
-        variant="ghost"
-      >
-        <Icons.chart className="h-4 w-4" />
-      </Button>
-      <Button
+
+      <Label className="whitespace-nowrap" htmlFor="isTwoHanding">
+        Two Handing
+      </Label>
+      <Switch
+        checked={isDamageOnEnemy}
+        onCheckedChange={() => setIsDamageOnEnemy(!isDamageOnEnemy)}
+        id="isTwoHanding"
+      />
+
+      {/* <Button
         onClick={() => updateWeaponInfo(value)}
         size="icon"
         variant="ghost"
       >
         <Icons.book className="h-4 w-4" />
-      </Button>
+      </Button> */}
     </div>
   );
 }

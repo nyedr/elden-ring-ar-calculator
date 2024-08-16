@@ -62,6 +62,7 @@
 html,
 body {
   height: 100%;
+  width: 100%;
   font-optical-sizing: auto;
   font-style: normal;
 }

@@ -16,12 +16,11 @@ import { useEffect, useState } from "react";
 import { Slider } from "./ui/slider";
 import WeaponExtraTable from "./weapon-info-extra-table";
 
-export interface WeaponInfoTriggerProps {
+export interface WeaponInfoProps {
   weapon: Weapon;
   character: Character;
   isWeaponInfoOpen: boolean;
-  setIsWeaponInfoOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  isCharacterTwoHanding: boolean;
+  setIsWeaponInfoOpen: (isOpen: boolean) => void;
 }
 
 export default function WeaponInfo({
@@ -29,8 +28,7 @@ export default function WeaponInfo({
   character,
   setIsWeaponInfoOpen,
   isWeaponInfoOpen,
-  isCharacterTwoHanding,
-}: WeaponInfoTriggerProps) {
+}: WeaponInfoProps) {
   const [weaponLevel, setWeaponLevel] = useState(weapon.maxUpgradeLevel);
   useEffect(() => {
     setWeaponLevel(weapon.maxUpgradeLevel);
@@ -39,8 +37,7 @@ export default function WeaponInfo({
   const weaponAttackRating = calculateWeaponDamage(
     character,
     weapon,
-    weaponLevel > weapon.maxUpgradeLevel ? weapon.maxUpgradeLevel : weaponLevel,
-    isCharacterTwoHanding
+    weaponLevel > weapon.maxUpgradeLevel ? weapon.maxUpgradeLevel : weaponLevel
   );
 
   return (

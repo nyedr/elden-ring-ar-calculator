@@ -33,6 +33,9 @@ export function Toolbar<TData>({
           }
           onChange={(event) => {
             // TODO: Fix weapon filtering
+            table
+              .getColumn(filterBy?.accessorKey)
+              ?.setFilterValue(event.target.value);
           }}
           className="h-10 w-[180px] lg:w-[270px]"
         />
@@ -48,7 +51,7 @@ export function Toolbar<TData>({
           </Button>
         )}
       </div>
-      <ViewOptions table={table} />
+      {/* <ViewOptions table={table} /> */}
     </div>
   );
 }

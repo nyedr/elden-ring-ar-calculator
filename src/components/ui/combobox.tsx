@@ -18,42 +18,35 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Weapon } from "@/lib/data/weapon";
-import { Icons } from "./icons";
-import { ComboboxItem } from "./ui/combobox";
 
-export interface WeaponSearchProps {
+export interface ComboboxItem {
+  value: string;
+  label: string;
+}
+
+interface ComboboxProps {
   items: ComboboxItem[];
-  setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
-  findWeapon: (weaponName: string) => Weapon | undefined;
-  setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
-  updateWeaponInfo: (weaponName: string) => void;
+  onValueChange: (selected: string) => void;
+  maxItemsShown?: number;
+  defaultValue?: string;
+  label?: string;
 }
 
 const DROPDOWN_ITEMS_SHOWN_LIMIT = 40;
 
-export function WeaponSearch({
+export default function Combobox({
   items,
-  findWeapon,
-  setSelectedWeapons,
-  setSelectedChartWeapon,
-  updateWeaponInfo,
-}: WeaponSearchProps) {
+  onValueChange,
+  maxItemsShown,
+  defaultValue,
+  label,
+}: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
   const filteredItems = items.filter((item) =>
-    item.label.toLowerCase().startsWith(searchQuery.toLowerCase())
+    item.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const addSelectedWeapon = (weaponName: string) => {
-    const weapon = findWeapon(weaponName);
-    if (weapon) {
-      setSelectedWeapons((prev) => [...(prev || []), weapon]);
-    } else {
-      console.error(`Weapon "${weaponName}" not found.`);
-    }
-  };
 
   return (
     <div className="flex items-center gap-3 w-full">
@@ -67,7 +60,7 @@ export function WeaponSearch({
           >
             {value
               ? items.find((item) => item.value === value)?.label
-              : "Select weapon"}
+              : `Select ${label?.toLowerCase() ?? "item"}`}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -76,18 +69,19 @@ export function WeaponSearch({
             <CommandInput
               value={searchQuery}
               onValueChange={(search: string) => setSearchQuery(search)}
-              placeholder="Search weapon..."
+              placeholder={`Search ${label?.toLowerCase() ?? "item"}...`}
             />
-            <CommandEmpty>No weapon found.</CommandEmpty>
+            <CommandEmpty>No {label ?? "item"}s found.</CommandEmpty>
             <CommandGroup>
               <CommandList>
                 {filteredItems
-                  .slice(0, DROPDOWN_ITEMS_SHOWN_LIMIT)
+                  .slice(0, maxItemsShown ?? DROPDOWN_ITEMS_SHOWN_LIMIT)
                   .map((item) => (
                     <CommandItem
                       key={item.value}
                       value={item.value}
                       onSelect={(currentValue: string) => {
+                        onValueChange(currentValue);
                         setValue(currentValue === value ? "" : currentValue);
                         setOpen(false);
                       }}
@@ -106,30 +100,6 @@ export function WeaponSearch({
           </Command>
         </PopoverContent>
       </Popover>
-      <Button
-        onClick={() => addSelectedWeapon(value)}
-        size="icon"
-        variant="ghost"
-      >
-        <Icons.plus className="h-4 w-4" />
-      </Button>
-      <Button
-        onClick={() => {
-          const selectedWeapon = findWeapon(value);
-          setSelectedChartWeapon(selectedWeapon || null);
-        }}
-        size="icon"
-        variant="ghost"
-      >
-        <Icons.chart className="h-4 w-4" />
-      </Button>
-      <Button
-        onClick={() => updateWeaponInfo(value)}
-        size="icon"
-        variant="ghost"
-      >
-        <Icons.book className="h-4 w-4" />
-      </Button>
     </div>
   );
 }

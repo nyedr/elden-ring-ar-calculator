@@ -9,7 +9,6 @@ import {
   damageAttributeKeys,
   DamageType,
   damageTypeToImageName,
-  StatusEffect,
   statusEffectToImageName,
 } from "@/lib/data/weapon-data";
 import { Button, buttonVariants } from "./ui/button";
@@ -104,11 +103,10 @@ export default function WeaponsTable({
             </span>
           ),
           meta: {
-            cellClassName: "border border-secondary",
+            cellClassName: "border border-secondary px-0",
             headerClassName: "text-start px-2",
           },
         },
-        // TODO: Move level to select
         {
           accessorKey: "spellScaling",
           header: () => (
@@ -166,8 +164,8 @@ export default function WeaponsTable({
                 <Button
                   variant="ghost"
                   onClick={() => sortWeaponsTable(damageType as SortByOption)}
-                  size="sm"
                   title={`${damageType} Attack`}
+                  size="sm"
                   className="px-2"
                 >
                   <Image
@@ -290,52 +288,48 @@ export default function WeaponsTable({
       accessorKey: "statusEffects",
       header: () => <span>Status Effects</span>,
       columns: [
-        ...Object.keys(statusEffectToImageName)
-          .filter((val) => val === StatusEffect.Death_Blight)
-          .map((statusEffect, index) => {
-            return {
-              accessorKey: statusEffect,
-              header: () => (
-                <Button
-                  variant="ghost"
-                  onClick={() => sortWeaponsTable(statusEffect as SortByOption)}
-                  size="sm"
-                  title={statusEffect}
-                  className="p-2"
-                >
-                  <Image
-                    alt={statusEffect}
-                    width={24}
-                    height={24}
-                    src={`/${
-                      statusEffectToImageName[
-                        statusEffect as keyof typeof statusEffectToImageName
-                      ]
-                    }.webp`}
-                    className="mx-auto"
-                  />
-                </Button>
-              ),
-              cell: ({ row }) => (
-                <span>
-                  {Math.floor(
-                    row.original.statusEffects[
+        ...Object.keys(statusEffectToImageName).map((statusEffect, index) => {
+          return {
+            accessorKey: statusEffect,
+            header: () => (
+              <Button
+                variant="ghost"
+                onClick={() => sortWeaponsTable(statusEffect as SortByOption)}
+                size="sm"
+                title={statusEffect}
+                className="p-2"
+              >
+                <Image
+                  alt={statusEffect}
+                  width={24}
+                  height={24}
+                  src={`/${
+                    statusEffectToImageName[
                       statusEffect as keyof typeof statusEffectToImageName
                     ]
-                  ) || (
-                    <Icons.minus className="text-secondary mx-auto w-4 h-4" />
-                  )}
-                </span>
+                  }.webp`}
+                  className="mx-auto"
+                />
+              </Button>
+            ),
+            cell: ({ row }) => (
+              <span>
+                {Math.floor(
+                  row.original.statusEffects[
+                    statusEffect as keyof typeof statusEffectToImageName
+                  ]
+                ) || <Icons.minus className="text-secondary mx-auto w-4 h-4" />}
+              </span>
+            ),
+            meta: {
+              cellClassName: cn(
+                "text-center",
+                index === 0 ? "border-l border-secondary" : ""
               ),
-              meta: {
-                cellClassName: cn(
-                  "text-center",
-                  index === 0 ? "border-l border-secondary" : ""
-                ),
-                headerClassName: "py-0 px-2",
-              },
-            } as ColumnDef<AttackRating>;
-          }),
+              headerClassName: "py-0 px-2",
+            },
+          } as ColumnDef<AttackRating>;
+        }),
       ],
     },
     {
@@ -362,10 +356,6 @@ export default function WeaponsTable({
   return (
     <div className="w-full py-10">
       <DataTable
-        filterBy={{
-          accessorKey: "weaponName",
-          label: "weapon name",
-        }}
         columns={weaponsColumns}
         data={weaponAttackRatings}
         isSelectable={true}

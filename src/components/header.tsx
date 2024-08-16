@@ -8,11 +8,15 @@ export default function Header() {
   return (
     <header className="w-full flex items-center justify-between gap-5">
       <Link href="/">
-        <h1 className="text-3xl font-bold whitespace-nowrap flex items-center gap-2">
-          <span className="sm:block hidden">Elden Ring</span>
-          <span className="sm:hidden block">ER</span>
-          AR Calculator
+        <h1 className="text-3xl sm:hidden font-bold whitespace-nowrap flex items-center gap-2">
+          ER AR
         </h1>
+        <h1 className="text-3xl hidden sm:flex font-bold whitespace-nowrap items-center gap-2">
+          Elden Ring AR Calculator
+        </h1>
+      </Link>
+      <Link className={buttonVariants({ variant: "link" })} href="/enemies">
+        Enemies
       </Link>
       <div className="flex items-center gap-5">
         <ThemeToggle />

@@ -27,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import { DataTableToolbarProps } from "./data-table/toolbar";
+import { DataTableToolbarProps, Toolbar } from "./data-table/toolbar";
 import { Pagination } from "./data-table/pagination";
 import { cn } from "@/lib/utils";
 import { AttackRating } from "@/lib/data/attackRating";
@@ -130,7 +130,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full space-y-4">
-      {/* {filterBy && <Toolbar filterBy={filterBy} table={table} />} */}
+      {filterBy && <Toolbar filterBy={filterBy} table={table} />}
       <div className="border rounded-md">
         <Table>
           <TableHeader>

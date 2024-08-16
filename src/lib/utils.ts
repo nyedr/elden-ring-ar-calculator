@@ -75,8 +75,7 @@ const createLevelsArray = (maxWeaponLevels: number[]): LevelsArray => {
 
 export const getWeaponsLevelsData = (
   character: Character,
-  selectedWeapons: Weapon[],
-  isCharacterTwoHanding: boolean = false
+  selectedWeapons: Weapon[]
 ) => {
   const maxWeaponLevels = selectedWeapons.map(
     (weapon) => weapon.maxUpgradeLevel
@@ -93,8 +92,7 @@ export const getWeaponsLevelsData = (
           const damage = calculateWeaponDamage(
             character,
             weapon,
-            level as number,
-            isCharacterTwoHanding
+            level as number
           ).getAr;
           return {
             primary: level,
@@ -108,8 +106,7 @@ export const getWeaponsLevelsData = (
             const damage = calculateWeaponDamage(
               character,
               weapon,
-              isSpecialLevel ? specialLevel : regularLevel,
-              isCharacterTwoHanding
+              isSpecialLevel ? specialLevel : regularLevel
             ).getAr;
             return {
               primary: label,

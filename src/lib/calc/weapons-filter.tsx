@@ -1,5 +1,4 @@
 import { Weapon } from "../data/weapon";
-import { Character } from "@/hooks/useCharacter";
 import { calculateWeaponDamage } from "./damage";
 import {
   DamageAttribute,
@@ -9,6 +8,7 @@ import {
   StatusEffect,
   allStatusEffects,
 } from "../data/weapon-data";
+import { Character } from "@/hooks/useCharacter";
 
 export interface WeaponFilter {
   selectedWeaponTypes: string[];
@@ -67,21 +67,18 @@ export const sortWeapons = (
   weapons: Weapon[],
   character: Character,
   sortBy: SortByOption,
-  toggleSortBy: boolean = false,
-  isCharacterTwoHanding: boolean = false
+  toggleSortBy: boolean = false
 ) => {
   return weapons.sort((a, b) => {
     const aAttackRating = calculateWeaponDamage(
       character,
       a,
-      a.maxUpgradeLevel,
-      isCharacterTwoHanding
+      a.maxUpgradeLevel
     );
     const bAttackRating = calculateWeaponDamage(
       character,
       b,
-      b.maxUpgradeLevel,
-      isCharacterTwoHanding
+      b.maxUpgradeLevel
     );
 
     const compareValues = (aValue: number, bValue: number) => {

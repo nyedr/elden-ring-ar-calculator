@@ -48,7 +48,6 @@ export function ViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {/* TODO: Consider changing the column filter names to be user facing. Ex: weaponName -> Name */}
                 {column.id}
               </DropdownMenuCheckboxItem>
             );

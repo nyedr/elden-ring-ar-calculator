@@ -154,13 +154,12 @@ export function calculateSpellScaling(
 export function calculateWeaponDamage(
   character: Character,
   weapon: Weapon,
-  level: number,
-  isTwoHanding: boolean = false
+  level: number
 ) {
   let attackRating = new AttackRating(weapon, level);
 
   const adjustedCharacterAttributes = adjustAttributesForTwoHanding({
-    twoHandingBonus: weapon.twoHandBonus && isTwoHanding,
+    twoHandingBonus: weapon.twoHandBonus && character.isTwoHanding,
     attributes: character.attributes,
   });
 

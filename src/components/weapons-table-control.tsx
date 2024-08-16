@@ -3,11 +3,10 @@ import {
   weaponAffinities,
   weaponTypes,
 } from "@/lib/data/weapon-data";
-import { ComboboxItem, WeaponSearch, WeaponSearchProps } from "./weapon-search";
+import { WeaponSearch, WeaponSearchProps } from "./weapon-search";
 import { Button } from "./ui/button";
 import { Weapon } from "@/lib/data/weapon";
-import { memo } from "react";
-import { maxRegularUpgradeLevel, toSpecialUpgradeLevel } from "@/lib/uiUtils";
+import { Dispatch, SetStateAction } from "react";
 
 import {
   Select,
@@ -21,96 +20,55 @@ import { MultiSelect } from "./ui/multi-select";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import { specialAndRegularLevelsDict } from "@/lib/utils";
-
-interface WeaponLevelInputProps {
-  upgradeLevel: number;
-  maxUpgradeLevel?: number;
-  onUpgradeLevelChanged(upgradeLevel: number): void;
-}
-
-/**
- * Form control for picking the weapon upgrade level (+1, +2, etc.)
- */
-const WeaponLevelInput = memo(function WeaponLevelInput({
-  upgradeLevel,
-  maxUpgradeLevel = maxRegularUpgradeLevel,
-  onUpgradeLevelChanged,
-}: WeaponLevelInputProps) {
-  return (
-    <div>
-      <Select
-        value={String(Math.min(upgradeLevel, maxUpgradeLevel))}
-        onValueChange={(val) => onUpgradeLevelChanged(+val)}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Weapon Level" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {Array.from(
-              { length: maxUpgradeLevel + 1 },
-              (_, upgradeLevelOption) => (
-                <SelectItem
-                  key={upgradeLevelOption}
-                  value={String(upgradeLevelOption)}
-                >
-                  {maxUpgradeLevel === maxRegularUpgradeLevel
-                    ? `+${upgradeLevelOption} / +${toSpecialUpgradeLevel(
-                        upgradeLevelOption
-                      )}`
-                    : `+${upgradeLevelOption}`}
-                </SelectItem>
-              )
-            )}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </div>
-  );
-});
+import { WeaponState } from "@/app/page";
+import { ComboboxItem } from "./ui/combobox";
+import { WeaponFilter } from "@/lib/calc/weapons-filter";
 
 export interface WeaponsTableControlProps
   extends Omit<WeaponSearchProps, "items"> {
-  selectedWeaponTypes: string[];
-  setSelectedWeaponTypes: (selectedWeaponTypes: string[]) => void;
-  selectedStatusEffects: string[];
-  setSelectedStatusEffects: (selectedStatusEffects: string[]) => void;
-  selectedWeaponAffinities: string[];
-  setSelectedWeaponAffinities: (selectedWeaponAffinities: string[]) => void;
+  setWeaponFilter: Dispatch<SetStateAction<WeaponFilter>>;
+  weaponFilter: WeaponFilter;
   setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
   setFilteredWeapons: () => void;
   updateWeaponInfo: (weaponName: string) => void;
   weaponSearchOptions: ComboboxItem[];
-  isCharacterTwoHanding: boolean;
-  setIsCharacterTwoHanding: (isCharacterTwoHanding: boolean) => void;
-  selectedWeaponLevel: [number, number, string];
-  setSelectedWeaponLevel: (
-    selectedWeaponLevel: [number, number, string]
-  ) => void;
+  weaponState: WeaponState;
+  setWeaponState: Dispatch<SetStateAction<WeaponState>>;
+  isTwoHanding: boolean;
+  setIsTwoHanding: (isTwoHanding: boolean) => void;
 }
 
 export default function WeaponsTableControl({
   findWeapon,
   weaponSearchOptions,
   setSelectedWeapons,
-  selectedWeaponTypes,
-  setSelectedWeaponTypes,
-  selectedWeaponAffinities,
-  setSelectedWeaponAffinities,
-  selectedStatusEffects,
   setSelectedChartWeapon,
-  setSelectedStatusEffects,
   setFilteredWeapons,
   updateWeaponInfo,
-  isCharacterTwoHanding,
-  setIsCharacterTwoHanding,
-  selectedWeaponLevel,
-  setSelectedWeaponLevel,
+  setWeaponFilter,
+  weaponFilter,
+  setWeaponState,
+  weaponState,
+  isTwoHanding,
+  setIsTwoHanding,
 }: WeaponsTableControlProps) {
   const weaponTypeDropdownOptions = weaponTypes.map(({ name }) => ({
     label: name,
     value: name,
   }));
+
+  const setSelectedWeaponTypes = (selectedWeaponTypes: string[]) =>
+    setWeaponFilter((prev) => ({ ...prev, selectedWeaponTypes }));
+  const setSelectedStatusEffects = (selectedStatusEffects: string[]) =>
+    setWeaponFilter((prev) => ({
+      ...prev,
+      selectedStatusEffects,
+    }));
+  const setSelectedWeaponAffinities = (selectedWeaponAffinities: string[]) =>
+    setWeaponFilter((prev) => ({
+      ...prev,
+      selectedWeaponAffinities,
+    }));
 
   return (
     <div className="w-full flex flex-col gap-2 justify-start">
@@ -134,7 +92,7 @@ export default function WeaponsTableControl({
       <MultiSelect
         options={weaponTypeDropdownOptions}
         onValueChange={setSelectedWeaponTypes}
-        defaultValue={selectedWeaponTypes}
+        defaultValue={weaponFilter.selectedWeaponTypes}
         placeholder="Weapon Types"
       />
 
@@ -152,7 +110,7 @@ export default function WeaponsTableControl({
           label: statusEffect,
         }))}
         onValueChange={setSelectedStatusEffects}
-        defaultValue={selectedStatusEffects}
+        defaultValue={weaponFilter.selectedStatusEffects}
         placeholder="Status Effects"
       />
 
@@ -170,7 +128,7 @@ export default function WeaponsTableControl({
           label: affinity,
         }))}
         onValueChange={setSelectedWeaponAffinities}
-        defaultValue={selectedWeaponAffinities}
+        defaultValue={weaponFilter.selectedWeaponAffinities}
         placeholder="Affinities"
       />
 
@@ -180,21 +138,24 @@ export default function WeaponsTableControl({
             Two Handing
           </Label>
           <Switch
-            checked={isCharacterTwoHanding}
-            onCheckedChange={() =>
-              setIsCharacterTwoHanding(!isCharacterTwoHanding)
-            }
+            checked={isTwoHanding}
+            onCheckedChange={() => setIsTwoHanding(!isTwoHanding)}
             id="isTwoHanding"
           />
         </div>
         <Select
-          value={selectedWeaponLevel[2]}
+          value={weaponState.selectedWeaponLevel[2]}
           onValueChange={(e) => {
             const level = specialAndRegularLevelsDict.find(
               (level) => level[2] === e
             );
             if (level) {
-              setSelectedWeaponLevel(level);
+              setWeaponState((prev) => {
+                return {
+                  ...prev,
+                  selectedWeaponLevel: level,
+                };
+              });
             }
           }}
         >
