@@ -1,5 +1,5 @@
 import { Weapon } from "../data/weapon";
-import { calculateWeaponDamage } from "./damage";
+import { calculateEnemyDamage, calculateWeaponDamage } from "./damage";
 import {
   DamageAttribute,
   damageAttributeKeys,
@@ -9,6 +9,7 @@ import {
   allStatusEffects,
 } from "../data/weapon-data";
 import { Character } from "@/hooks/useCharacter";
+import { Enemy } from "../data/enemy-data";
 
 export interface WeaponFilter {
   selectedWeaponTypes: string[];
@@ -67,7 +68,11 @@ export const sortWeapons = (
   weapons: Weapon[],
   character: Character,
   sortBy: SortByOption,
-  toggleSortBy: boolean = false
+  toggleSortBy: boolean = false,
+  enemyInfo?: {
+    isDamageOnEnemy: boolean;
+    selectedEnemy: Enemy | null;
+  }
 ) => {
   return weapons.sort((a, b) => {
     const aAttackRating = calculateWeaponDamage(
@@ -88,39 +93,39 @@ export const sortWeapons = (
       return bValue - aValue;
     };
 
+    const arSort =
+      !!enemyInfo && !!enemyInfo.selectedEnemy && enemyInfo.isDamageOnEnemy
+        ? compareValues(
+            calculateEnemyDamage(aAttackRating, enemyInfo.selectedEnemy)
+              .enemyTotalAr ?? 0,
+            calculateEnemyDamage(bAttackRating, enemyInfo.selectedEnemy)
+              .enemyTotalAr ?? 0
+          )
+        : compareValues(aAttackRating.getAr, bAttackRating.getAr);
+
     if (sortBy === "weaponName") {
       if (toggleSortBy) {
         const primarySort = a.name.localeCompare(b.name);
-        return primarySort !== 0
-          ? primarySort
-          : compareValues(aAttackRating.getAr, bAttackRating.getAr);
+        return primarySort !== 0 ? primarySort : arSort;
       }
 
       const primarySort = b.name.localeCompare(a.name);
-      return primarySort !== 0
-        ? primarySort
-        : compareValues(aAttackRating.getAr, bAttackRating.getAr);
+      return primarySort !== 0 ? primarySort : arSort;
     }
 
-    if (sortBy === "AR") {
-      return compareValues(aAttackRating.getAr, bAttackRating.getAr);
-    }
+    if (sortBy === "AR") return arSort;
 
     if (sortBy === "Spell Scaling") {
       const primarySort = compareValues(
         aAttackRating.spellScaling,
         bAttackRating.spellScaling
       );
-      return primarySort !== 0
-        ? primarySort
-        : compareValues(aAttackRating.getAr, bAttackRating.getAr);
+      return primarySort !== 0 ? primarySort : arSort;
     }
 
     if (sortBy === "weight") {
       const primarySort = compareValues(a.weight, b.weight);
-      return primarySort !== 0
-        ? primarySort
-        : compareValues(aAttackRating.getAr, bAttackRating.getAr);
+      return primarySort !== 0 ? primarySort : arSort;
     }
 
     if (allStatusEffects.includes(sortBy as StatusEffect)) {
@@ -128,9 +133,7 @@ export const sortWeapons = (
         a.levels[a.maxUpgradeLevel][sortBy],
         b.levels[b.maxUpgradeLevel][sortBy]
       );
-      return primarySort !== 0
-        ? primarySort
-        : compareValues(aAttackRating.getAr, bAttackRating.getAr);
+      return primarySort !== 0 ? primarySort : arSort;
     }
 
     if (allSimplifiedDamageTypes.includes(sortBy as DamageType)) {
@@ -138,9 +141,7 @@ export const sortWeapons = (
         aAttackRating.damages[sortBy as DamageType].total,
         bAttackRating.damages[sortBy as DamageType].total
       );
-      return primarySort !== 0
-        ? primarySort
-        : compareValues(aAttackRating.getAr, bAttackRating.getAr);
+      return primarySort !== 0 ? primarySort : arSort;
     }
 
     if (damageAttributeKeys.includes(sortBy as keyof DamageAttribute)) {
@@ -149,9 +150,7 @@ export const sortWeapons = (
       const bScaling =
         b.levels[b.maxUpgradeLevel][sortBy as keyof DamageAttribute];
       const primarySort = compareValues(aScaling, bScaling);
-      return primarySort !== 0
-        ? primarySort
-        : compareValues(aAttackRating.getAr, bAttackRating.getAr);
+      return primarySort !== 0 ? primarySort : arSort;
     }
 
     return 0;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Enemy } from "@/lib/data/enemy-data";
+import { allNewGames, Enemy, NewGame } from "@/lib/data/enemy-data";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./ui/data-table";
 import {
@@ -16,11 +16,13 @@ import { Button, buttonVariants } from "./ui/button";
 interface EnemiesTableProps {
   enemiesData: Enemy[];
   setSelectedEnemy: (enemy: Enemy) => void;
+  setNewGame: (newGame: NewGame) => void;
 }
 
 export default function EnemiesTable({
   enemiesData,
   setSelectedEnemy,
+  setNewGame,
 }: EnemiesTableProps) {
   const enemiesColumns: ColumnDef<Enemy>[] = [
     {
@@ -239,6 +241,12 @@ export default function EnemiesTable({
         }}
         columns={enemiesColumns}
         data={enemiesData}
+        customSelect={{
+          options: allNewGames,
+          triggerClassName: "max-w-28",
+          defaultValue: NewGame.NG,
+          onChange: (newGame) => setNewGame(newGame as NewGame),
+        }}
       />
     </div>
   );

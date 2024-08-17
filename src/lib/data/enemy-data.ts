@@ -28,6 +28,17 @@ export enum NewGame {
   NGPlus7 = "NG+7",
 }
 
+export const allNewGames = [
+  NewGame.NG,
+  NewGame.NGPlus,
+  NewGame.NGPlus2,
+  NewGame.NGPlus3,
+  NewGame.NGPlus4,
+  NewGame.NGPlus5,
+  NewGame.NGPlus6,
+  NewGame.NGPlus7,
+];
+
 export interface EnemyDrop {
   drop: string;
   baseDropChance: number;

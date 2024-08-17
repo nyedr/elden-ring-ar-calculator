@@ -18,6 +18,8 @@ const spreadSheetGids = [
   [1181312165, NewGame.NGPlus7],
 ];
 
+// TODO: Some resistances are not being parsed correctly and are resulting in null values
+
 // Function to fetch and parse CSV
 async function fetchAndParseCSV(
   api_url: string,

@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 interface EnemiesTableControlProps {
   enemiesFilterData: EmemyFilterData;
   setEnemiesFilterData: React.Dispatch<React.SetStateAction<EmemyFilterData>>;
-  filterEnemies: () => void;
+  filterEnemies: (enemiesFilterData: EmemyFilterData) => void;
   clearFilters: () => void;
 }
 
@@ -57,7 +57,9 @@ export default function EnemiesTableControl({
         }
       />
       <div className="flex items-center gap-3 w-full mt-2">
-        <Button onClick={() => filterEnemies()}>Filter enemies</Button>
+        <Button onClick={() => filterEnemies(enemiesFilterData)}>
+          Filter enemies
+        </Button>
         <Button variant="outline" onClick={() => clearFilters()}>
           Clear
         </Button>

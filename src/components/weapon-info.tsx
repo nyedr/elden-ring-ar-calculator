@@ -7,7 +7,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Weapon } from "@/lib/data/weapon";
-import { calculateWeaponDamage } from "@/lib/calc/damage";
+import {
+  adjustAttributesForTwoHanding,
+  calculateWeaponDamage,
+} from "@/lib/calc/damage";
 import { Character } from "@/hooks/useCharacter";
 import { Button } from "./ui/button";
 import WeaponDamageTable from "./weapon-info-damage-table";
@@ -75,7 +78,14 @@ export default function WeaponInfo({
           <WeaponDamageTable attackRating={weaponAttackRating} />
           <WeaponExtraTable attackRating={weaponAttackRating} />
           <WeaponScalingTable
-            characterAttributes={character.attributes}
+            characterAttributes={
+              character.isTwoHanding
+                ? adjustAttributesForTwoHanding({
+                    attributes: character.attributes,
+                    twoHandingBonus: true,
+                  })
+                : character.attributes
+            }
             level={weaponLevel}
             weapon={weapon}
           />

@@ -28,8 +28,8 @@ interface ComboboxProps {
   items: ComboboxItem[];
   onValueChange: (selected: string) => void;
   maxItemsShown?: number;
-  defaultValue?: string;
   label?: string;
+  filter?: (value: string, search: string) => number;
 }
 
 const DROPDOWN_ITEMS_SHOWN_LIMIT = 40;
@@ -38,15 +38,12 @@ export default function Combobox({
   items,
   onValueChange,
   maxItemsShown,
-  defaultValue,
   label,
+  filter,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
-  const filteredItems = items.filter((item) =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="flex items-center gap-3 w-full">
@@ -65,7 +62,17 @@ export default function Combobox({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[--radix-popover-trigger-width] max-h-[--radix-popover-content-available-height] p-0">
-          <Command>
+          <Command
+            filter={
+              filter
+                ? filter
+                : (value, search) => {
+                    return +!!value
+                      .toLowerCase()
+                      .includes(search.toLowerCase());
+                  }
+            }
+          >
             <CommandInput
               value={searchQuery}
               onValueChange={(search: string) => setSearchQuery(search)}
@@ -74,7 +81,7 @@ export default function Combobox({
             <CommandEmpty>No {label ?? "item"}s found.</CommandEmpty>
             <CommandGroup>
               <CommandList>
-                {filteredItems
+                {items
                   .slice(0, maxItemsShown ?? DROPDOWN_ITEMS_SHOWN_LIMIT)
                   .map((item) => (
                     <CommandItem

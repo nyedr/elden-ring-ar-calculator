@@ -27,7 +27,11 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import { DataTableToolbarProps, Toolbar } from "./data-table/toolbar";
+import {
+  CustomSelect,
+  DataTableToolbarProps,
+  Toolbar,
+} from "./data-table/toolbar";
 import { Pagination } from "./data-table/pagination";
 import { cn } from "@/lib/utils";
 import { AttackRating } from "@/lib/data/attackRating";
@@ -39,6 +43,7 @@ interface DataTableProps<TData, TValue> {
   filterBy?: DataTableToolbarProps<TData>["filterBy"];
   isSelectable?: boolean;
   selectedItems?: TData[];
+  customSelect?: CustomSelect;
 }
 
 const DEFAULT_TABLE_PAGE_SIZE = 30;
@@ -50,6 +55,7 @@ export function DataTable<TData, TValue>({
   filterBy,
   isSelectable = false,
   selectedItems,
+  customSelect,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -130,7 +136,13 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full space-y-4">
-      {filterBy && <Toolbar filterBy={filterBy} table={table} />}
+      {filterBy && (
+        <Toolbar
+          customSelect={customSelect}
+          filterBy={filterBy}
+          table={table}
+        />
+      )}
       <div className="border rounded-md">
         <Table>
           <TableHeader>

@@ -19,6 +19,9 @@ import {
 } from "@/lib/data/weapon-data";
 import { Weapon } from "./weapon";
 
+// TODO: Get motion values and add them to the weapon data
+// TODO: Get poise values and add them to the weapon data
+
 const getWeapons = () => {
   const { weapons: weaponsData, weaponsCount: weaponsCountData } =
     setWeaponsData();

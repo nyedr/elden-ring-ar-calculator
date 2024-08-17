@@ -23,6 +23,7 @@ import { specialAndRegularLevelsDict } from "@/lib/utils";
 import { WeaponState } from "@/app/page";
 import { ComboboxItem } from "./ui/combobox";
 import { WeaponFilter } from "@/lib/calc/weapons-filter";
+import { EnemySearch } from "./enemy-search";
 
 export interface WeaponsTableControlProps
   extends Omit<WeaponSearchProps, "items"> {
@@ -36,6 +37,10 @@ export interface WeaponsTableControlProps
   setWeaponState: Dispatch<SetStateAction<WeaponState>>;
   isTwoHanding: boolean;
   setIsTwoHanding: (isTwoHanding: boolean) => void;
+  isDamageOnEnemy: boolean;
+  setIsDamageOnEnemy: React.Dispatch<React.SetStateAction<boolean>>;
+  enemySearchOptions: ComboboxItem[];
+  setSelectedEnemy: (enemy: string) => void;
 }
 
 export default function WeaponsTableControl({
@@ -51,6 +56,10 @@ export default function WeaponsTableControl({
   weaponState,
   isTwoHanding,
   setIsTwoHanding,
+  isDamageOnEnemy,
+  setIsDamageOnEnemy,
+  enemySearchOptions,
+  setSelectedEnemy,
 }: WeaponsTableControlProps) {
   const weaponTypeDropdownOptions = weaponTypes.map(({ name }) => ({
     label: name,
@@ -173,6 +182,13 @@ export default function WeaponsTableControl({
           </SelectContent>
         </Select>
       </div>
+
+      <EnemySearch
+        isDamageOnEnemy={isDamageOnEnemy}
+        items={enemySearchOptions}
+        setIsDamageOnEnemy={setIsDamageOnEnemy}
+        setSelectedEnemy={setSelectedEnemy}
+      />
 
       <Button onClick={setFilteredWeapons} size="lg" className="w-full mt-4">
         Filter weapons

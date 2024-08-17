@@ -6,6 +6,7 @@ import { scalingRating } from "@/lib/calc/scaling";
 import { AttackRating } from "@/lib/data/attackRating";
 import Image from "next/image";
 import {
+  allSimplifiedDamageTypes,
   damageAttributeKeys,
   DamageType,
   damageTypeToImageName,
@@ -29,6 +30,7 @@ interface WeaponsTableProps {
   setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
   updateWeaponInfo: (weaponName: string) => void;
   setSelectedChartWeapon: (weapon: Weapon) => void;
+  isDamageOnEnemy: boolean;
 }
 
 export default function WeaponsTable({
@@ -39,6 +41,7 @@ export default function WeaponsTable({
   selectedWeapons,
   updateWeaponInfo,
   setSelectedChartWeapon,
+  isDamageOnEnemy,
 }: WeaponsTableProps) {
   const weaponsColumns: ColumnDef<AttackRating>[] = [
     {
@@ -188,11 +191,17 @@ export default function WeaponsTable({
                       : ""
                   }
                 >
-                  {Math.floor(
-                    row.original.damages[
-                      damageType as keyof typeof damageTypeToImageName
-                    ].total
-                  ) || (
+                  {(isDamageOnEnemy
+                    ? Math.floor(
+                        row.original.enemyAR![
+                          damageType as keyof typeof damageTypeToImageName
+                        ] ?? 0
+                      )
+                    : Math.floor(
+                        row.original.damages[
+                          damageType as keyof typeof damageTypeToImageName
+                        ].total
+                      )) || (
                     <Icons.minus className="text-secondary w-4 h-4 mx-auto" />
                   )}
                 </span>
@@ -226,7 +235,11 @@ export default function WeaponsTable({
                   : ""
               )}
             >
-              {Math.floor(row.original.getAr)}
+              {Math.floor(
+                isDamageOnEnemy
+                  ? Math.floor(row.original.enemyTotalAr ?? 0)
+                  : row.original.getAr
+              )}
             </span>
           ),
           meta: {

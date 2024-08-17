@@ -171,3 +171,39 @@ export const weaponTypes = [
   { name: "Medium Shield", class: "shield" },
   { name: "Greatshield", class: "shield" },
 ];
+
+export const weaponExtraValues = [
+  "1h R1 1",
+  "1h R1 2",
+  "1h R1 3",
+  "1h R1 4",
+  "1h R1 5",
+  "1h R1 6",
+  "1h R2 1",
+  "1h R2 2",
+  "1h Charged R2 1",
+  "1h Charged R2 2",
+  "1h Running R1",
+  "1h Running R2",
+  "1h Jumping R1",
+  "1h Jumping R2",
+  "2h R1 1",
+  "2h R1 2",
+  "2h R1 3",
+  "2h R1 4",
+  "2h R1 5",
+  "2h R1 6",
+  "2h R2 1",
+  "2h R2 2",
+  "2h Charged R2 1",
+  "2h Charged R2 2",
+  "2h Running R1",
+  "2h Running R2",
+  "2h Jumping R1",
+  "2h Jumping R2",
+] as const;
+
+// create a type of weaponExtraValues where each item is a key of WeaponValue with the value being a number
+export type WeaponExtraValues = {
+  [key in (typeof weaponExtraValues)[number]]: number;
+};

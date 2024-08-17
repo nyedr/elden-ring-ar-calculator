@@ -1,11 +1,27 @@
 "use client";
 
 import { Cross2Icon } from "@radix-ui/react-icons";
-import { ColumnFilter, Table } from "@tanstack/react-table";
+import { Table } from "@tanstack/react-table";
 
 import { Button } from "../button";
 import { Input } from "../input";
-import { ViewOptions } from "./view-options";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export interface CustomSelect {
+  defaultValue: string;
+  options: string[];
+  onChange: (value: string) => void;
+  triggerClassName?: string;
+}
 
 export interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -13,11 +29,13 @@ export interface DataTableToolbarProps<TData> {
     accessorKey: string;
     label: string;
   };
+  customSelect?: CustomSelect;
 }
 
 export function Toolbar<TData>({
   table,
   filterBy,
+  customSelect,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -51,7 +69,26 @@ export function Toolbar<TData>({
           </Button>
         )}
       </div>
-      {/* <ViewOptions table={table} /> */}
+
+      {customSelect && (
+        <Select
+          onValueChange={(val) => customSelect.onChange(val)}
+          defaultValue={customSelect.defaultValue}
+        >
+          <SelectTrigger className={customSelect.triggerClassName}>
+            <SelectValue placeholder="Select" />
+          </SelectTrigger>
+          <SelectContent defaultValue={customSelect.defaultValue}>
+            <SelectGroup>
+              {customSelect.options.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      )}
     </div>
   );
 }

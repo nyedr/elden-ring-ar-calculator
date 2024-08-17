@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import { AttackRating } from "@/lib/data/attackRating";
 import { Enemy } from "@/lib/data/enemy-data";
 import { numberWithCommas } from "@/lib/utils";
+import EnemyInfoTables from "./enemy-info-tables";
 
 export interface EnemyInfoProps {
   attackRating?: AttackRating;
@@ -45,7 +46,7 @@ export default function EnemyInfo({
             </DialogDescription>
             <DialogDescription className="text-primary flex w-full items-center justify-between">
               <strong>Poise</strong>
-              <span>{enemy.poise.effective}</span>
+              <span>{Math.floor(enemy.poise.effective)}</span>
             </DialogDescription>
             <DialogDescription className="text-primary flex w-full items-center justify-between">
               <strong>Poise regen delay</strong>
@@ -53,10 +54,42 @@ export default function EnemyInfo({
             </DialogDescription>
             <DialogDescription className="text-primary flex w-full items-center justify-between">
               <strong>DLC Clear Health</strong>
-              <span>{enemy.dlcClearHealthPoints}</span>
+              <span>
+                {enemy.dlcClearHealthPoints
+                  ? numberWithCommas(enemy.dlcClearHealthPoints)
+                  : ""}
+              </span>
             </DialogDescription>
           </div>
         </div>
+
+        <EnemyInfoTables attackRating={attackRating} enemy={enemy} />
+
+        {attackRating?.enemyTotalAr && (
+          <div className="flex flex-col gap-2 w-full">
+            <div className="w-full overflow-hidden h-4 rounded-md bg-secondary">
+              <div
+                className={`h-full bg-red-700`}
+                style={{
+                  width: `${
+                    (attackRating.enemyTotalAr / enemy.healthPoints) * 100
+                  }%`,
+                }}
+              />
+            </div>
+            <div className="w-full flex items-center justify-between">
+              <span>
+                Hits to kill:{" "}
+                {Math.ceil(enemy.healthPoints / attackRating.enemyTotalAr)}
+              </span>
+              <span>
+                {Math.floor(attackRating.enemyTotalAr)} /{" "}
+                {numberWithCommas(enemy.healthPoints)}
+              </span>
+            </div>
+          </div>
+        )}
+
         <h2 className="font-semibold text-xl">Drops</h2>
         <div className="flex flex-wrap items-center w-full gap-3">
           {enemy.drops.length > 0 &&

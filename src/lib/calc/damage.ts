@@ -75,7 +75,6 @@ export const isDamageTypeAffectedByUnmetRequirements = (
   attackRating: AttackRating,
   damageType: DamageType
 ) => {
-  // TODO: Fix red on two handing
   // Create an array of all the attributes that are not met
   const unmetRequirements: AttributeKey[] = Object.entries(
     attackRating.requirementsMet
@@ -208,70 +207,40 @@ export function calculateWeaponDamage(
 }
 
 export const calculateEnemyDamage = (
-  totalDamageType1: number,
-  totalDamageType2: number,
-  negationType1: number,
-  negationType2: number,
-  flatDefense: number,
-  motionValue = 100
-) => {
-  // Function to calculate defense multiplier]
-  function defenseMultiplier(attackRatio: number) {
-    if (attackRatio < 0.125) {
-      return 0.1;
-    } else if (attackRatio < 1) {
-      return 0.1 + Math.pow(attackRatio - 0.125, 2) / 2.552;
-    } else if (attackRatio < 2.5) {
-      return 0.7 - Math.pow(2.5 - attackRatio, 2) / 7.5;
-    } else if (attackRatio < 8) {
-      return 0.9 - Math.pow(8 - attackRatio, 2) / 151.25;
-    } else {
-      return 0.9;
-    }
-  }
-
-  // Calculate defense multipliers
-  const defenseMultiplierType1 = defenseMultiplier(
-    (totalDamageType1 * motionValue) / (flatDefense * 100)
-  );
-  const defenseMultiplierType2 = defenseMultiplier(
-    (totalDamageType2 * motionValue) / (flatDefense * 100)
-  );
-
-  // Calculate final damages
-  const finalDamageType1 =
-    (1 - negationType1 / 100) *
-    defenseMultiplierType1 *
-    totalDamageType1 *
-    (motionValue / 100);
-  const finalDamageType2 =
-    (1 - negationType2 / 100) *
-    defenseMultiplierType2 *
-    totalDamageType2 *
-    (motionValue / 100);
-
-  // Overall final damage
-  const overallFinalDamage = finalDamageType1 + finalDamageType2;
-
-  return overallFinalDamage;
-};
-
-export const calculateEnemyDamage1 = (
   attackRating: AttackRating,
   enemy: Enemy,
   motionValue = 100
-) => {
-  const [[damageTypeOne, totalDamageOne], [damageTypeTwo, totalDamageTwo]]: [
-    string,
-    number
-  ][] = Object.entries(attackRating.damages)
+): AttackRating => {
+  const damages: [string, number][] = Object.entries(attackRating.damages)
     .filter(([_, value]) => value.total !== 0)
     .map(([key, value]) => [key, value.total]);
 
-  const flatEnemyDefense = enemy.defence[damageTypeOne as DamageType];
-
-  const negationTypeOne = enemy.damageNegation[damageTypeOne as DamageType];
-  const negationTypeTwo = enemy.damageNegation[damageTypeTwo as DamageType];
+  const [damageTypeOne, totalDamageOne] = damages[0];
+  const physicalDamageTypes = [
+    DamageType.Physical,
+    DamageType.Pierce,
+    DamageType.Slash,
+    DamageType.Strike,
+  ];
+  const isDamageTypeOnePhysical = physicalDamageTypes.some((damageType) =>
+    damageTypeOne.includes(damageType)
+  );
+  const isWeaponTypePhysical = physicalDamageTypes.includes(
+    attackRating.weapon.physicalDamageType as DamageType
+  );
+  const isTypePhysical = isDamageTypeOnePhysical && isWeaponTypePhysical;
+  const flatEnemyDefense =
+    enemy.defence[
+      (isTypePhysical
+        ? attackRating.weapon.physicalDamageType
+        : damageTypeOne) as DamageType
+    ];
+  const negationTypeOne =
+    enemy.damageNegation[
+      (isTypePhysical
+        ? attackRating.weapon.physicalDamageType
+        : damageTypeOne) as DamageType
+    ];
 
   // Function to calculate defense multiplier]
   function defenseMultiplier(attackRatio: number) {
@@ -288,28 +257,46 @@ export const calculateEnemyDamage1 = (
     }
   }
 
-  // Calculate defense multipliers
   const defenseMultiplierType1 = defenseMultiplier(
     (totalDamageOne * motionValue) / (flatEnemyDefense * 100)
   );
-  const defenseMultiplierType2 = defenseMultiplier(
-    (totalDamageTwo * motionValue) / (flatEnemyDefense * 100)
-  );
 
-  // Calculate final damages
   const finalDamageType1 =
     (1 - negationTypeOne / 100) *
     defenseMultiplierType1 *
     totalDamageOne *
     (motionValue / 100);
+
+  if (damages.length === 1) {
+    return {
+      ...attackRating,
+      enemyAR: {
+        [damageTypeOne]: finalDamageType1,
+      },
+      enemyTotalAr: finalDamageType1,
+    } as AttackRating;
+  }
+
+  const [damageTypeTwo, totalDamageTwo] = damages[1];
+
+  const negationTypeTwo = enemy.damageNegation[damageTypeTwo as DamageType];
+
+  const defenseMultiplierType2 = defenseMultiplier(
+    (totalDamageTwo * motionValue) / (flatEnemyDefense * 100)
+  );
+
   const finalDamageType2 =
     (1 - negationTypeTwo / 100) *
     defenseMultiplierType2 *
     totalDamageTwo *
     (motionValue / 100);
 
-  // Overall final damage
-  const overallFinalDamage = finalDamageType1 + finalDamageType2;
-
-  return overallFinalDamage;
+  return {
+    ...attackRating,
+    enemyAR: {
+      [damageTypeOne]: finalDamageType1,
+      [damageTypeTwo]: finalDamageType2,
+    },
+    enemyTotalAr: finalDamageType1 + finalDamageType2,
+  } as AttackRating;
 };

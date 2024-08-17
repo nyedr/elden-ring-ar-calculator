@@ -122,3 +122,16 @@ export const getWeaponsLevelsData = (
 export const numberWithCommas = (num: number) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+
+export const removeDuplicateNames = (arr: any[]) => {
+  const seenNames = new Set();
+
+  return arr.filter((item) => {
+    if (seenNames.has(item.name)) {
+      return false;
+    } else {
+      seenNames.add(item.name);
+      return true;
+    }
+  });
+};
