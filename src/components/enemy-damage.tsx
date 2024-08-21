@@ -90,7 +90,7 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
             ? weaponAttack.twoHanded
             : weaponAttack.oneHanded) as keyof DamageValues
         ] ?? 100
-      ).enemyTotalAr,
+      ).enemyAR,
     [attackRating, enemy, isTwoHanding, weaponAttack]
   );
 

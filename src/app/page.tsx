@@ -12,12 +12,7 @@ import {
   weaponAffinities,
   weaponTypes,
 } from "@/lib/data/weapon-data";
-import {
-  filterWeapons,
-  SortByOption,
-  sortWeapons,
-  WeaponFilter,
-} from "@/lib/calc/weapons-filter";
+import { filterWeapons, WeaponFilter } from "@/lib/calc/weapons-filter";
 import Header from "@/components/header";
 import SelectedWeaponsChart from "@/components/selected-weapons-chart";
 import {
@@ -55,8 +50,6 @@ export default function Home() {
     selectedWeaponTypes: defaultWeaponTypesSelected,
     selectedStatusEffects: defaultStatusEffectsSelected,
     selectedWeaponAffinities: defaultWeaponAffinitiesSelected,
-    sortBy: "AR",
-    toggleSortBy: false,
   });
   const [isEnemyInfoOpen, setIsEnemyInfoOpen] = useState(false);
 
@@ -125,55 +118,19 @@ export default function Home() {
     [weaponsData, isDamageOnEnemy, selectedEnemy]
   );
 
-  useEffect(() => {
-    sortWeaponsTable(weaponFilter.sortBy, false);
-  }, [character.attributes, selectedEnemy, isDamageOnEnemy]);
+  useEffect(() => {}, [character.attributes, selectedEnemy, isDamageOnEnemy]);
 
   const setFilteredWeapons = useCallback(() => {
-    const sortedWeapons = sortWeapons(
+    const filteredWeapons = filterWeapons(
       initialWeaponsData.weapons,
-      character,
-      weaponFilter.sortBy,
-      weaponFilter.toggleSortBy
+      weaponFilter
     );
-
-    const filteredWeapons = filterWeapons(sortedWeapons, weaponFilter);
 
     setWeaponsData((prev) => ({
       ...prev,
       weapons: filteredWeapons,
     }));
   }, [initialWeaponsData, character, weaponFilter]);
-
-  const sortWeaponsTable = useCallback(
-    (sortByOption: SortByOption, toggle = true) => {
-      const toggleSortBy =
-        weaponFilter.sortBy === sortByOption
-          ? !weaponFilter.toggleSortBy
-          : false;
-
-      setWeaponsData((prev) => ({
-        ...prev,
-        weapons: sortWeapons(
-          weaponsData.weapons,
-          character,
-          sortByOption,
-          toggle ? toggleSortBy : weaponFilter.toggleSortBy,
-          {
-            isDamageOnEnemy,
-            selectedEnemy,
-          }
-        ),
-      }));
-
-      setWeaponFilter((prev) => ({
-        ...prev,
-        sortBy: sortByOption,
-        toggleSortBy: toggle ? toggleSortBy : weaponFilter.toggleSortBy,
-      }));
-    },
-    [weaponsData, character, weaponFilter, isDamageOnEnemy, selectedEnemy]
-  );
 
   const weaponSearchOptions: ComboboxItem[] = initialWeaponsData.weapons.map(
     (weapon) => ({
@@ -296,7 +253,6 @@ export default function Home() {
       <WeaponsTable
         updateWeaponInfo={updateWeaponInfo}
         selectedWeapons={weaponState.selectedWeapons}
-        sortWeaponsTable={sortWeaponsTable}
         character={useDebouncedValue(character)}
         weaponAttackRatings={weaponsData.weapons.map((weapon) =>
           getWeaponAttackRating(weapon)

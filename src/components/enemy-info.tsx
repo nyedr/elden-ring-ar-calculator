@@ -71,7 +71,7 @@ export default function EnemyInfo({
 
         <EnemyInfoTables attackRating={attackRating} enemy={enemy} />
 
-        {attackRating?.enemyTotalAr && (
+        {attackRating?.enemyAR && (
           <EnemyDamage attackRating={attackRating} enemy={enemy} />
         )}
 

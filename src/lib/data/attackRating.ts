@@ -24,8 +24,8 @@ export class AttackRating {
   requirementsMet: {
     -readonly [K in keyof DamageAttribute]: boolean;
   };
-  enemyAR: Partial<{ [K in DamageType]: number }> | undefined;
-  enemyTotalAr: number | undefined;
+  enemyDamages: Partial<{ [K in DamageType]: number }>;
+  enemyAR: number | undefined;
 
   constructor(weapon: Weapon, level: number) {
     this.weapon = weapon;
@@ -33,8 +33,8 @@ export class AttackRating {
     this.totalAR = 0;
     this.spellScaling = 0;
     this.damages = {} as Record<DamageType, Damage>;
+    this.enemyDamages = {} as Record<DamageType, number>;
     this.enemyAR = undefined;
-    this.enemyTotalAr = undefined;
 
     allSimplifiedDamageTypes.forEach((damageType) => {
       this.damages[damageType] = {

@@ -19,13 +19,11 @@ import {
   calculateWeaponDamage,
   isDamageTypeAffectedByUnmetRequirements,
 } from "@/lib/calc/damage";
-import { SortByOption } from "@/lib/calc/weapons-filter";
 import { allNewGames, NewGame } from "@/lib/data/enemy-data";
 
 interface WeaponsTableProps {
   character: Character;
   weaponAttackRatings: AttackRating[];
-  sortWeaponsTable: (sortByOption: SortByOption) => void;
   selectedWeapons: Weapon[];
   setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
   updateWeaponInfo: (weaponName: string) => void;
@@ -34,12 +32,11 @@ interface WeaponsTableProps {
   setNewGame: React.Dispatch<React.SetStateAction<NewGame>>;
 }
 
-// TODO!: Weapon status effects are not being displayed properly
+// TODO: Sort secondarily by weapon AR
 
 export default function WeaponsTable({
   character,
   weaponAttackRatings,
-  sortWeaponsTable,
   setSelectedWeapons,
   selectedWeapons,
   updateWeaponInfo,
@@ -85,12 +82,15 @@ export default function WeaponsTable({
         },
         {
           accessorKey: "weaponName",
+          invertSorting: true,
           accessorFn: ({ weapon }) => weapon.weaponName,
-          header: () => {
+          header: ({ column }) => {
             return (
               <Button
                 variant="ghost"
-                onClick={() => sortWeaponsTable("weaponName")}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
                 size="sm"
                 className="px-2"
               >
@@ -117,10 +117,13 @@ export default function WeaponsTable({
         },
         {
           accessorKey: "spellScaling",
-          header: () => (
+          invertSorting: true,
+          header: ({ column }) => (
             <Button
               variant="ghost"
-              onClick={() => sortWeaponsTable("Spell Scaling")}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               size="sm"
               title="Spell Scaling"
               className="px-2"
@@ -142,10 +145,14 @@ export default function WeaponsTable({
         },
         {
           accessorKey: "weight",
-          header: () => (
+          accessorFn: ({ weapon }) => weapon.weight,
+          invertSorting: true,
+          header: ({ column }) => (
             <Button
               variant="ghost"
-              onClick={() => sortWeaponsTable("weight")}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               size="sm"
               className="px-2"
             >
@@ -168,11 +175,15 @@ export default function WeaponsTable({
           ([damageType, imageName]) => {
             return {
               accessorKey: damageType,
-              accessorFn: ({ damages }) => damages[damageType as DamageType],
-              header: () => (
+              accessorFn: ({ damages }) =>
+                damages[damageType as DamageType].total,
+              invertSorting: true,
+              header: ({ column }) => (
                 <Button
                   variant="ghost"
-                  onClick={() => sortWeaponsTable(damageType as SortByOption)}
+                  onClick={() =>
+                    column.toggleSorting(column.getIsSorted() === "asc")
+                  }
                   title={`${damageType} Attack`}
                   size="sm"
                   className="px-2"
@@ -199,7 +210,7 @@ export default function WeaponsTable({
                 >
                   {(isDamageOnEnemy
                     ? Math.floor(
-                        row.original.enemyAR![
+                        row.original.enemyDamages[
                           damageType as keyof typeof damageTypeToImageName
                         ] ?? 0
                       )
@@ -220,11 +231,14 @@ export default function WeaponsTable({
           }
         ),
         {
-          accessorKey: "getAr",
-          header: () => (
+          accessorKey: isDamageOnEnemy ? "enemyAR" : "getAr",
+          invertSorting: true,
+          header: ({ column }) => (
             <Button
               variant="ghost"
-              onClick={() => sortWeaponsTable("AR")}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               size="sm"
               className="px-2"
             >
@@ -243,7 +257,7 @@ export default function WeaponsTable({
             >
               {Math.floor(
                 isDamageOnEnemy
-                  ? Math.floor(row.original.enemyTotalAr ?? 0)
+                  ? Math.floor(row.original.enemyAR ?? 0)
                   : row.original.getAr
               )}
             </span>
@@ -265,10 +279,13 @@ export default function WeaponsTable({
             accessorKey: attribute,
             accessorFn: ({ weapon }) =>
               weapon.levels[weapon.maxUpgradeLevel][attribute],
-            header: () => (
+            invertSorting: true,
+            header: ({ column }) => (
               <Button
                 variant="ghost"
-                onClick={() => sortWeaponsTable(attribute as SortByOption)}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
                 size="sm"
                 className="px-2"
               >
@@ -316,10 +333,13 @@ export default function WeaponsTable({
               statusEffects[
                 statusEffect as keyof typeof statusEffectToImageName
               ],
-            header: () => (
+            invertSorting: true,
+            header: ({ column }) => (
               <Button
                 variant="ghost"
-                onClick={() => sortWeaponsTable(statusEffect as SortByOption)}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
                 size="sm"
                 title={statusEffect}
                 className="p-2"

@@ -49,7 +49,6 @@ export function Toolbar<TData>({
               ?.getFilterValue() as string) ?? ""
           }
           onChange={(event) => {
-            // TODO: Fix weapon filtering
             table
               .getColumn(filterBy?.accessorKey)
               ?.setFilterValue(event.target.value);

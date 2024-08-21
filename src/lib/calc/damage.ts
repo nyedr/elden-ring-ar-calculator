@@ -270,10 +270,10 @@ export const calculateEnemyDamage = (
   if (damages.length === 1) {
     return {
       ...attackRating,
-      enemyAR: {
+      enemyDamages: {
         [damageTypeOne]: finalDamageType1,
       },
-      enemyTotalAr: finalDamageType1,
+      enemyAR: finalDamageType1,
     } as AttackRating;
   }
 
@@ -293,10 +293,10 @@ export const calculateEnemyDamage = (
 
   return {
     ...attackRating,
-    enemyAR: {
+    enemyDamages: {
       [damageTypeOne]: finalDamageType1,
       [damageTypeTwo]: finalDamageType2,
     },
-    enemyTotalAr: finalDamageType1 + finalDamageType2,
+    enemyAR: finalDamageType1 + finalDamageType2,
   } as AttackRating;
 };
