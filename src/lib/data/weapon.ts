@@ -5,6 +5,7 @@ import {
   WeaponLevel,
   StatusEffect,
   AttributeKey,
+  DamageValues,
 } from "./weapon-data";
 
 export interface WeaponProps {
@@ -22,6 +23,8 @@ export interface WeaponProps {
   requirements: { [K in AttributeKey]: number };
   poiseAttack: number;
   twoHandBonus: boolean;
+  poiseDmg: DamageValues;
+  motionValues: DamageValues;
 }
 
 export class Weapon {
@@ -39,6 +42,8 @@ export class Weapon {
   requirements: { [K in AttributeKey]: number };
   poiseAttack: number;
   twoHandBonus: boolean;
+  poiseDmg: DamageValues;
+  motionValues: DamageValues;
 
   constructor(props: WeaponProps) {
     this.name = props.name;
@@ -57,6 +62,8 @@ export class Weapon {
     this.weight = props.weight;
     this.requirements = props.requirements;
     this.twoHandBonus = props.twoHandBonus;
+    this.poiseDmg = props.poiseDmg;
+    this.motionValues = props.motionValues;
   }
 
   formatScaling(

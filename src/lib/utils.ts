@@ -50,8 +50,6 @@ export const specialAndRegularLevelsDict = [
 export const createArrayFromNumber = (num: number) =>
   Array.from({ length: num }, (_, i) => i);
 
-// Create a type where if isConsisentLevels is true, the levelsArr is an array of numbers
-// Otherwise, it is an array of [regularLevel, specialLevel, label] tuples
 type LevelsArray =
   | { isConsistentLevels: true; levelsArr: number[] }
   | { isConsistentLevels: false; levelsArr: [number, number, string][] };
@@ -93,10 +91,12 @@ export const getWeaponsLevelsData = (
             character,
             weapon,
             level as number
-          ).getAr;
+          );
           return {
             primary: level,
-            secondary: damage,
+            secondary: weapon.canCastSpells
+              ? damage.spellScaling
+              : damage.getAr,
           } as ChartData[0]["data"][0];
         })
       : (levelsArr as [number, number, string][]).map(
@@ -107,10 +107,12 @@ export const getWeaponsLevelsData = (
               character,
               weapon,
               isSpecialLevel ? specialLevel : regularLevel
-            ).getAr;
+            );
             return {
               primary: label,
-              secondary: damage,
+              secondary: weapon.canCastSpells
+                ? damage.spellScaling
+                : damage.getAr,
             } as ChartData[0]["data"][0];
           }
         ),
@@ -134,4 +136,74 @@ export const removeDuplicateNames = (arr: any[]) => {
       return true;
     }
   });
+};
+
+// TODO!: Posise sequence is not optimal enough, refactor.
+
+export const getOptimalPoiseBrakeSequence = (
+  poiseDmg: Record<string, number | null>,
+  poise: number
+): string[] => {
+  const moves = Object.entries(poiseDmg)
+    .filter(([_, value]) => value !== null)
+    .sort(([, a], [, b]) => (b as number) - (a as number));
+
+  const dp: Record<number, [string[], number]> = {};
+  for (let i = 0; i <= poise + 36; i++) {
+    dp[i] = [[], Infinity];
+  }
+  dp[0] = [[], 0];
+
+  const isValidSequence = (sequence: string[]): boolean => {
+    const sequenceTracker: Record<string, number> = {};
+    for (const move of sequence) {
+      const match = move.match(/(1h|2h) (R\d+|Jumping|Running|Charged) (\d+)/);
+      if (match) {
+        const [, prefix, type, numStr] = match;
+        const num = parseInt(numStr, 10);
+        if (num > 1 && (sequenceTracker[`${prefix} ${type}`] || 0) < num - 1) {
+          return false;
+        }
+        sequenceTracker[`${prefix} ${type}`] = num;
+      }
+    }
+    return true;
+  };
+
+  for (const [move, damage] of moves) {
+    for (
+      let currentPoise = poise + 36;
+      currentPoise >= damage!;
+      currentPoise--
+    ) {
+      const [sequence, length] = dp[currentPoise - (damage as number)];
+      if (length + 1 < dp[currentPoise][1]) {
+        const newSequence = [...sequence, move];
+        if (isValidSequence(newSequence)) {
+          dp[currentPoise] = [newSequence, length + 1];
+        }
+      }
+    }
+  }
+
+  let bestSequence: string[] = [];
+  let bestPoise = Infinity;
+  for (let p = poise; p <= poise + 36; p++) {
+    if (dp[p][0].length > 0 && p < bestPoise) {
+      bestSequence = dp[p][0];
+      bestPoise = p;
+    }
+  }
+
+  return bestSequence;
+};
+
+export const parseMove = (move: string): string => {
+  const match = move.match(
+    /(1h|2h) (R\d+|Charged R\d+|Running R\d+|Jumping R\d+)/
+  );
+  if (match) {
+    return match[2];
+  }
+  return move;
 };

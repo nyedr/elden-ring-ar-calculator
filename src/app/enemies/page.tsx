@@ -26,10 +26,8 @@ export default function Enemies() {
     enemiesData,
     selectedEnemy,
     setSelectedEnemy,
-    newGame,
     setNewGame,
     filterEnemies,
-    setEnemiesData,
     resetEnemiesData,
   } = useEnemies();
 

@@ -16,11 +16,21 @@ import {
   flatPassives,
   allStatusEffects,
   Scaling,
+  damageValuesKeys,
+  DamageValues,
 } from "@/lib/data/weapon-data";
 import { Weapon } from "./weapon";
 
-// TODO: Get motion values and add them to the weapon data
-// TODO: Get poise values and add them to the weapon data
+const parseDamageValues = (value: string): number => {
+  const valueHasPlus = value.includes("+");
+
+  if (valueHasPlus) {
+    const values = value.split("+");
+    return values.reduce((acc, val) => acc + parseInt(val), 0);
+  }
+
+  return parseInt(value);
+};
 
 const getWeapons = () => {
   const { weapons: weaponsData, weaponsCount: weaponsCountData } =
@@ -48,6 +58,16 @@ const getWeapons = () => {
     for (let i = 0; i < weaponsCount; i++) {
       const weaponData = extraData[i];
 
+      const poiseDmg = damageValuesKeys.reduce((acc, key) => {
+        acc[key] = parseDamageValues(weaponData[`P${key}` as keyof WeaponData]);
+        return acc;
+      }, {} as DamageValues);
+
+      const motionValues = damageValuesKeys.reduce((acc, key) => {
+        acc[key] = parseDamageValues(weaponData[`M${key}` as keyof WeaponData]);
+        return acc;
+      }, {} as DamageValues);
+
       let weapon = new Weapon({
         name: weaponData["Weapon Name"],
         weaponName: weaponData.Name,
@@ -65,6 +85,8 @@ const getWeapons = () => {
         },
         weight: +weaponData.Weight,
         twoHandBonus: weaponData["2H Str Bonus"] === "Yes",
+        poiseDmg,
+        motionValues,
       });
 
       weapons.push({ ...weapons[i], ...weapon } as Weapon);

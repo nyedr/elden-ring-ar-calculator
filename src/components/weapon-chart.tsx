@@ -1,7 +1,7 @@
 import { Weapon } from "@/lib/data/weapon";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
-import DynamicStyledChart from "./ui/chart";
+import DynamicStyledChart, { ChartItem } from "./ui/chart";
 import React from "react";
 import { Character } from "@/hooks/useCharacter";
 import { calculateWeaponDamage } from "@/lib/calc/damage";
@@ -16,29 +16,31 @@ interface WeaponChartProps {
 const getWeaponARBreakdownData = (
   character: Character,
   weapon: Weapon,
-  damageType: DamageType | "Total"
-) => {
-  return {
-    label: `${damageType}`,
-    data: weapon.levels.map((_, index) => {
-      const attackRating = calculateWeaponDamage(character, weapon, index);
+  damageType: DamageType
+): ChartItem => ({
+  label: `${damageType}`,
+  data: weapon.levels.map((_, level) => {
+    const attackRating = calculateWeaponDamage(character, weapon, level);
+    return {
+      primary: level,
+      secondary: Math.floor(attackRating.damages[damageType].total),
+    };
+  }),
+});
 
-      if (damageType === "Total") {
-        return {
-          primary: index,
-          secondary: Math.floor(attackRating.getAr),
-        };
-      }
-
-      return {
-        primary: index,
-        secondary: Math.floor(attackRating.damages[damageType].total),
-      };
-    }),
-  };
-};
-
-// TODO: Weapons with spell scaling should be compared by their spell scaling
+const getWeaponSpellScalingData = (
+  character: Character,
+  weapon: Weapon
+): ChartItem => ({
+  label: "Spell Scaling",
+  data: weapon.levels.map((_, level) => {
+    const attackRating = calculateWeaponDamage(character, weapon, level);
+    return {
+      primary: level,
+      secondary: attackRating.spellScaling,
+    };
+  }),
+});
 
 export default function WeaponChart({
   selectedChartWeapon,
@@ -50,17 +52,28 @@ export default function WeaponChart({
     activeDatumIndex: -1,
   });
 
-  const data = [...allSimplifiedDamageTypes.slice()]
-    .map((damageType) =>
-      getWeaponARBreakdownData(
-        character,
-        selectedChartWeapon,
-        damageType as DamageType | "Total"
+  const data = React.useMemo(() => {
+    const breakdownData = allSimplifiedDamageTypes
+      .map((damageType) =>
+        getWeaponARBreakdownData(
+          character,
+          selectedChartWeapon,
+          damageType as DamageType
+        )
       )
-    )
-    .filter(
-      (data) => data.data[selectedChartWeapon.maxUpgradeLevel].secondary > 0
-    );
+      .filter(
+        (data) =>
+          (data.data[selectedChartWeapon.maxUpgradeLevel].secondary ?? 0) > 0
+      );
+
+    if (selectedChartWeapon.canCastSpells) {
+      breakdownData.push(
+        getWeaponSpellScalingData(character, selectedChartWeapon)
+      );
+    }
+
+    return breakdownData;
+  }, [character, selectedChartWeapon]);
 
   const colorsByDamageType = {
     [DamageType.Physical]: "#202C39",
@@ -68,10 +81,16 @@ export default function WeaponChart({
     [DamageType.Fire]: "#F03A47",
     [DamageType.Lightning]: "#F8C537",
     [DamageType.Holy]: "#ECE4B7",
+    "Spell Scaling": "#6C5B7B",
   };
 
-  const lineColorsByDamageType = data.map(
-    (data) => colorsByDamageType[data.label as keyof typeof colorsByDamageType]
+  const lineColorsByDamageType = React.useMemo(
+    () =>
+      data.map(
+        (data) =>
+          colorsByDamageType[data!.label as keyof typeof colorsByDamageType]
+      ),
+    [data]
   );
 
   return (

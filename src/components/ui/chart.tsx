@@ -5,14 +5,16 @@ import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 import { AxisOptions, Chart } from "react-charts";
 
-export type ChartData = {
+export type ChartItem = {
   label: string;
   data: {
     primary: string | number | Date | null;
     secondary: number | null;
     radius?: number | undefined;
   }[];
-}[];
+};
+
+export type ChartData = ChartItem[];
 
 interface DynamicChartProps {
   elementType: "line" | "area" | "bar";

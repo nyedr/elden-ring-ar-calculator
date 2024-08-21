@@ -6,7 +6,6 @@ import { scalingRating } from "@/lib/calc/scaling";
 import { AttackRating } from "@/lib/data/attackRating";
 import Image from "next/image";
 import {
-  allSimplifiedDamageTypes,
   damageAttributeKeys,
   DamageType,
   damageTypeToImageName,
@@ -21,6 +20,7 @@ import {
   isDamageTypeAffectedByUnmetRequirements,
 } from "@/lib/calc/damage";
 import { SortByOption } from "@/lib/calc/weapons-filter";
+import { allNewGames, NewGame } from "@/lib/data/enemy-data";
 
 interface WeaponsTableProps {
   character: Character;
@@ -31,7 +31,10 @@ interface WeaponsTableProps {
   updateWeaponInfo: (weaponName: string) => void;
   setSelectedChartWeapon: (weapon: Weapon) => void;
   isDamageOnEnemy: boolean;
+  setNewGame: React.Dispatch<React.SetStateAction<NewGame>>;
 }
+
+// TODO!: Weapon status effects are not being displayed properly
 
 export default function WeaponsTable({
   character,
@@ -42,10 +45,11 @@ export default function WeaponsTable({
   updateWeaponInfo,
   setSelectedChartWeapon,
   isDamageOnEnemy,
+  setNewGame,
 }: WeaponsTableProps) {
   const weaponsColumns: ColumnDef<AttackRating>[] = [
     {
-      header: () => <span></span>,
+      header: "General Info",
       accessorKey: "weapon",
       enableSorting: false,
       columns: [
@@ -81,6 +85,7 @@ export default function WeaponsTable({
         },
         {
           accessorKey: "weaponName",
+          accessorFn: ({ weapon }) => weapon.weaponName,
           header: () => {
             return (
               <Button
@@ -163,6 +168,7 @@ export default function WeaponsTable({
           ([damageType, imageName]) => {
             return {
               accessorKey: damageType,
+              accessorFn: ({ damages }) => damages[damageType as DamageType],
               header: () => (
                 <Button
                   variant="ghost"
@@ -214,7 +220,7 @@ export default function WeaponsTable({
           }
         ),
         {
-          accessorKey: "attackRating",
+          accessorKey: "getAr",
           header: () => (
             <Button
               variant="ghost"
@@ -257,6 +263,8 @@ export default function WeaponsTable({
         ...damageAttributeKeys.map((attribute) => {
           return {
             accessorKey: attribute,
+            accessorFn: ({ weapon }) =>
+              weapon.levels[weapon.maxUpgradeLevel][attribute],
             header: () => (
               <Button
                 variant="ghost"
@@ -304,6 +312,10 @@ export default function WeaponsTable({
         ...Object.keys(statusEffectToImageName).map((statusEffect, index) => {
           return {
             accessorKey: statusEffect,
+            accessorFn: ({ statusEffects }) =>
+              statusEffects[
+                statusEffect as keyof typeof statusEffectToImageName
+              ],
             header: () => (
               <Button
                 variant="ghost"
@@ -371,6 +383,10 @@ export default function WeaponsTable({
       <DataTable
         columns={weaponsColumns}
         data={weaponAttackRatings}
+        filterBy={{
+          accessorKey: "weaponName",
+          label: "Weapon",
+        }}
         isSelectable={true}
         selectedItems={selectedWeapons.map((weapon) => {
           return calculateWeaponDamage(
@@ -379,6 +395,16 @@ export default function WeaponsTable({
             weapon.maxUpgradeLevel
           );
         })}
+        customSelect={
+          isDamageOnEnemy
+            ? {
+                options: allNewGames,
+                triggerClassName: "max-w-28",
+                defaultValue: NewGame.NG,
+                onChange: (newGame) => setNewGame(newGame as NewGame),
+              }
+            : undefined
+        }
       />
     </div>
   );

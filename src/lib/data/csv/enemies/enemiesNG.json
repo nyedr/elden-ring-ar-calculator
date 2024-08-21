@@ -2034,7 +2034,7 @@
       "Scarlet Rot": 105,
       "Bleed": 105,
       "Frost": 105,
-      "Sleep": null,
+      "Sleep": 1056,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -3019,7 +3019,7 @@
       "Scarlet Rot": 110,
       "Bleed": 110,
       "Frost": 110,
-      "Sleep": null,
+      "Sleep": 1104,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -3062,7 +3062,7 @@
       "Scarlet Rot": 108,
       "Bleed": 108,
       "Frost": 108,
-      "Sleep": null,
+      "Sleep": 1085,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -3691,7 +3691,7 @@
       "Scarlet Rot": 105,
       "Bleed": 105,
       "Frost": 105,
-      "Sleep": null,
+      "Sleep": 1056,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -3733,7 +3733,7 @@
       "Poison": 552,
       "Scarlet Rot": "Immune",
       "Bleed": 552,
-      "Frost": null,
+      "Frost": 1188,
       "Sleep": 552,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -4415,7 +4415,7 @@
       "Poison": "Immune",
       "Scarlet Rot": 526,
       "Bleed": 526,
-      "Frost": null,
+      "Frost": 1131,
       "Sleep": "Immune",
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -4458,7 +4458,7 @@
       "Poison": 526,
       "Scarlet Rot": 526,
       "Bleed": 526,
-      "Frost": null,
+      "Frost": 1131,
       "Sleep": "Immune",
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -4501,7 +4501,7 @@
       "Poison": 561,
       "Scarlet Rot": "Immune",
       "Bleed": 561,
-      "Frost": null,
+      "Frost": 1207,
       "Sleep": "Immune",
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -4544,7 +4544,7 @@
       "Poison": 526,
       "Scarlet Rot": 526,
       "Bleed": 526,
-      "Frost": null,
+      "Frost": 1131,
       "Sleep": "Immune",
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -4965,7 +4965,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1188,
       "Scarlet Rot": 552,
       "Bleed": 552,
       "Frost": 138,
@@ -5341,7 +5341,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1188,
       "Scarlet Rot": 552,
       "Bleed": 552,
       "Frost": 138,
@@ -5917,7 +5917,7 @@
       "Scarlet Rot": 110,
       "Bleed": 110,
       "Frost": 110,
-      "Sleep": null,
+      "Sleep": 1104,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -6273,8 +6273,8 @@
       "regenDelay": 9.231
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1188,
+      "Scarlet Rot": 1188,
       "Bleed": 552,
       "Frost": 245,
       "Sleep": "Immune",
@@ -10376,7 +10376,7 @@
       "Scarlet Rot": 109,
       "Bleed": 109,
       "Frost": 109,
-      "Sleep": null,
+      "Sleep": 1095,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -10631,7 +10631,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1159,
       "Scarlet Rot": 539,
       "Bleed": 539,
       "Frost": 134,
@@ -10835,7 +10835,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1159,
       "Scarlet Rot": 539,
       "Bleed": 539,
       "Frost": 134,
@@ -10891,7 +10891,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1159,
       "Scarlet Rot": 539,
       "Bleed": 539,
       "Frost": 134,
@@ -10947,7 +10947,7 @@
       "regenDelay": 0
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1159,
       "Scarlet Rot": 539,
       "Bleed": 539,
       "Frost": 134,
@@ -12919,7 +12919,7 @@
     },
     "resistances": {
       "Poison": "Immune",
-      "Scarlet Rot": null,
+      "Scarlet Rot": 1169,
       "Bleed": 543,
       "Frost": 135,
       "Sleep": 241,
@@ -18714,7 +18714,7 @@
       "Scarlet Rot": 102,
       "Bleed": 102,
       "Frost": 102,
-      "Sleep": null,
+      "Sleep": 1027,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -19563,8 +19563,8 @@
       "regenDelay": 9.231
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1188,
+      "Scarlet Rot": 1188,
       "Bleed": 245,
       "Frost": 245,
       "Sleep": "Immune",
@@ -24951,7 +24951,7 @@
       "Scarlet Rot": 106,
       "Bleed": 106,
       "Frost": 106,
-      "Sleep": null,
+      "Sleep": 1065,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -25037,7 +25037,7 @@
       "Scarlet Rot": 106,
       "Bleed": 106,
       "Frost": 106,
-      "Sleep": null,
+      "Sleep": 1065,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -25166,7 +25166,7 @@
       "Scarlet Rot": 104,
       "Bleed": 104,
       "Frost": 104,
-      "Sleep": null,
+      "Sleep": 1046,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -25378,7 +25378,7 @@
       "Scarlet Rot": 106,
       "Bleed": 106,
       "Frost": 106,
-      "Sleep": null,
+      "Sleep": 1065,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -26824,7 +26824,7 @@
       "Scarlet Rot": 106,
       "Bleed": 106,
       "Frost": 106,
-      "Sleep": null,
+      "Sleep": 1065,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -30114,7 +30114,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": 534,
       "Frost": 133,
@@ -30170,7 +30170,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": 534,
       "Frost": 133,
@@ -30226,7 +30226,7 @@
       "regenDelay": 0
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": 534,
       "Frost": 133,
@@ -30521,7 +30521,7 @@
       "Scarlet Rot": 108,
       "Bleed": 108,
       "Frost": 108,
-      "Sleep": null,
+      "Sleep": 1085,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -35473,7 +35473,7 @@
       "Scarlet Rot": 100,
       "Bleed": 100,
       "Frost": 100,
-      "Sleep": null,
+      "Sleep": 1007,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -37257,7 +37257,7 @@
       "Poison": 653,
       "Scarlet Rot": 653,
       "Bleed": 653,
-      "Frost": null,
+      "Frost": 1406,
       "Sleep": 653,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -37331,7 +37331,7 @@
       "Poison": 653,
       "Scarlet Rot": 653,
       "Bleed": 653,
-      "Frost": null,
+      "Frost": 1406,
       "Sleep": 653,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -37486,7 +37486,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": "Immune",
-      "Sleep": null,
+      "Sleep": 2382,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -37529,7 +37529,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": "Immune",
-      "Sleep": null,
+      "Sleep": 2382,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -37572,7 +37572,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": "Immune",
-      "Sleep": null,
+      "Sleep": 2382,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -37615,7 +37615,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": "Immune",
-      "Sleep": null,
+      "Sleep": 2382,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -37871,7 +37871,7 @@
     "poise": { "base": 65, "multiplier": 1, "effective": 65, "regenDelay": 5 },
     "resistances": {
       "Poison": 601,
-      "Scarlet Rot": null,
+      "Scarlet Rot": 1292,
       "Bleed": 200,
       "Frost": 267,
       "Sleep": 267,
@@ -38121,7 +38121,7 @@
       "Scarlet Rot": 114,
       "Bleed": 114,
       "Frost": 114,
-      "Sleep": null,
+      "Sleep": 1145,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -38847,7 +38847,7 @@
     "poise": { "base": 65, "multiplier": 1, "effective": 65, "regenDelay": 5 },
     "resistances": {
       "Poison": 601,
-      "Scarlet Rot": null,
+      "Scarlet Rot": 1292,
       "Bleed": 200,
       "Frost": 267,
       "Sleep": 267,
@@ -40249,7 +40249,7 @@
     "poise": { "base": 65, "multiplier": 1, "effective": 65, "regenDelay": 5 },
     "resistances": {
       "Poison": 601,
-      "Scarlet Rot": null,
+      "Scarlet Rot": 1292,
       "Bleed": 200,
       "Frost": 267,
       "Sleep": 267,
@@ -41548,7 +41548,7 @@
       "Scarlet Rot": 351,
       "Bleed": 574,
       "Frost": 574,
-      "Sleep": null,
+      "Sleep": 2277,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -41735,10 +41735,10 @@
       "regenDelay": 12.308
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
-      "Bleed": null,
-      "Frost": null,
+      "Poison": 1349,
+      "Scarlet Rot": 1349,
+      "Bleed": 1349,
+      "Frost": 1349,
       "Sleep": "Immune",
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -42110,7 +42110,7 @@
       "Scarlet Rot": 351,
       "Bleed": 574,
       "Frost": 574,
-      "Sleep": null,
+      "Sleep": 2277,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -42153,7 +42153,7 @@
       "Scarlet Rot": 113,
       "Bleed": 113,
       "Frost": 113,
-      "Sleep": null,
+      "Sleep": 1133,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -43706,7 +43706,7 @@
       "Scarlet Rot": 110,
       "Bleed": 110,
       "Frost": 110,
-      "Sleep": null,
+      "Sleep": 1104,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -44688,7 +44688,7 @@
       "Scarlet Rot": 110,
       "Bleed": 110,
       "Frost": 110,
-      "Sleep": null,
+      "Sleep": 1104,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -46050,7 +46050,7 @@
       "Scarlet Rot": 108,
       "Bleed": 108,
       "Frost": 108,
-      "Sleep": null,
+      "Sleep": 1085,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -46093,7 +46093,7 @@
       "Scarlet Rot": 108,
       "Bleed": 108,
       "Frost": 108,
-      "Sleep": null,
+      "Sleep": 1085,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -48455,7 +48455,7 @@
       "Poison": 534,
       "Scarlet Rot": 534,
       "Bleed": 534,
-      "Frost": null,
+      "Frost": 1150,
       "Sleep": 237,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -50240,7 +50240,7 @@
       "Poison": 340,
       "Scarlet Rot": 340,
       "Bleed": 556,
-      "Frost": null,
+      "Frost": 1197,
       "Sleep": 247,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -51607,7 +51607,7 @@
       "Scarlet Rot": 351,
       "Bleed": 574,
       "Frost": 574,
-      "Sleep": null,
+      "Sleep": 2277,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -56564,7 +56564,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1235,
       "Scarlet Rot": 574,
       "Bleed": 574,
       "Frost": 143,
@@ -56723,7 +56723,7 @@
       "Scarlet Rot": 367,
       "Bleed": 601,
       "Frost": 601,
-      "Sleep": null,
+      "Sleep": 1292,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -56762,7 +56762,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1235,
       "Scarlet Rot": 574,
       "Bleed": 574,
       "Frost": 143,
@@ -56865,7 +56865,7 @@
       "Scarlet Rot": 114,
       "Bleed": 114,
       "Frost": 114,
-      "Sleep": null,
+      "Sleep": 1143,
       "Madness": 0,
       "Death Blight": "Immune"
     },
@@ -57628,7 +57628,7 @@
       "Scarlet Rot": 109,
       "Bleed": 109,
       "Frost": 109,
-      "Sleep": null,
+      "Sleep": 1095,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -59309,7 +59309,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1178,
       "Scarlet Rot": 548,
       "Bleed": 548,
       "Frost": 137,
@@ -59917,7 +59917,7 @@
       "Scarlet Rot": 109,
       "Bleed": 109,
       "Frost": 109,
-      "Sleep": null,
+      "Sleep": 1095,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -60382,7 +60382,7 @@
       "Scarlet Rot": 109,
       "Bleed": 109,
       "Frost": 109,
-      "Sleep": null,
+      "Sleep": 1095,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -65834,7 +65834,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1093,
       "Scarlet Rot": 508,
       "Bleed": 508,
       "Frost": 127,
@@ -66008,7 +66008,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1093,
       "Scarlet Rot": 508,
       "Bleed": 508,
       "Frost": 127,
@@ -70069,7 +70069,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1140,
       "Scarlet Rot": 530,
       "Bleed": 530,
       "Frost": 132,
@@ -72030,7 +72030,7 @@
       "Scarlet Rot": 104,
       "Bleed": 104,
       "Frost": 104,
-      "Sleep": null,
+      "Sleep": 1046,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -72753,7 +72753,7 @@
       "Scarlet Rot": 107,
       "Bleed": 107,
       "Frost": 107,
-      "Sleep": null,
+      "Sleep": 1075,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -73305,7 +73305,7 @@
       "Scarlet Rot": 107,
       "Bleed": 107,
       "Frost": 107,
-      "Sleep": null,
+      "Sleep": 1075,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -73430,7 +73430,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1140,
       "Scarlet Rot": 530,
       "Bleed": 530,
       "Frost": 132,
@@ -73543,7 +73543,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1140,
       "Scarlet Rot": 530,
       "Bleed": 530,
       "Frost": 132,
@@ -74819,7 +74819,7 @@
       "Scarlet Rot": 105,
       "Bleed": 105,
       "Frost": 105,
-      "Sleep": null,
+      "Sleep": 1056,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -74905,7 +74905,7 @@
       "Scarlet Rot": 105,
       "Bleed": 105,
       "Frost": 105,
-      "Sleep": null,
+      "Sleep": 1056,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -75042,7 +75042,7 @@
       "Scarlet Rot": 105,
       "Bleed": 105,
       "Frost": 105,
-      "Sleep": null,
+      "Sleep": 1056,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -75492,7 +75492,7 @@
       "Scarlet Rot": 235,
       "Bleed": 235,
       "Frost": 324,
-      "Sleep": null,
+      "Sleep": 2102,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -76156,7 +76156,7 @@
       "Scarlet Rot": 235,
       "Bleed": 235,
       "Frost": 324,
-      "Sleep": null,
+      "Sleep": 2102,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -76199,7 +76199,7 @@
       "Scarlet Rot": 235,
       "Bleed": 235,
       "Frost": 324,
-      "Sleep": null,
+      "Sleep": 2102,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -77102,7 +77102,7 @@
       "Poison": 530,
       "Scarlet Rot": 530,
       "Bleed": 530,
-      "Frost": null,
+      "Frost": 1140,
       "Sleep": 530,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -77188,7 +77188,7 @@
       "Poison": 530,
       "Scarlet Rot": 530,
       "Bleed": 530,
-      "Frost": null,
+      "Frost": 1140,
       "Sleep": 530,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -78417,7 +78417,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1140,
       "Scarlet Rot": 530,
       "Bleed": 530,
       "Frost": 132,
@@ -80922,7 +80922,7 @@
       "regenDelay": 9.231
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": 237,
       "Frost": 237,
@@ -80988,7 +80988,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": 114,
       "Frost": 114,
-      "Sleep": null,
+      "Sleep": 1143,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -81560,7 +81560,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1463,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 680,
@@ -81603,7 +81603,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1463,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 680,
@@ -81758,7 +81758,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1463,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 680,
@@ -81808,7 +81808,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1463,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 680,
@@ -81963,7 +81963,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1463,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 680,
@@ -82013,7 +82013,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1463,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 680,
@@ -82069,8 +82069,8 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1406,
+      "Scarlet Rot": 1406,
       "Bleed": 653,
       "Frost": 163,
       "Sleep": 290,
@@ -82125,8 +82125,8 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1463,
+      "Scarlet Rot": 1463,
       "Bleed": 680,
       "Frost": 170,
       "Sleep": 302,
@@ -82181,8 +82181,8 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1406,
+      "Scarlet Rot": 1406,
       "Bleed": 653,
       "Frost": 163,
       "Sleep": 290,
@@ -82237,8 +82237,8 @@
       "regenDelay": 0
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1406,
+      "Scarlet Rot": 1406,
       "Bleed": 653,
       "Frost": 163,
       "Sleep": 290,
@@ -82293,8 +82293,8 @@
       "regenDelay": 0
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1463,
+      "Scarlet Rot": 1463,
       "Bleed": 680,
       "Frost": 170,
       "Sleep": 302,
@@ -84841,8 +84841,8 @@
       "regenDelay": 6.154
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1481,
+      "Scarlet Rot": 1481,
       "Bleed": 420,
       "Frost": 306,
       "Sleep": 688,
@@ -84884,8 +84884,8 @@
       "regenDelay": 6.154
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1481,
+      "Scarlet Rot": 1481,
       "Bleed": 420,
       "Frost": 306,
       "Sleep": 688,
@@ -84931,7 +84931,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": 114,
       "Frost": 114,
-      "Sleep": null,
+      "Sleep": 1145,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -84974,7 +84974,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": 115,
       "Frost": 115,
-      "Sleep": null,
+      "Sleep": 1157,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -85017,7 +85017,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": 114,
       "Frost": 114,
-      "Sleep": null,
+      "Sleep": 1143,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -85060,7 +85060,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": 117,
       "Frost": 117,
-      "Sleep": null,
+      "Sleep": 1168,
       "Madness": 0,
       "Death Blight": "Immune"
     },
@@ -85103,7 +85103,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": 117,
       "Frost": 117,
-      "Sleep": null,
+      "Sleep": 1168,
       "Madness": 0,
       "Death Blight": "Immune"
     },
@@ -85456,7 +85456,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": 114,
       "Frost": 114,
-      "Sleep": null,
+      "Sleep": 1143,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -86175,7 +86175,7 @@
       "regenDelay": 9.231
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1463,
       "Scarlet Rot": "Immune",
       "Bleed": 680,
       "Frost": 302,
@@ -86838,7 +86838,7 @@
       "Scarlet Rot": 653,
       "Bleed": 290,
       "Frost": 653,
-      "Sleep": null,
+      "Sleep": 1406,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -86944,7 +86944,7 @@
       "Scarlet Rot": 115,
       "Bleed": 115,
       "Frost": 115,
-      "Sleep": null,
+      "Sleep": 1157,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -87144,7 +87144,7 @@
       "Scarlet Rot": 116,
       "Bleed": 116,
       "Frost": 116,
-      "Sleep": null,
+      "Sleep": 1160,
       "Madness": 0,
       "Death Blight": "Immune"
     },
@@ -87767,7 +87767,7 @@
       "Scarlet Rot": 104,
       "Bleed": 104,
       "Frost": 104,
-      "Sleep": null,
+      "Sleep": 1046,
       "Madness": 0,
       "Death Blight": "Immune"
     },
@@ -91043,7 +91043,7 @@
       "Poison": 247,
       "Scarlet Rot": 247,
       "Bleed": 247,
-      "Frost": null,
+      "Frost": 1197,
       "Sleep": 44,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -91421,7 +91421,7 @@
       "Scarlet Rot": 112,
       "Bleed": 112,
       "Frost": 112,
-      "Sleep": null,
+      "Sleep": 1124,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -91532,7 +91532,7 @@
       "Scarlet Rot": 111,
       "Bleed": 111,
       "Frost": 111,
-      "Sleep": null,
+      "Sleep": 1114,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -92496,7 +92496,7 @@
       "Poison": 653,
       "Scarlet Rot": 653,
       "Bleed": 653,
-      "Frost": null,
+      "Frost": 1406,
       "Sleep": 290,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -92608,7 +92608,7 @@
       "Scarlet Rot": 111,
       "Bleed": 111,
       "Frost": 111,
-      "Sleep": null,
+      "Sleep": 1114,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -94669,7 +94669,7 @@
       "Scarlet Rot": 111,
       "Bleed": 111,
       "Frost": 111,
-      "Sleep": null,
+      "Sleep": 1114,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -95433,7 +95433,7 @@
       "Poison": 340,
       "Scarlet Rot": 340,
       "Bleed": 556,
-      "Frost": null,
+      "Frost": 1197,
       "Sleep": 247,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -96564,7 +96564,7 @@
       "Scarlet Rot": 108,
       "Bleed": 108,
       "Frost": 108,
-      "Sleep": null,
+      "Sleep": 1085,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -96936,7 +96936,7 @@
       "Scarlet Rot": 107,
       "Bleed": 107,
       "Frost": 107,
-      "Sleep": null,
+      "Sleep": 1075,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -99668,7 +99668,7 @@
       "regenDelay": 0
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1159,
       "Scarlet Rot": 539,
       "Bleed": 539,
       "Frost": 134,
@@ -100258,7 +100258,7 @@
       "Poison": 552,
       "Scarlet Rot": 552,
       "Bleed": 552,
-      "Frost": null,
+      "Frost": 1188,
       "Sleep": 245,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -100798,10 +100798,10 @@
       "regenDelay": 9.231
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
-      "Bleed": null,
-      "Frost": null,
+      "Poison": 1169,
+      "Scarlet Rot": 1169,
+      "Bleed": 1169,
+      "Frost": 1169,
       "Sleep": "Immune",
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -101522,7 +101522,7 @@
       "Poison": 601,
       "Scarlet Rot": 601,
       "Bleed": 601,
-      "Frost": null,
+      "Frost": 1292,
       "Sleep": "Immune",
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -102296,7 +102296,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1159,
       "Scarlet Rot": 539,
       "Bleed": 539,
       "Frost": 134,
@@ -103653,7 +103653,7 @@
       "Scarlet Rot": 101,
       "Bleed": 101,
       "Frost": 101,
-      "Sleep": null,
+      "Sleep": 1017,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -103954,7 +103954,7 @@
       "Scarlet Rot": 103,
       "Bleed": 103,
       "Frost": 103,
-      "Sleep": null,
+      "Sleep": 1036,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -104671,7 +104671,7 @@
       "Scarlet Rot": 106,
       "Bleed": 106,
       "Frost": 106,
-      "Sleep": null,
+      "Sleep": 1065,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -104956,7 +104956,7 @@
       "Scarlet Rot": 109,
       "Bleed": 109,
       "Frost": 109,
-      "Sleep": null,
+      "Sleep": 1095,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -105041,7 +105041,7 @@
       "Poison": 534,
       "Scarlet Rot": 534,
       "Bleed": 534,
-      "Frost": null,
+      "Frost": 1150,
       "Sleep": 237,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -105738,7 +105738,7 @@
       "Scarlet Rot": 109,
       "Bleed": 109,
       "Frost": 109,
-      "Sleep": null,
+      "Sleep": 1095,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -106047,7 +106047,7 @@
       "Poison": 329,
       "Scarlet Rot": 329,
       "Bleed": 539,
-      "Frost": null,
+      "Frost": 1159,
       "Sleep": 239,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -107200,7 +107200,7 @@
     },
     "resistances": {
       "Poison": "Immune",
-      "Scarlet Rot": null,
+      "Scarlet Rot": 1169,
       "Bleed": 241,
       "Frost": 241,
       "Sleep": "Immune",
@@ -107745,7 +107745,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 534,
@@ -107788,7 +107788,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 534,
@@ -107844,7 +107844,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 534,
@@ -107887,7 +107887,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 534,
@@ -107943,7 +107943,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 534,
@@ -107986,7 +107986,7 @@
       "regenDelay": 5.385
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1150,
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": 534,
@@ -108508,7 +108508,7 @@
       "Poison": 543,
       "Scarlet Rot": 543,
       "Bleed": 543,
-      "Frost": null,
+      "Frost": 1169,
       "Sleep": 543,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -108594,7 +108594,7 @@
       "Poison": 543,
       "Scarlet Rot": 543,
       "Bleed": 543,
-      "Frost": null,
+      "Frost": 1169,
       "Sleep": 543,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -108680,7 +108680,7 @@
       "Poison": 543,
       "Scarlet Rot": 543,
       "Bleed": 543,
-      "Frost": null,
+      "Frost": 1169,
       "Sleep": 543,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -108938,7 +108938,7 @@
       "Poison": 543,
       "Scarlet Rot": 543,
       "Bleed": 543,
-      "Frost": null,
+      "Frost": 1169,
       "Sleep": 543,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -109018,7 +109018,7 @@
       "Poison": 543,
       "Scarlet Rot": 543,
       "Bleed": 543,
-      "Frost": null,
+      "Frost": 1169,
       "Sleep": 543,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -109098,7 +109098,7 @@
       "Poison": 543,
       "Scarlet Rot": 543,
       "Bleed": 543,
-      "Frost": null,
+      "Frost": 1169,
       "Sleep": 543,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -109486,7 +109486,7 @@
       "Poison": 543,
       "Scarlet Rot": 543,
       "Bleed": 543,
-      "Frost": null,
+      "Frost": 1169,
       "Sleep": 543,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -109560,7 +109560,7 @@
       "Poison": 543,
       "Scarlet Rot": 543,
       "Bleed": 543,
-      "Frost": null,
+      "Frost": 1169,
       "Sleep": 543,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -109634,7 +109634,7 @@
       "Poison": 543,
       "Scarlet Rot": 543,
       "Bleed": 543,
-      "Frost": null,
+      "Frost": 1169,
       "Sleep": 543,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -109702,7 +109702,7 @@
       "Poison": 530,
       "Scarlet Rot": 530,
       "Bleed": 530,
-      "Frost": null,
+      "Frost": 1140,
       "Sleep": 530,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -109776,7 +109776,7 @@
       "Poison": 530,
       "Scarlet Rot": 530,
       "Bleed": 530,
-      "Frost": null,
+      "Frost": 1140,
       "Sleep": 530,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -110821,7 +110821,7 @@
       "Poison": 552,
       "Scarlet Rot": 552,
       "Bleed": 552,
-      "Frost": null,
+      "Frost": 1188,
       "Sleep": "Immune",
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -111209,7 +111209,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1140,
       "Scarlet Rot": 530,
       "Bleed": 530,
       "Frost": 132,
@@ -111816,7 +111816,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1140,
       "Scarlet Rot": 530,
       "Bleed": 530,
       "Frost": 132,
@@ -112452,7 +112452,7 @@
       "Scarlet Rot": 108,
       "Bleed": 108,
       "Frost": 108,
-      "Sleep": null,
+      "Sleep": 1085,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -112879,7 +112879,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": "Immune",
-      "Sleep": null,
+      "Sleep": 2102,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -112918,10 +112918,10 @@
       "regenDelay": 9.231
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
-      "Bleed": null,
-      "Frost": null,
+      "Poison": 1140,
+      "Scarlet Rot": 1140,
+      "Bleed": 1140,
+      "Frost": 1140,
       "Sleep": "Immune",
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -113147,7 +113147,7 @@
       "Scarlet Rot": 104,
       "Bleed": 104,
       "Frost": 104,
-      "Sleep": null,
+      "Sleep": 1046,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -113190,7 +113190,7 @@
       "Scarlet Rot": 104,
       "Bleed": 104,
       "Frost": 104,
-      "Sleep": null,
+      "Sleep": 1046,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -113362,7 +113362,7 @@
       "Scarlet Rot": 106,
       "Bleed": 106,
       "Frost": 106,
-      "Sleep": null,
+      "Sleep": 1065,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -113490,7 +113490,7 @@
       "Poison": 565,
       "Scarlet Rot": 565,
       "Bleed": 565,
-      "Frost": null,
+      "Frost": 1216,
       "Sleep": 565,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -113533,7 +113533,7 @@
       "Poison": 565,
       "Scarlet Rot": 565,
       "Bleed": 565,
-      "Frost": null,
+      "Frost": 1216,
       "Sleep": 565,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -114145,7 +114145,7 @@
       "Poison": 267,
       "Scarlet Rot": 267,
       "Bleed": 267,
-      "Frost": null,
+      "Frost": 1292,
       "Sleep": 47,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -118227,7 +118227,7 @@
       "Scarlet Rot": 111,
       "Bleed": 111,
       "Frost": 111,
-      "Sleep": null,
+      "Sleep": 1114,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -119869,7 +119869,7 @@
       "Scarlet Rot": 109,
       "Bleed": 109,
       "Frost": 109,
-      "Sleep": null,
+      "Sleep": 1095,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -119912,7 +119912,7 @@
       "Scarlet Rot": 100,
       "Bleed": 100,
       "Frost": 100,
-      "Sleep": null,
+      "Sleep": 1007,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -124429,7 +124429,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": "Immune",
-      "Sleep": null,
+      "Sleep": 2050,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -125072,7 +125072,7 @@
       "Scarlet Rot": 104,
       "Bleed": 104,
       "Frost": 104,
-      "Sleep": null,
+      "Sleep": 1046,
       "Madness": 0,
       "Death Blight": "Immune"
     },
@@ -125345,7 +125345,7 @@
       "Scarlet Rot": 101,
       "Bleed": 101,
       "Frost": 101,
-      "Sleep": null,
+      "Sleep": 1017,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -126794,7 +126794,7 @@
       "Scarlet Rot": 112,
       "Bleed": 112,
       "Frost": 112,
-      "Sleep": null,
+      "Sleep": 1124,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -126926,7 +126926,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1207,
       "Scarlet Rot": 561,
       "Bleed": 561,
       "Frost": 140,
@@ -127531,7 +127531,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1207,
       "Scarlet Rot": 561,
       "Bleed": 561,
       "Frost": 140,
@@ -129289,7 +129289,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1102,
       "Scarlet Rot": 512,
       "Bleed": 512,
       "Frost": 128,
@@ -129345,7 +129345,7 @@
       "regenDelay": 2.308
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1102,
       "Scarlet Rot": 512,
       "Bleed": 512,
       "Frost": 128,
@@ -129388,7 +129388,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1102,
       "Scarlet Rot": 512,
       "Bleed": 512,
       "Frost": 128,
@@ -129488,7 +129488,7 @@
     },
     "resistances": {
       "Poison": "Immune",
-      "Scarlet Rot": null,
+      "Scarlet Rot": 1102,
       "Bleed": 227,
       "Frost": 227,
       "Sleep": "Immune",
@@ -131440,7 +131440,7 @@
       "Scarlet Rot": 109,
       "Bleed": 109,
       "Frost": 109,
-      "Sleep": null,
+      "Sleep": 1095,
       "Madness": 0,
       "Death Blight": 999
     },
@@ -131725,7 +131725,7 @@
       "Poison": 552,
       "Scarlet Rot": 552,
       "Bleed": 552,
-      "Frost": null,
+      "Frost": 1188,
       "Sleep": 245,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -132885,7 +132885,7 @@
       "Scarlet Rot": "Immune",
       "Bleed": "Immune",
       "Frost": "Immune",
-      "Sleep": null,
+      "Sleep": 2190,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -133284,8 +133284,8 @@
       "regenDelay": 9.231
     },
     "resistances": {
-      "Poison": null,
-      "Scarlet Rot": null,
+      "Poison": 1235,
+      "Scarlet Rot": 1235,
       "Bleed": 574,
       "Frost": 255,
       "Sleep": "Immune",
@@ -133861,7 +133861,7 @@
       "regenDelay": 0
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1102,
       "Scarlet Rot": 512,
       "Bleed": 512,
       "Frost": 128,
@@ -138029,7 +138029,7 @@
       "regenDelay": 7.692
     },
     "resistances": {
-      "Poison": null,
+      "Poison": 1102,
       "Scarlet Rot": 512,
       "Bleed": 512,
       "Frost": 128,
@@ -138722,7 +138722,7 @@
       "Poison": 318,
       "Scarlet Rot": 318,
       "Bleed": 521,
-      "Frost": null,
+      "Frost": 1121,
       "Sleep": 231,
       "Madness": "Immune",
       "Death Blight": "Immune"
@@ -141758,7 +141758,7 @@
       "Scarlet Rot": 434,
       "Bleed": 711,
       "Frost": 711,
-      "Sleep": null,
+      "Sleep": 2820,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -142560,7 +142560,7 @@
       "Scarlet Rot": 407,
       "Bleed": 667,
       "Frost": 667,
-      "Sleep": null,
+      "Sleep": 2644,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -143732,7 +143732,7 @@
       "Scarlet Rot": 421,
       "Bleed": 689,
       "Frost": 689,
-      "Sleep": null,
+      "Sleep": 2732,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -144773,7 +144773,7 @@
       "Scarlet Rot": 425,
       "Bleed": 696,
       "Frost": 696,
-      "Sleep": null,
+      "Sleep": 2761,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -145272,7 +145272,7 @@
       "Scarlet Rot": 416,
       "Bleed": 681,
       "Frost": 681,
-      "Sleep": null,
+      "Sleep": 2703,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -145358,7 +145358,7 @@
       "Scarlet Rot": 306,
       "Bleed": "Immune",
       "Frost": "Immune",
-      "Sleep": null,
+      "Sleep": 2732,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -145401,7 +145401,7 @@
       "Scarlet Rot": 306,
       "Bleed": "Immune",
       "Frost": "Immune",
-      "Sleep": null,
+      "Sleep": 2732,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },
@@ -165531,8 +165531,8 @@
       "Poison": 718,
       "Scarlet Rot": 718,
       "Bleed": 718,
-      "Frost": null,
-      "Sleep": null,
+      "Frost": 1546,
+      "Sleep": 2850,
       "Madness": "Immune",
       "Death Blight": "Immune"
     },

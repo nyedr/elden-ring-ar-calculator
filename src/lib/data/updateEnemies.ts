@@ -18,9 +18,6 @@ const spreadSheetGids = [
   [1181312165, NewGame.NGPlus7],
 ];
 
-// TODO: Some resistances are not being parsed correctly and are resulting in null values
-
-// Function to fetch and parse CSV
 async function fetchAndParseCSV(
   api_url: string,
   withoutHeaders: boolean = false
@@ -47,6 +44,18 @@ async function fetchAndParseCSV(
     return [];
   }
 }
+
+const parseRes = (res: string): number | "Immune" => {
+  if (res === "Immune") {
+    return "Immune";
+  }
+
+  if (res.includes(",")) {
+    return +res.replace(",", "");
+  }
+
+  return +res;
+};
 
 // Helper function to parse drop information
 const parseDropInfo = (dropInfo: string): EnemyDrop | null => {
@@ -98,33 +107,6 @@ export const updateEnemies = async (update: boolean = false) => {
     }
   });
 
-  // console.log(JSON.stringify(itemDropsData, null, 2));
-  // console.log(JSON.stringify(Array.from(dropsMap), null, 2));
-  console.log("Map item:", JSON.stringify(dropsMap.get(52500086), null, 2));
-  console.log(
-    "Item drop info:",
-    JSON.stringify(
-      itemDropsData.find((item) => +item.ID === 52500086),
-      null,
-      2
-    )
-  );
-  console.log(
-    "Parsed item drop info:",
-    JSON.stringify(
-      Array.from(
-        { length: 12 },
-        (_, i) => `Drop ${i} - {Number} (Base Chance) [Discovery]`
-      ).map((header) =>
-        parseDropInfo(
-          itemDropsData.find((item) => +item.ID === 52500086)[header]
-        )
-      ),
-      null,
-      2
-    )
-  );
-
   for (const [gid, NG] of spreadSheetGids) {
     const ELDEN_RING_ENEMIES_DATA_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
     const enemiesData = await fetchAndParseCSV(
@@ -175,20 +157,13 @@ export const updateEnemies = async (update: boolean = false) => {
           regenDelay: +data["Regen Delay"],
         },
         resistances: {
-          [StatusEffect.Poison]:
-            data.Poison === "Immune" ? "Immune" : +data.Poison,
-          [StatusEffect.Scarlet_Rot]:
-            data["Scarlet Rot"] === "Immune" ? "Immune" : +data["Scarlet Rot"],
-          [StatusEffect.Bleed]:
-            data.Bleed === "Immune" ? "Immune" : +data.Bleed,
-          [StatusEffect.Frost]:
-            data.Frost === "Immune" ? "Immune" : +data.Frost,
-          [StatusEffect.Sleep]:
-            data.Sleep === "Immune" ? "Immune" : +data.Sleep,
-          [StatusEffect.Madness]:
-            data.Madness === "Immune" ? "Immune" : +data.Madness,
-          [StatusEffect.Death_Blight]:
-            data.Deathblight === "Immune" ? "Immune" : +data.Deathblight,
+          [StatusEffect.Poison]: parseRes(data.Poison),
+          [StatusEffect.Scarlet_Rot]: parseRes(data["Scarlet Rot"]),
+          [StatusEffect.Bleed]: parseRes(data.Bleed),
+          [StatusEffect.Frost]: parseRes(data.Frost),
+          [StatusEffect.Sleep]: parseRes(data.Sleep),
+          [StatusEffect.Madness]: parseRes(data.Madness),
+          [StatusEffect.Death_Blight]: parseRes(data.Deathblight),
         },
         drops,
       };

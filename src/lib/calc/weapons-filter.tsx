@@ -30,6 +30,25 @@ export const sortByOptions = [
 
 export type SortByOption = (typeof sortByOptions)[number];
 
+const isWeaponTypeSelected = (weapon: Weapon, selectedWeaponTypes: string[]) =>
+  selectedWeaponTypes.includes(weapon.weaponType);
+
+const isStatusEffectsSelected = (
+  weapon: Weapon,
+  selectedStatusEffects: string[]
+) =>
+  selectedStatusEffects.some((effect) =>
+    weapon.statusEffects.includes(effect as StatusEffect)
+  ) ||
+  (weapon.statusEffects.length === 0 && selectedStatusEffects.includes("None"));
+
+const isWeaponAffinitySelected = (
+  weapon: Weapon,
+  selectedWeaponAffinities: string[]
+) =>
+  (weapon.affinity === "-" && selectedWeaponAffinities.includes("Unique")) ||
+  selectedWeaponAffinities.includes(weapon.affinity);
+
 export const filterWeapons = (
   weapons: Weapon[],
   weaponFilter: WeaponFilter
@@ -40,28 +59,34 @@ export const filterWeapons = (
     selectedWeaponAffinities,
   } = weaponFilter;
 
-  return weapons.filter((weapon) => {
-    const weaponType = weapon.weaponType;
-    const statusEffects = weapon.statusEffects;
+  return weapons.filter(
+    (weapon) =>
+      isWeaponTypeSelected(weapon, selectedWeaponTypes) &&
+      isStatusEffectsSelected(weapon, selectedStatusEffects) &&
+      isWeaponAffinitySelected(weapon, selectedWeaponAffinities)
+  );
+};
 
-    const isWeaponTypeSelected = selectedWeaponTypes.includes(weaponType);
-    const isStatusEffectsSelected =
-      selectedStatusEffects.some((effect) =>
-        statusEffects.includes(effect as StatusEffect)
-      ) ||
-      (statusEffects.length === 0 && selectedStatusEffects.includes("None"));
+const compareValues = (aValue: number, bValue: number, toggleSortBy: boolean) =>
+  toggleSortBy ? aValue - bValue : bValue - aValue;
 
-    const isWeaponAffinitySelected =
-      (weapon.affinity === "-" &&
-        selectedWeaponAffinities.includes("Unique")) ||
-      selectedWeaponAffinities.includes(weapon.affinity);
-
+const getAttackRating = (
+  weapon: Weapon,
+  character: Character,
+  enemyInfo?: { isDamageOnEnemy: boolean; selectedEnemy: Enemy | null }
+) => {
+  const attackRating = calculateWeaponDamage(
+    character,
+    weapon,
+    weapon.maxUpgradeLevel
+  );
+  if (enemyInfo?.isDamageOnEnemy && enemyInfo.selectedEnemy) {
     return (
-      isWeaponTypeSelected &&
-      isStatusEffectsSelected &&
-      isWeaponAffinitySelected
+      calculateEnemyDamage(attackRating, enemyInfo.selectedEnemy)
+        .enemyTotalAr ?? 0
     );
-  });
+  }
+  return attackRating.getAr;
 };
 
 export const sortWeapons = (
@@ -69,47 +94,18 @@ export const sortWeapons = (
   character: Character,
   sortBy: SortByOption,
   toggleSortBy: boolean = false,
-  enemyInfo?: {
-    isDamageOnEnemy: boolean;
-    selectedEnemy: Enemy | null;
-  }
+  enemyInfo?: { isDamageOnEnemy: boolean; selectedEnemy: Enemy | null }
 ) => {
   return weapons.sort((a, b) => {
-    const aAttackRating = calculateWeaponDamage(
-      character,
-      a,
-      a.maxUpgradeLevel
-    );
-    const bAttackRating = calculateWeaponDamage(
-      character,
-      b,
-      b.maxUpgradeLevel
-    );
+    const aAttackRating = getAttackRating(a, character, enemyInfo);
+    const bAttackRating = getAttackRating(b, character, enemyInfo);
 
-    const compareValues = (aValue: number, bValue: number) => {
-      if (toggleSortBy) {
-        return aValue - bValue;
-      }
-      return bValue - aValue;
-    };
-
-    const arSort =
-      !!enemyInfo && !!enemyInfo.selectedEnemy && enemyInfo.isDamageOnEnemy
-        ? compareValues(
-            calculateEnemyDamage(aAttackRating, enemyInfo.selectedEnemy)
-              .enemyTotalAr ?? 0,
-            calculateEnemyDamage(bAttackRating, enemyInfo.selectedEnemy)
-              .enemyTotalAr ?? 0
-          )
-        : compareValues(aAttackRating.getAr, bAttackRating.getAr);
+    const arSort = compareValues(aAttackRating, bAttackRating, toggleSortBy);
 
     if (sortBy === "weaponName") {
-      if (toggleSortBy) {
-        const primarySort = a.name.localeCompare(b.name);
-        return primarySort !== 0 ? primarySort : arSort;
-      }
-
-      const primarySort = b.name.localeCompare(a.name);
+      const primarySort = toggleSortBy
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
       return primarySort !== 0 ? primarySort : arSort;
     }
 
@@ -117,39 +113,46 @@ export const sortWeapons = (
 
     if (sortBy === "Spell Scaling") {
       const primarySort = compareValues(
-        aAttackRating.spellScaling,
-        bAttackRating.spellScaling
+        calculateWeaponDamage(character, a, a.maxUpgradeLevel).spellScaling,
+        calculateWeaponDamage(character, b, b.maxUpgradeLevel).spellScaling,
+        toggleSortBy
       );
       return primarySort !== 0 ? primarySort : arSort;
     }
 
     if (sortBy === "weight") {
-      const primarySort = compareValues(a.weight, b.weight);
+      const primarySort = compareValues(a.weight, b.weight, toggleSortBy);
       return primarySort !== 0 ? primarySort : arSort;
     }
 
     if (allStatusEffects.includes(sortBy as StatusEffect)) {
       const primarySort = compareValues(
         a.levels[a.maxUpgradeLevel][sortBy],
-        b.levels[b.maxUpgradeLevel][sortBy]
+        b.levels[b.maxUpgradeLevel][sortBy],
+        toggleSortBy
       );
       return primarySort !== 0 ? primarySort : arSort;
     }
 
     if (allSimplifiedDamageTypes.includes(sortBy as DamageType)) {
       const primarySort = compareValues(
-        aAttackRating.damages[sortBy as DamageType].total,
-        bAttackRating.damages[sortBy as DamageType].total
+        calculateWeaponDamage(character, a, a.maxUpgradeLevel).damages[
+          sortBy as DamageType
+        ].total,
+        calculateWeaponDamage(character, b, b.maxUpgradeLevel).damages[
+          sortBy as DamageType
+        ].total,
+        toggleSortBy
       );
       return primarySort !== 0 ? primarySort : arSort;
     }
 
     if (damageAttributeKeys.includes(sortBy as keyof DamageAttribute)) {
-      const aScaling =
-        a.levels[a.maxUpgradeLevel][sortBy as keyof DamageAttribute];
-      const bScaling =
-        b.levels[b.maxUpgradeLevel][sortBy as keyof DamageAttribute];
-      const primarySort = compareValues(aScaling, bScaling);
+      const primarySort = compareValues(
+        a.levels[a.maxUpgradeLevel][sortBy as keyof DamageAttribute],
+        b.levels[b.maxUpgradeLevel][sortBy as keyof DamageAttribute],
+        toggleSortBy
+      );
       return primarySort !== 0 ? primarySort : arSort;
     }
 

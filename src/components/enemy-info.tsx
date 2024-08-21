@@ -11,6 +11,7 @@ import { AttackRating } from "@/lib/data/attackRating";
 import { Enemy } from "@/lib/data/enemy-data";
 import { numberWithCommas } from "@/lib/utils";
 import EnemyInfoTables from "./enemy-info-tables";
+import EnemyDamage from "./enemy-damage";
 
 export interface EnemyInfoProps {
   attackRating?: AttackRating;
@@ -33,12 +34,17 @@ export default function EnemyInfo({
       >
         <DialogHeader className="sm:mt-0 mt-5">
           <DialogTitle className="text-2xl">{enemy.name} Details</DialogTitle>
+          {attackRating && (
+            <span className="text-xl font-semibold">
+              {attackRating?.weapon.weaponName}
+            </span>
+          )}{" "}
         </DialogHeader>
         <div className="w-full flex flex-col justify-center">
           <div className="grid md:grid-cols-2 md:gap-x-10 gap-y-5">
-            <DialogDescription className="text-primary flex w-full items-center justify-between">
+            <DialogDescription className="text-primary flex w-full  justify-between">
               <strong>Location</strong>
-              <span>{enemy.location}</span>
+              <span className="text-right">{enemy.location}</span>
             </DialogDescription>
             <DialogDescription className="text-primary flex w-full items-center justify-between">
               <strong>Health</strong>
@@ -66,28 +72,7 @@ export default function EnemyInfo({
         <EnemyInfoTables attackRating={attackRating} enemy={enemy} />
 
         {attackRating?.enemyTotalAr && (
-          <div className="flex flex-col gap-2 w-full">
-            <div className="w-full overflow-hidden h-4 rounded-md bg-secondary">
-              <div
-                className={`h-full bg-red-700`}
-                style={{
-                  width: `${
-                    (attackRating.enemyTotalAr / enemy.healthPoints) * 100
-                  }%`,
-                }}
-              />
-            </div>
-            <div className="w-full flex items-center justify-between">
-              <span>
-                Hits to kill:{" "}
-                {Math.ceil(enemy.healthPoints / attackRating.enemyTotalAr)}
-              </span>
-              <span>
-                {Math.floor(attackRating.enemyTotalAr)} /{" "}
-                {numberWithCommas(enemy.healthPoints)}
-              </span>
-            </div>
-          </div>
+          <EnemyDamage attackRating={attackRating} enemy={enemy} />
         )}
 
         <h2 className="font-semibold text-xl">Drops</h2>
