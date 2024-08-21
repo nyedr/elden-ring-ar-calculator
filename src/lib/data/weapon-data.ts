@@ -1,15 +1,3 @@
-// Passive effects that have a constant value regardless of weapon level or character attribute values
-export const flatPassives = ["Scarlet Rot", "Madness", "Sleep"] as const;
-export type FlatPassive = (typeof flatPassives)[number];
-
-// Passive effects that change with weapon level but not character attribute values
-export const leveledPassives = ["Frost"] as const;
-export type LeveledPassive = (typeof leveledPassives)[number];
-
-// Passive effects that change with weapon level and character attribute values (i.e. Arcane)
-export const scaledPassives = ["Poison", "Blood"] as const;
-export type ScaledPassive = (typeof scaledPassives)[number];
-
 export enum DamageType {
   Magic = "Magic",
   Fire = "Fire",
@@ -57,6 +45,25 @@ export enum StatusEffect {
   Madness = "Madness",
   Death_Blight = "Death Blight",
 }
+
+// Passive effects that have a constant value regardless of weapon level or character attribute values
+export const flatPassives = [
+  StatusEffect.Scarlet_Rot,
+  StatusEffect.Madness,
+  StatusEffect.Sleep,
+] as const;
+export type FlatPassive = (typeof flatPassives)[number];
+
+// Passive effects that change with weapon level but not character attribute values
+export const leveledPassives = [StatusEffect.Frost] as const;
+export type LeveledPassive = (typeof leveledPassives)[number];
+
+// Passive effects that change with weapon level and character attribute values (i.e. Arcane)
+export const scaledPassives = [
+  StatusEffect.Poison,
+  StatusEffect.Bleed,
+] as const;
+export type ScaledPassive = (typeof scaledPassives)[number];
 
 export const statusEffectToImageName = {
   [StatusEffect.Scarlet_Rot]: "scarletRotStatus",

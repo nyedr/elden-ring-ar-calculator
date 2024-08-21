@@ -287,7 +287,10 @@ export default function Home() {
       )}
       {/* <pre className="w-full p-4 rounded-lg bg-secondary">
         <code>
-          {JSON.stringify(weaponState.selectedChartWeapon?.poiseDmg, null, 2)}
+          {JSON.stringify(,
+            null,
+            2
+          )}
         </code>
       </pre> */}
       <WeaponsTable
