@@ -20,6 +20,7 @@ import {
   isDamageTypeAffectedByUnmetRequirements,
 } from "@/lib/calc/damage";
 import { allNewGames, NewGame } from "@/lib/data/enemy-data";
+import { useEffect } from "react";
 
 interface WeaponsTableProps {
   character: Character;
@@ -150,6 +151,7 @@ export default function WeaponsTable({
           header: ({ column }) => (
             <Button
               variant="ghost"
+              title="Weight"
               onClick={() =>
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
@@ -175,8 +177,10 @@ export default function WeaponsTable({
           ([damageType, imageName]) => {
             return {
               accessorKey: damageType,
-              accessorFn: ({ damages }) =>
-                damages[damageType as DamageType].total,
+              accessorFn: ({ damages, enemyDamages }) =>
+                isDamageOnEnemy
+                  ? enemyDamages[damageType as DamageType]
+                  : damages[damageType as DamageType].total,
               invertSorting: true,
               header: ({ column }) => (
                 <Button
@@ -186,7 +190,7 @@ export default function WeaponsTable({
                   }
                   title={`${damageType} Attack`}
                   size="sm"
-                  className="px-2"
+                  className="px-2 min-w-9"
                 >
                   <Image
                     alt={damageType}
@@ -231,7 +235,7 @@ export default function WeaponsTable({
           }
         ),
         {
-          accessorKey: isDamageOnEnemy ? "enemyAR" : "getAr",
+          accessorKey: isDamageOnEnemy ? "enemyAR" : "getAR",
           invertSorting: true,
           header: ({ column }) => (
             <Button
@@ -258,7 +262,7 @@ export default function WeaponsTable({
               {Math.floor(
                 isDamageOnEnemy
                   ? Math.floor(row.original.enemyAR ?? 0)
-                  : row.original.getAr
+                  : row.original.getAR
               )}
             </span>
           ),
@@ -272,7 +276,7 @@ export default function WeaponsTable({
     },
     {
       header: () => <span>Scaling</span>,
-      accessorKey: "weapon",
+      accessorKey: "level",
       columns: [
         ...damageAttributeKeys.map((attribute) => {
           return {
@@ -326,55 +330,60 @@ export default function WeaponsTable({
       accessorKey: "statusEffects",
       header: () => <span>Status Effects</span>,
       columns: [
-        ...Object.keys(statusEffectToImageName).map((statusEffect, index) => {
-          return {
-            accessorKey: statusEffect,
-            accessorFn: ({ statusEffects }) =>
-              statusEffects[
-                statusEffect as keyof typeof statusEffectToImageName
-              ],
-            invertSorting: true,
-            header: ({ column }) => (
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  column.toggleSorting(column.getIsSorted() === "asc")
-                }
-                size="sm"
-                title={statusEffect}
-                className="p-2"
-              >
-                <Image
-                  alt={statusEffect}
-                  width={24}
-                  height={24}
-                  src={`/${
-                    statusEffectToImageName[
+        ...Object.keys(statusEffectToImageName)
+          // Exclude the last status effect - Death Blight
+          .slice(0, Object.keys(statusEffectToImageName).length - 1)
+          .map((statusEffect, index) => {
+            return {
+              accessorKey: statusEffect,
+              accessorFn: ({ statusEffects }) =>
+                statusEffects[
+                  statusEffect as keyof typeof statusEffectToImageName
+                ],
+              invertSorting: true,
+              header: ({ column }) => (
+                <Button
+                  variant="ghost"
+                  onClick={() =>
+                    column.toggleSorting(column.getIsSorted() === "asc")
+                  }
+                  size="sm"
+                  title={statusEffect}
+                  className="p-2 min-w-9"
+                >
+                  <Image
+                    alt={statusEffect}
+                    width={24}
+                    height={24}
+                    src={`/${
+                      statusEffectToImageName[
+                        statusEffect as keyof typeof statusEffectToImageName
+                      ]
+                    }.webp`}
+                    className="mx-auto"
+                  />
+                </Button>
+              ),
+              cell: ({ row }) => (
+                <span>
+                  {Math.floor(
+                    row.original.statusEffects[
                       statusEffect as keyof typeof statusEffectToImageName
                     ]
-                  }.webp`}
-                  className="mx-auto"
-                />
-              </Button>
-            ),
-            cell: ({ row }) => (
-              <span>
-                {Math.floor(
-                  row.original.statusEffects[
-                    statusEffect as keyof typeof statusEffectToImageName
-                  ]
-                ) || <Icons.minus className="text-secondary mx-auto w-4 h-4" />}
-              </span>
-            ),
-            meta: {
-              cellClassName: cn(
-                "text-center",
-                index === 0 ? "border-l border-secondary" : ""
+                  ) || (
+                    <Icons.minus className="text-secondary mx-auto w-4 h-4" />
+                  )}
+                </span>
               ),
-              headerClassName: "py-0 px-2",
-            },
-          } as ColumnDef<AttackRating>;
-        }),
+              meta: {
+                cellClassName: cn(
+                  "text-center",
+                  index === 0 ? "border-l border-secondary" : ""
+                ),
+                headerClassName: "py-0 px-2",
+              },
+            } as ColumnDef<AttackRating>;
+          }),
       ],
     },
     {
@@ -415,6 +424,10 @@ export default function WeaponsTable({
             weapon.maxUpgradeLevel
           );
         })}
+        defaultSortBy={{
+          id: isDamageOnEnemy ? "enemyAR" : "getAR",
+          desc: false,
+        }}
         customSelect={
           isDamageOnEnemy
             ? {

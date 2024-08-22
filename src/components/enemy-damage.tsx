@@ -37,13 +37,14 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
   const twoHandedOptions = weaponAttackOptions.filter((option) =>
     option.value.startsWith("2h")
   );
+
   const [isTwoHanding, setIsTwoHanding] = useState(false);
   const [weaponAttack, setWeaponAttack] = useState<{
     oneHanded: string;
     twoHanded: string;
   }>({
-    oneHanded: oneHandedOptions[0].value,
-    twoHanded: twoHandedOptions[0].value,
+    oneHanded: oneHandedOptions[0]?.value ?? "",
+    twoHanded: twoHandedOptions[0]?.value ?? "",
   });
 
   const oneHandedPoiseBreak = useMemo(
@@ -99,6 +100,31 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
   }, []);
 
   if (!enemyDamage) return null;
+
+  if (oneHandedOptions.length === 0 || twoHandedOptions.length === 0) {
+    // If there are no motion values for the weapon, display a simple damage bar
+    // This weapon is likely a bow or ballista type weapon
+    return (
+      <div className="flex flex-col gap-2 w-full">
+        <div className="w-full overflow-hidden h-4 rounded-md mt-2 bg-secondary">
+          <div
+            className={`h-full bg-red-700`}
+            style={{
+              width: `${(enemyDamage / enemy.healthPoints) * 100}%`,
+            }}
+          />
+        </div>
+        <div className="w-full flex items-center justify-between">
+          <span>
+            Hits to kill: {Math.ceil(enemy.healthPoints / enemyDamage)}
+          </span>
+          <span>
+            {Math.floor(enemyDamage)} / {numberWithCommas(enemy.healthPoints)}
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -166,30 +192,6 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
           ))}
         </div>
       </div>
-      {/* {JSON.stringify(
-        {
-          input: {
-            moves: isTwoHanding ? twoHandedPoiseBreak : oneHandedPoiseBreak,
-            poise: enemy.poise.effective,
-          },
-          result: getOptimalPoiseBrakeSequence(
-            isTwoHanding ? twoHandedPoiseBreak : oneHandedPoiseBreak,
-            enemy.poise.effective
-          ),
-          total: getOptimalPoiseBrakeSequence(
-            isTwoHanding ? twoHandedPoiseBreak : oneHandedPoiseBreak,
-            enemy.poise.effective
-          )
-            .map((k) => attackRating.weapon.poiseDmg[k as keyof DamageValues])
-            .reduce(
-              // @ts-ignore
-              (accumulator, currentValue) => accumulator + currentValue,
-              0
-            ),
-        },
-        null,
-        2
-      )} */}
     </div>
   );
 }

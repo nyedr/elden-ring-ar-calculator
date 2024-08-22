@@ -110,6 +110,7 @@ export function WeaponSearch({
         onClick={() => addSelectedWeapon(value)}
         size="icon"
         variant="ghost"
+        title="Add to comparison chart"
       >
         <Icons.plus className="h-4 w-4" />
       </Button>
@@ -120,6 +121,7 @@ export function WeaponSearch({
         }}
         size="icon"
         variant="ghost"
+        title="View damage breakdown chart"
       >
         <Icons.chart className="h-4 w-4" />
       </Button>
@@ -127,6 +129,7 @@ export function WeaponSearch({
         onClick={() => updateWeaponInfo(value)}
         size="icon"
         variant="ghost"
+        title="View additional information"
       >
         <Icons.book className="h-4 w-4" />
       </Button>

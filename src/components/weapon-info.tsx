@@ -50,7 +50,7 @@ export default function WeaponInfo({
         className="flex flex-col max-w-[850px] max-[800px]:px-[calc(10vw/2)] max-h-full sm:overflow-y-auto overflow-y-scroll"
       >
         <DialogHeader className="sm:mt-0 mt-5">
-          <DialogTitle className="text-2xl">{weapon.name} Details</DialogTitle>
+          <DialogTitle className="text-2xl">{weapon.name}</DialogTitle>
         </DialogHeader>
         <div className="w-full flex flex-col justify-center">
           <div className="grid md:grid-cols-2 md:gap-x-10 gap-y-5">

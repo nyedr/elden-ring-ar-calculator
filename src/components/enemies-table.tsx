@@ -43,6 +43,7 @@ export default function EnemiesTable({
               Name
             </Button>
           ),
+          invertSorting: true,
           accessorKey: "name",
           cell: ({ row }) => (
             <span
@@ -75,6 +76,7 @@ export default function EnemiesTable({
             </Button>
           ),
           accessorKey: "healthPoints",
+          invertSorting: true,
           cell: ({ row }) => (
             <div>{numberWithCommas(row.original.healthPoints)}</div>
           ),
@@ -97,6 +99,7 @@ export default function EnemiesTable({
             </Button>
           ),
           accessorKey: "poise",
+          invertSorting: true,
           accessorFn: ({ poise }) => poise.effective,
           cell: ({ row }) => (
             <div>{Math.floor(row.original.poise.effective)}</div>
@@ -120,6 +123,7 @@ export default function EnemiesTable({
             </Button>
           ),
           accessorKey: "defence",
+          invertSorting: true,
           accessorFn: ({ defence }) => defence.Physical,
           cell: ({ row }) => <div>{row.original.defence.Physical}</div>,
           meta: {
@@ -169,6 +173,7 @@ export default function EnemiesTable({
               ),
               accessorKey: damageType,
               accessorFn: ({ damageNegation }) => damageNegation[damageType],
+              invertSorting: true,
               cell: ({ row }) => (
                 <div>{row.original.damageNegation[damageType]}</div>
               ),
@@ -192,6 +197,7 @@ export default function EnemiesTable({
           return {
             accessorKey: statusEffect,
             accessorFn: ({ resistances }) => resistances[status],
+            invertSorting: true,
             header: ({ column }) => (
               <Button
                 onClick={() =>

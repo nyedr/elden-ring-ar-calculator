@@ -8,7 +8,7 @@ import DynamicStyledChart, { ChartData } from "./ui/chart";
 interface WeaponArGraphProps {
   data: ChartData;
   clearSelectedWeapons: () => void;
-  removeSelectedWeapon: (weaponName: string) => void;
+  removeSelectedWeapon?: (weaponName: string) => void;
 }
 
 export default function SelectedWeaponsChart({

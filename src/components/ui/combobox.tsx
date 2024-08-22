@@ -46,7 +46,7 @@ export default function Combobox({
   const [searchQuery, setSearchQuery] = React.useState("");
 
   return (
-    <div className="flex items-center gap-3 w-full">
+    <div className="flex items-center gap-3 overflow-hidden w-full">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

@@ -44,6 +44,10 @@ interface DataTableProps<TData, TValue> {
   isSelectable?: boolean;
   selectedItems?: TData[];
   customSelect?: CustomSelect;
+  defaultSortBy?: {
+    id: string;
+    desc: boolean;
+  };
 }
 
 const DEFAULT_TABLE_PAGE_SIZE = 30;
@@ -56,6 +60,7 @@ export function DataTable<TData, TValue>({
   isSelectable = false,
   selectedItems,
   customSelect,
+  defaultSortBy,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -63,7 +68,9 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>(
+    defaultSortBy ? [defaultSortBy] : []
+  );
   const [grouping, setGrouping] = React.useState<GroupingState>([]);
 
   const handleColumnVisibilityChange = (

@@ -33,7 +33,7 @@ export default function EnemyInfo({
         className="flex flex-col max-w-[850px] max-[800px]:px-[calc(10vw/2)] max-h-full sm:overflow-y-auto overflow-y-scroll"
       >
         <DialogHeader className="sm:mt-0 mt-5">
-          <DialogTitle className="text-2xl">{enemy.name} Details</DialogTitle>
+          <DialogTitle className="text-2xl">{enemy.name}</DialogTitle>
           {attackRating && (
             <span className="text-xl font-semibold">
               {attackRating?.weapon.weaponName}

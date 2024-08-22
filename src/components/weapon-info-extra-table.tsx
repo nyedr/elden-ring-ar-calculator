@@ -18,7 +18,7 @@ export default function WeaponExtraTable({
       <TableBody className="border-t-2 border-secondary">
         <TableRow>
           <TableHead className="sm:w-32">AR</TableHead>
-          <TableCell>{Math.floor(attackRating.getAr)}</TableCell>
+          <TableCell>{Math.floor(attackRating.getAR)}</TableCell>
         </TableRow>
         <TableRow>
           <TableHead>Spell Scaling</TableHead>

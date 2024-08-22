@@ -3,9 +3,10 @@ import { maxSpecialUpgradeLevel } from "./uiUtils";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Weapon } from "./data/weapon";
-import { calculateWeaponDamage } from "./calc/damage";
+import { calculateEnemyDamage, calculateWeaponDamage } from "./calc/damage";
 import { Character } from "@/hooks/useCharacter";
 import { ChartData } from "@/components/ui/chart";
+import { Enemy } from "@/lib/data/enemy-data";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -73,50 +74,83 @@ const createLevelsArray = (maxWeaponLevels: number[]): LevelsArray => {
 
 export const getWeaponsLevelsData = (
   character: Character,
-  selectedWeapons: Weapon[]
+  selectedWeapons: Weapon[],
+  enemyData: {
+    selectedEnemy: Enemy | null;
+    isDamageOnEnemy: boolean;
+  }
 ) => {
   const maxWeaponLevels = selectedWeapons.map(
     (weapon) => weapon.maxUpgradeLevel
   );
 
+  console.log(maxWeaponLevels);
+
   const { isConsistentLevels, levelsArr } = <LevelsArray>(
     createLevelsArray(maxWeaponLevels)
   );
 
-  const selectedWeaponsData = selectedWeapons.map((weapon) => ({
-    label: `${weapon.weaponName}`,
-    data: isConsistentLevels
-      ? levelsArr.map((level) => {
-          const damage = calculateWeaponDamage(
+  console.log(isConsistentLevels, levelsArr);
+
+  const isEnemyDamage = enemyData.isDamageOnEnemy && enemyData.selectedEnemy;
+
+  const selectedWeaponsData = selectedWeapons.map((weapon) => {
+    if (isConsistentLevels) {
+      return {
+        label: `${weapon.weaponName}`,
+        data: levelsArr.map((level) => {
+          let damage = calculateWeaponDamage(
             character,
             weapon,
             level as number
           );
+
+          if (isEnemyDamage) {
+            damage = calculateEnemyDamage(damage, enemyData.selectedEnemy!);
+          }
+
+          const totalDamage = isEnemyDamage ? damage.enemyAR : damage.getAR;
+
           return {
             primary: level,
-            secondary: weapon.canCastSpells
-              ? damage.spellScaling
-              : damage.getAr,
+            secondary: damage.spellScaling || totalDamage,
           } as ChartData[0]["data"][0];
-        })
-      : (levelsArr as [number, number, string][]).map(
+        }),
+      };
+    } else {
+      return {
+        label: `${weapon.weaponName}`,
+        data: (levelsArr as [number, number, string][]).map(
           ([regularLevel, specialLevel, label]) => {
             const isSpecialLevel =
               weapon.maxUpgradeLevel === maxSpecialUpgradeLevel;
-            const damage = calculateWeaponDamage(
+            let damage = calculateWeaponDamage(
               character,
               weapon,
               isSpecialLevel ? specialLevel : regularLevel
             );
+
+            if (isEnemyDamage) {
+              damage = calculateEnemyDamage(damage, enemyData.selectedEnemy!);
+            }
+
+            const totalDamage = isEnemyDamage ? damage.enemyAR : damage.getAR;
+
+            console.log(
+              weapon.maxUpgradeLevel,
+              totalDamage,
+              isSpecialLevel ? specialLevel : regularLevel
+            );
+
             return {
               primary: label,
-              secondary: weapon.canCastSpells
-                ? damage.spellScaling
-                : damage.getAr,
+              secondary: damage.spellScaling || totalDamage,
             } as ChartData[0]["data"][0];
           }
         ),
-  }));
+      };
+    }
+  });
 
   return selectedWeaponsData as ChartData;
 };

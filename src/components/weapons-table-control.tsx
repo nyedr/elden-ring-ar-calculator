@@ -6,7 +6,7 @@ import {
 import { WeaponSearch, WeaponSearchProps } from "./weapon-search";
 import { Button } from "./ui/button";
 import { Weapon } from "@/lib/data/weapon";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import {
   Select,
@@ -18,12 +18,12 @@ import {
 } from "@/components/ui/select";
 import { MultiSelect } from "./ui/multi-select";
 import { Label } from "./ui/label";
-import { Switch } from "./ui/switch";
 import { specialAndRegularLevelsDict } from "@/lib/utils";
 import { WeaponState } from "@/app/page";
 import { ComboboxItem } from "./ui/combobox";
 import { WeaponFilter } from "@/lib/calc/weapons-filter";
 import { EnemySearch } from "./enemy-search";
+import AppManual from "./app-manual";
 
 export interface WeaponsTableControlProps
   extends Omit<WeaponSearchProps, "items"> {
@@ -65,6 +65,7 @@ export default function WeaponsTableControl({
     label: name,
     value: name,
   }));
+  const [isManualOpen, setIsManualOpen] = useState(false);
 
   const setSelectedWeaponTypes = (selectedWeaponTypes: string[]) =>
     setWeaponFilter((prev) => ({ ...prev, selectedWeaponTypes }));
@@ -80,7 +81,7 @@ export default function WeaponsTableControl({
     }));
 
   return (
-    <div className="w-full flex flex-col gap-2 justify-start">
+    <div className="w-full flex flex-col gap-3 justify-start">
       <WeaponSearch
         {...{
           updateWeaponInfo,
@@ -91,67 +92,61 @@ export default function WeaponsTableControl({
         }}
       />
 
-      <Label
-        id="weaponTypesLabel"
-        htmlFor="weaponTypes"
-        className="text-sm font-semibold mb-0 mt-2"
-      >
-        Weapon Types
-      </Label>
-      <MultiSelect
-        options={weaponTypeDropdownOptions}
-        onValueChange={setSelectedWeaponTypes}
-        defaultValue={weaponFilter.selectedWeaponTypes}
-        placeholder="Weapon Types"
-      />
+      <div className="flex items-start flex-col gap-2">
+        <Label htmlFor="weaponTypes" className="text-sm font-semibold mb-0">
+          Weapon Types
+        </Label>
+        <MultiSelect
+          id="weaponTypes"
+          options={weaponTypeDropdownOptions}
+          onValueChange={setSelectedWeaponTypes}
+          defaultValue={weaponFilter.selectedWeaponTypes}
+          placeholder="Weapon Types"
+        />
+      </div>
 
-      <Label
-        id="statusEffectsLabel"
-        htmlFor="statusEffects"
-        className="text-sm font-semibold mt-1 mb-0"
-      >
-        Status Effects
-      </Label>
-      <MultiSelect
-        id="statusEffects"
-        options={[...allStatusEffects.slice(), "None"].map((statusEffect) => ({
-          value: statusEffect,
-          label: statusEffect,
-        }))}
-        onValueChange={setSelectedStatusEffects}
-        defaultValue={weaponFilter.selectedStatusEffects}
-        placeholder="Status Effects"
-      />
+      <div className="flex items-start flex-col gap-2">
+        <Label htmlFor="statusEffects" className="text-sm font-semibold mb-0">
+          Status Effects
+        </Label>
+        <MultiSelect
+          id="statusEffects"
+          options={[...allStatusEffects.slice(), "None"].map(
+            (statusEffect) => ({
+              value: statusEffect,
+              label: statusEffect,
+            })
+          )}
+          onValueChange={setSelectedStatusEffects}
+          defaultValue={weaponFilter.selectedStatusEffects}
+          placeholder="Status Effects"
+        />
+      </div>
 
-      <Label
-        id="weaponAffinitiesLabel"
-        htmlFor="weaponAffinities"
-        className="text-sm font-semibold mt-1 mb-0"
-      >
-        Weapon Affinities
-      </Label>
+      <div className="flex items-start flex-col gap-2">
+        <Label
+          htmlFor="weaponAffinities"
+          className="text-sm font-semibold mb-0"
+        >
+          Weapon Affinities
+        </Label>
 
-      <MultiSelect
-        options={[...weaponAffinities].map((affinity) => ({
-          value: affinity,
-          label: affinity,
-        }))}
-        onValueChange={setSelectedWeaponAffinities}
-        defaultValue={weaponFilter.selectedWeaponAffinities}
-        placeholder="Affinities"
-      />
+        <MultiSelect
+          id="weaponAffinities"
+          options={[...weaponAffinities].map((affinity) => ({
+            value: affinity,
+            label: affinity,
+          }))}
+          onValueChange={setSelectedWeaponAffinities}
+          defaultValue={weaponFilter.selectedWeaponAffinities}
+          placeholder="Affinities"
+        />
+      </div>
 
-      <div className="w-full flex items-center justify-evenly gap-4 mt-1">
-        <div className="flex items-center space-x-2">
-          <Label className="whitespace-nowrap" htmlFor="isTwoHanding">
-            Two Handing
-          </Label>
-          <Switch
-            checked={isTwoHanding}
-            onCheckedChange={() => setIsTwoHanding(!isTwoHanding)}
-            id="isTwoHanding"
-          />
-        </div>
+      <div className="flex items-start flex-col gap-2 mb-1">
+        <Label htmlFor="weaponLevel" className="text-sm font-semibold mb-0">
+          Weapon Level
+        </Label>
         <Select
           value={weaponState.selectedWeaponLevel[2]}
           onValueChange={(e) => {
@@ -168,7 +163,7 @@ export default function WeaponsTableControl({
             }
           }}
         >
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger id="weaponLevel" className="w-full">
             <SelectValue placeholder="Weapons Level" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
@@ -190,9 +185,22 @@ export default function WeaponsTableControl({
         setSelectedEnemy={setSelectedEnemy}
       />
 
-      <Button onClick={setFilteredWeapons} size="lg" className="w-full mt-4">
-        Filter weapons
-      </Button>
+      <div className="flex items-center gap-3 mt-2">
+        <Button onClick={setFilteredWeapons} size="lg" className="w-full">
+          Filter weapons
+        </Button>
+        <Button
+          onClick={() => setIsManualOpen((prev) => !prev)}
+          variant="outline"
+          size="lg"
+        >
+          Help
+        </Button>
+        <AppManual
+          closeManual={() => setIsManualOpen(false)}
+          isOpen={isManualOpen}
+        />
+      </div>
     </div>
   );
 }

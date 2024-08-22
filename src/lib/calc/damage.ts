@@ -176,7 +176,7 @@ export function calculateWeaponDamage(
     attackRating.damages[damageType].weapon = weaponDamage;
     attackRating.damages[damageType].scaled = scaledDamage;
     attackRating.damages[damageType].total = sum;
-    attackRating.setAR(attackRating.getAr + sum);
+    attackRating.setAR(attackRating.getAR + sum);
   });
 
   damageAttributeKeys.slice().forEach((attribute) => {

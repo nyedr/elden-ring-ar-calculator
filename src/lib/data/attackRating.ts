@@ -76,7 +76,7 @@ export class AttackRating {
     this.totalAR = value;
   }
 
-  get getAr() {
+  get getAR() {
     return this.totalAR;
   }
 }

@@ -85,7 +85,7 @@ export default function Home() {
         calculateWeaponDamage(
           character,
           weapon,
-          Math.min(weaponState.selectedWeaponLevel[1], weapon.maxUpgradeLevel)
+          Math.min(weaponState.selectedWeaponLevel[0], weapon.maxUpgradeLevel)
         ),
         selectedEnemy
       );
@@ -175,7 +175,14 @@ export default function Home() {
     <main className="flex flex-col gap-4 items-center w-full max-w-[1420px] px-5 lg:px-0 mx-auto py-4 max-[800px]:px-[calc(10vw/2)]">
       <Header />
       <div className="flex sm:flex-row flex-col justify-center h-full w-full gap-5 sm:justify-between">
-        <CharacterStats {...{ character, setCharacterAttribute }} />
+        <CharacterStats
+          {...{
+            character,
+            setCharacterAttribute,
+            isTwoHanding: character.isTwoHanding,
+            setIsTwoHanding,
+          }}
+        />
         {weaponState.weaponInfo && (
           <WeaponInfo
             character={character}
@@ -226,7 +233,10 @@ export default function Home() {
           clearSelectedWeapons={() =>
             setWeaponState((prev) => ({ ...prev, selectedWeapons: [] }))
           }
-          data={getWeaponsLevelsData(character, weaponState.selectedWeapons)}
+          data={getWeaponsLevelsData(character, weaponState.selectedWeapons, {
+            selectedEnemy,
+            isDamageOnEnemy,
+          })}
           removeSelectedWeapon={removeSelectedWeaponByName}
         />
       )}

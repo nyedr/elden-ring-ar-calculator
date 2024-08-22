@@ -13,8 +13,6 @@ export interface EnemySearchProps {
   isDamageOnEnemy: boolean;
 }
 
-const DROPDOWN_ITEMS_SHOWN_LIMIT = 40;
-
 export function EnemySearch({
   items,
   setSelectedEnemy,

@@ -3,10 +3,13 @@ import { Label } from "./ui/label";
 import { Slider } from "./ui/slider";
 import NumberTextField from "./ui/number-input";
 import { memo, useEffect, useState, useRef } from "react";
+import { Switch } from "./ui/switch";
 
 interface CharacterStatsProps {
   character: Character;
   setCharacterAttribute: (attribute: keyof Attributes, value: number) => void;
+  setIsTwoHanding: (isTwoHanding: boolean) => void;
+  isTwoHanding: boolean;
 }
 
 interface AttributeInputProps {
@@ -15,7 +18,7 @@ interface AttributeInputProps {
   onAttributeChanged(attribute: keyof Attributes, value: number): void;
 }
 
-const AttributeInput = memo(function AttributeInput({
+export const AttributeInput = memo(function AttributeInput({
   attribute,
   value,
   onAttributeChanged,
@@ -60,6 +63,8 @@ const AttributeInput = memo(function AttributeInput({
 export default function CharacterStats({
   setCharacterAttribute,
   character,
+  isTwoHanding,
+  setIsTwoHanding,
 }: CharacterStatsProps) {
   return (
     <form className="flex flex-col w-full gap-4">
@@ -89,7 +94,19 @@ export default function CharacterStats({
           </div>
         );
       })}
-      <h1 className="text-2xl font-medium">Level: {character.level}</h1>
+      <div className="flex items-center w-full justify-between">
+        <h1 className="text-2xl font-medium">Level: {character.level}</h1>
+        <div className="flex items-center space-x-2">
+          <Label className="whitespace-nowrap" htmlFor="isTwoHanding">
+            Two Handing
+          </Label>
+          <Switch
+            checked={isTwoHanding}
+            onCheckedChange={() => setIsTwoHanding(!isTwoHanding)}
+            id="isTwoHanding"
+          />
+        </div>
+      </div>
     </form>
   );
 }
