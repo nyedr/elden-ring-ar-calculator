@@ -172,64 +172,40 @@ export const removeDuplicateNames = (arr: any[]) => {
   });
 };
 
-// TODO!: Posise sequence is not optimal enough, refactor.
-
 export const getOptimalPoiseBrakeSequence = (
   poiseDmg: Record<string, number | null>,
-  poise: number
+  poiseTarget: number
 ): string[] => {
-  const moves = Object.entries(poiseDmg)
-    .filter(([_, value]) => value !== null)
-    .sort(([, a], [, b]) => (b as number) - (a as number));
+  const validMoves = Object.entries(poiseDmg)
+    .filter(([_, dmg]) => dmg !== null)
+    .sort((a, b) => b[1]! - a[1]!); // Sort moves by poise value in descending order
 
-  const dp: Record<number, [string[], number]> = {};
-  for (let i = 0; i <= poise + 36; i++) {
-    dp[i] = [[], Infinity];
-  }
-  dp[0] = [[], 0];
+  let sequence: string[] = [];
+  let currentPoise = 0;
 
-  const isValidSequence = (sequence: string[]): boolean => {
-    const sequenceTracker: Record<string, number> = {};
-    for (const move of sequence) {
-      const match = move.match(/(1h|2h) (R\d+|Jumping|Running|Charged) (\d+)/);
-      if (match) {
-        const [, prefix, type, numStr] = match;
-        const num = parseInt(numStr, 10);
-        if (num > 1 && (sequenceTracker[`${prefix} ${type}`] || 0) < num - 1) {
-          return false;
-        }
-        sequenceTracker[`${prefix} ${type}`] = num;
-      }
-    }
-    return true;
-  };
-
-  for (const [move, damage] of moves) {
-    for (
-      let currentPoise = poise + 36;
-      currentPoise >= damage!;
-      currentPoise--
-    ) {
-      const [sequence, length] = dp[currentPoise - (damage as number)];
-      if (length + 1 < dp[currentPoise][1]) {
-        const newSequence = [...sequence, move];
-        if (isValidSequence(newSequence)) {
-          dp[currentPoise] = [newSequence, length + 1];
-        }
+  // First, try to get as close as possible without exceeding the target
+  for (let [move, dmg] of validMoves) {
+    while (currentPoise + dmg! <= poiseTarget) {
+      sequence.push(move);
+      currentPoise += dmg!;
+      if (currentPoise >= poiseTarget) {
+        return sequence;
       }
     }
   }
 
-  let bestSequence: string[] = [];
-  let bestPoise = Infinity;
-  for (let p = poise; p <= poise + 36; p++) {
-    if (dp[p][0].length > 0 && p < bestPoise) {
-      bestSequence = dp[p][0];
-      bestPoise = p;
+  // If no exact match is possible, add the smallest possible move to exceed the poise target
+  for (let [move, dmg] of validMoves.reverse()) {
+    if (currentPoise < poiseTarget) {
+      sequence.push(move);
+      currentPoise += dmg!;
+      if (currentPoise >= poiseTarget) {
+        break;
+      }
     }
   }
 
-  return bestSequence;
+  return sequence;
 };
 
 export const parseMove = (move: string): string => {

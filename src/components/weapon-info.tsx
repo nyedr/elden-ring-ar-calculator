@@ -47,7 +47,7 @@ export default function WeaponInfo({
     <Dialog open={isWeaponInfoOpen}>
       <DialogContent
         onXClick={() => setIsWeaponInfoOpen(false)}
-        className="flex flex-col max-w-[850px] max-[800px]:px-[calc(10vw/2)] max-h-full sm:overflow-y-auto overflow-y-scroll"
+        className="flex flex-col max-w-[850px] max-[800px]:px-[calc(10vw/2)] h-full sm:max-h-[90%] sm:overflow-y-auto overflow-y-scroll"
       >
         <DialogHeader className="sm:mt-0 mt-5">
           <DialogTitle className="text-2xl">{weapon.name}</DialogTitle>
@@ -107,6 +107,7 @@ export default function WeaponInfo({
             />
           </div>
         </div>
+        {JSON.stringify(weapon.poiseDmg, null, 2)}
         <DialogFooter>
           <Button size="sm" onClick={() => setIsWeaponInfoOpen(false)}>
             Close

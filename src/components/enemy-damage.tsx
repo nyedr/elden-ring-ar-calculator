@@ -38,6 +38,8 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
     option.value.startsWith("2h")
   );
 
+  // TODO: Update options to only have on of each attack type
+
   const [isTwoHanding, setIsTwoHanding] = useState(false);
   const [weaponAttack, setWeaponAttack] = useState<{
     oneHanded: string;

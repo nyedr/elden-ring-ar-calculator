@@ -30,7 +30,7 @@ export default function EnemyInfo({
     <Dialog open={isOpen}>
       <DialogContent
         onXClick={() => setIsOpen(false)}
-        className="flex flex-col max-w-[850px] max-[800px]:px-[calc(10vw/2)] max-h-full sm:overflow-y-auto overflow-y-scroll"
+        className="flex flex-col max-w-[850px] sm:max-h-[90%] max-[800px]:px-[calc(10vw/2)] h-full sm:overflow-y-auto overflow-y-scroll"
       >
         <DialogHeader className="sm:mt-0 mt-5">
           <DialogTitle className="text-2xl">{enemy.name}</DialogTitle>
