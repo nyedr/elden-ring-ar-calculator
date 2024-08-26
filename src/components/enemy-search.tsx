@@ -13,6 +13,8 @@ export interface EnemySearchProps {
   isDamageOnEnemy: boolean;
 }
 
+const DROPDOWN_ITEMS_SHOWN_LIMIT = 50;
+
 export function EnemySearch({
   items,
   setSelectedEnemy,
@@ -24,7 +26,7 @@ export function EnemySearch({
       <Combobox
         items={items}
         onValueChange={(selected) => setSelectedEnemy(selected)}
-        maxItemsShown={items.length}
+        maxItemsShown={DROPDOWN_ITEMS_SHOWN_LIMIT}
         label="Enemy"
       />
 

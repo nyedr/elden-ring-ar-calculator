@@ -1,5 +1,7 @@
 import { Enemy } from "../data/enemy-data";
 
+// TODO: Fix filter enemies by location, it's not working as expected
+
 export const filterEnemiesByLocation = (
   enemies: Enemy[],
   location: string

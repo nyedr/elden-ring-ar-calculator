@@ -107,7 +107,6 @@ export default function WeaponInfo({
             />
           </div>
         </div>
-        {JSON.stringify(weapon.poiseDmg, null, 2)}
         <DialogFooter>
           <Button size="sm" onClick={() => setIsWeaponInfoOpen(false)}>
             Close

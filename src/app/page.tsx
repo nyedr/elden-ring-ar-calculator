@@ -233,6 +233,7 @@ export default function Home() {
           clearSelectedWeapons={() =>
             setWeaponState((prev) => ({ ...prev, selectedWeapons: [] }))
           }
+          updateWeaponInfo={updateWeaponInfo}
           data={getWeaponsLevelsData(character, weaponState.selectedWeapons, {
             selectedEnemy,
             isDamageOnEnemy,

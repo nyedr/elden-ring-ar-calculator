@@ -45,6 +45,10 @@ export default function Combobox({
   const [value, setValue] = React.useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
 
+  const filteredItems = items.filter((item) =>
+    item.label.toLowerCase().startsWith(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="flex items-center gap-3 overflow-hidden w-full">
       <Popover open={open} onOpenChange={setOpen}>
@@ -57,7 +61,7 @@ export default function Combobox({
           >
             {value
               ? items.find((item) => item.value === value)?.label
-              : `Select ${label?.toLowerCase() ?? "item"}`}
+              : `Search ${label?.toLowerCase() ?? "item"}`}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -81,7 +85,7 @@ export default function Combobox({
             <CommandEmpty>No {label ?? "item"}s found.</CommandEmpty>
             <CommandGroup>
               <CommandList>
-                {items
+                {filteredItems
                   .slice(0, maxItemsShown ?? DROPDOWN_ITEMS_SHOWN_LIMIT)
                   .map((item) => (
                     <CommandItem

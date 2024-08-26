@@ -9,12 +9,14 @@ interface WeaponArGraphProps {
   data: ChartData;
   clearSelectedWeapons: () => void;
   removeSelectedWeapon?: (weaponName: string) => void;
+  updateWeaponInfo: (weaponName: string) => void;
 }
 
 export default function SelectedWeaponsChart({
   data,
   clearSelectedWeapons,
   removeSelectedWeapon,
+  updateWeaponInfo,
 }: WeaponArGraphProps) {
   const [{ activeSeriesIndex, activeDatumIndex }, setState] = React.useState({
     activeSeriesIndex: -1,
@@ -36,6 +38,7 @@ export default function SelectedWeaponsChart({
         data={data}
         elementType="line"
         setState={setState}
+        viewItem={updateWeaponInfo}
         activeDatumIndex={activeDatumIndex}
         activeSeriesIndex={activeSeriesIndex}
         removeChartItem={removeSelectedWeapon}

@@ -266,8 +266,8 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
                   weapon levels.
                 </li>
                 <li>
-                  Remove a weapon from the comparison chart by clicking on its
-                  name at the top of the chart.
+                  Check a weapons information by clicking on its name at the top
+                  of the chart.
                 </li>
                 <li>
                   Clear the graph by pressing the X button in the top right
@@ -281,6 +281,7 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
             </p>
             <div className="w-full relative mx-auto"></div>
             <SelectedWeaponsChart
+              updateWeaponInfo={() => console.log("Clearing selected weapons!")}
               clearSelectedWeapons={() =>
                 console.log("Clearing selected weapons!")
               }

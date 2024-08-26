@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 import { AxisOptions, Chart } from "react-charts";
+import { Icons } from "../icons";
 
 export type ChartItem = {
   label: string;
@@ -29,6 +30,7 @@ interface DynamicChartProps {
   data: ChartData;
   removeChartItem?: (name: string) => void;
   lineColors?: string[];
+  viewItem?: (name: string) => void;
 }
 
 export default function DynamicStyledChart({
@@ -39,6 +41,7 @@ export default function DynamicStyledChart({
   data,
   removeChartItem,
   lineColors,
+  viewItem,
 }: DynamicChartProps) {
   const { interactionMode } = useDemoConfig({
     series: 4,
@@ -90,13 +93,12 @@ export default function DynamicStyledChart({
           <div
             key={i}
             onClick={() => {
-              if (removeChartItem == null) return;
-              removeChartItem(d.label);
-              setColors((prev) => prev.filter((_, index) => i !== index));
+              if (viewItem == null) return;
+              viewItem(d.label);
             }}
             className={cn(
               `flex text-sm items-center gap-2 ${
-                removeChartItem ? "cursor-pointer hover:opacity-75" : null
+                viewItem ? "cursor-pointer hover:opacity-75" : null
               } select-none`,
               i !== activeSeriesIndex && activeSeriesIndex !== -1
                 ? "opacity-30"
@@ -104,7 +106,7 @@ export default function DynamicStyledChart({
             )}
           >
             <div
-              className="w-4 h-4 rounded-full"
+              className="w-3 h-3 rounded-full"
               style={{
                 background: `${lineColors == null ? colors[i] : lineColors[i]}`,
               }}
