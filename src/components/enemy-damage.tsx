@@ -190,7 +190,7 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
         </span>
       </div>
 
-      <div className="flex items-center gap-2 w-full">
+      <div className="flex sm:items-center flex-col sm:flex-row gap-2 w-full">
         <span className="whitespace-nowrap font-semibold">
           Efficient poise break:
         </span>
