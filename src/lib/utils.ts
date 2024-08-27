@@ -7,6 +7,7 @@ import { calculateEnemyDamage, calculateWeaponDamage } from "./calc/damage";
 import { Character } from "@/hooks/useCharacter";
 import { ChartData } from "@/components/ui/chart";
 import { Enemy } from "@/lib/data/enemy-data";
+import { DamageValues } from "./data/weapon-data";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -216,4 +217,23 @@ export const parseMove = (move: string): string => {
     return match[2];
   }
   return move;
+};
+
+export const getDamageValues = (damageValues: DamageValues) => {
+  return {
+    "1h R1 1": damageValues["1h R1 1"],
+    "1h R2 1": damageValues["1h R2 1"],
+    "1h Charged R2 1": damageValues["1h Charged R2 1"],
+    "1h Running R1": damageValues["1h Running R1"],
+    "1h Running R2": damageValues["1h Running R2"],
+    "1h Jumping R1": damageValues["1h Jumping R1"],
+    "1h Jumping R2": damageValues["1h Jumping R2"],
+    "2h R1 1": damageValues["2h R1 1"],
+    "2h R2 1": damageValues["2h R2 1"],
+    "2h Charged R2 1": damageValues["2h Charged R2 1"],
+    "2h Running R1": damageValues["2h Running R1"],
+    "2h Running R2": damageValues["2h Running R2"],
+    "2h Jumping R1": damageValues["2h Jumping R1"],
+    "2h Jumping R2": damageValues["2h Jumping R2"],
+  };
 };

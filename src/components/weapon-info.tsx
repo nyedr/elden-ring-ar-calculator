@@ -6,6 +6,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { Weapon } from "@/lib/data/weapon";
 import {
   adjustAttributesForTwoHanding,
@@ -24,6 +34,8 @@ export interface WeaponInfoProps {
   character: Character;
   isWeaponInfoOpen: boolean;
   setIsWeaponInfoOpen: (isOpen: boolean) => void;
+  affinityOptions: Weapon[];
+  setWeaponInfo: (weapon: Weapon) => void;
 }
 
 export default function WeaponInfo({
@@ -31,6 +43,8 @@ export default function WeaponInfo({
   character,
   setIsWeaponInfoOpen,
   isWeaponInfoOpen,
+  affinityOptions,
+  setWeaponInfo,
 }: WeaponInfoProps) {
   const [weaponLevel, setWeaponLevel] = useState(weapon.maxUpgradeLevel);
   useEffect(() => {
@@ -50,7 +64,7 @@ export default function WeaponInfo({
         className="flex flex-col max-w-[850px] max-[800px]:px-[calc(10vw/2)] h-full sm:max-h-[90%] sm:overflow-y-auto overflow-y-scroll"
       >
         <DialogHeader className="sm:mt-0 mt-5">
-          <DialogTitle className="text-2xl">{weapon.name}</DialogTitle>
+          <DialogTitle className="text-2xl">{weapon.weaponName}</DialogTitle>
         </DialogHeader>
         <div className="w-full flex flex-col justify-center">
           <div className="grid md:grid-cols-2 md:gap-x-10 gap-y-5">
@@ -72,7 +86,37 @@ export default function WeaponInfo({
             </DialogDescription>
             <DialogDescription className="text-primary flex w-full items-center justify-between">
               <strong>Affinity</strong>
-              <span>{weapon.affinity}</span>
+
+              <Select
+                disabled={affinityOptions.length === 1}
+                onValueChange={(value) => {
+                  setWeaponInfo(
+                    affinityOptions.find(
+                      (weapon) =>
+                        weapon.affinity === (value === "Default" ? "" : value)
+                    ) ?? weapon
+                  );
+                }}
+                defaultValue={weapon.affinity || "Default"}
+              >
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="Weapons Level" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  <SelectGroup>
+                    {affinityOptions
+                      .map((weapon) => weapon.affinity)
+                      .map((affinity) => (
+                        <SelectItem
+                          key={affinity || "Default"}
+                          value={affinity || "Default"}
+                        >
+                          {affinity || "Default"}
+                        </SelectItem>
+                      ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </DialogDescription>
           </div>
           <WeaponDamageTable attackRating={weaponAttackRating} />

@@ -20,7 +20,6 @@ import {
   isDamageTypeAffectedByUnmetRequirements,
 } from "@/lib/calc/damage";
 import { allNewGames, NewGame } from "@/lib/data/enemy-data";
-import { useEffect } from "react";
 
 interface WeaponsTableProps {
   character: Character;

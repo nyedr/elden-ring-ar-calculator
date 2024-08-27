@@ -80,6 +80,14 @@ body {
   }
 }
 
+.tooltip {
+  @apply invisible absolute;
+}
+
+.has-tooltip:hover .tooltip {
+  @apply visible z-50;
+}
+
 @layer base {
   * {
     @apply border-border;

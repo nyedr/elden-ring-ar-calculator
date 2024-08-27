@@ -11,6 +11,7 @@ import {
   ChevronDown,
   CircleX,
   WandSparkles,
+  CircleHelp,
   Infinity,
 } from "lucide-react";
 import react from "react";
@@ -33,6 +34,7 @@ export enum IconName {
   CHEVRON_DOWN = "chevronDown",
   WAND_SPARKLES = "wandSparkles",
   GITHUB = "gitHub",
+  HELP = "circleHelp",
 }
 
 export const Icons: Record<
@@ -45,6 +47,7 @@ export const Icons: Record<
   [IconName.CHART]: ChartLine,
   [IconName.BOOK]: BookOpen,
   [IconName.X]: X,
+  [IconName.HELP]: CircleHelp,
   [IconName.EYE]: Eye,
   [IconName.CIRCLE_X]: CircleX,
   [IconName.INFINITY]: Infinity,

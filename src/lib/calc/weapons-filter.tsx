@@ -1,15 +1,5 @@
 import { Weapon } from "../data/weapon";
-import { calculateEnemyDamage, calculateWeaponDamage } from "./damage";
-import {
-  DamageAttribute,
-  damageAttributeKeys,
-  DamageType,
-  allSimplifiedDamageTypes,
-  StatusEffect,
-  allStatusEffects,
-} from "../data/weapon-data";
-import { Character } from "@/hooks/useCharacter";
-import { Enemy } from "../data/enemy-data";
+import { StatusEffect } from "../data/weapon-data";
 
 export interface WeaponFilter {
   selectedWeaponTypes: string[];

@@ -57,9 +57,6 @@ export default function Enemies() {
           setIsOpen={setIsEnemyInfoOpen}
         />
       )}
-      {/* <pre className="w-full p-4 rounded-lg bg-secondary">
-        <code>{JSON.stringify(enemiesFilterData, null, 2)}</code>
-      </pre> */}
       <EnemiesTable
         setNewGame={setNewGame}
         setSelectedEnemy={setEnemyInfo}

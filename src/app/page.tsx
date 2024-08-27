@@ -175,6 +175,17 @@ export default function Home() {
     <main className="flex flex-col gap-4 items-center w-full max-w-[1420px] px-5 lg:px-0 mx-auto py-4 max-[800px]:px-[calc(10vw/2)]">
       <Header />
       <div className="flex sm:flex-row flex-col justify-center h-full w-full gap-5 sm:justify-between">
+        {/*
+            TODO: Create a character build page and move this there
+            Replace this component with a field of Number inputs for each attack attribute
+            With floating labels
+
+            Above it should be a select that allows you to select the character build from 
+            a list of saved builds from the character build page
+
+            Above that should be two selects and a multi select for the body buff, aura buff, and other buffs
+            Character type should be updated to accomodate for this extra data
+        */}
         <CharacterStats
           {...{
             character,
@@ -191,6 +202,12 @@ export default function Home() {
               setWeaponState((prev) => ({ ...prev, isWeaponInfoOpen: isOpen }));
             }}
             weapon={weaponState.weaponInfo}
+            setWeaponInfo={(weapon: Weapon) => {
+              setWeaponState((prev) => ({ ...prev, weaponInfo: weapon }));
+            }}
+            affinityOptions={weaponsData.weapons.filter(
+              (weapon) => weapon.name === weaponState.weaponInfo?.name
+            )}
           />
         )}
         <WeaponsTableControl
@@ -226,6 +243,7 @@ export default function Home() {
             setWeaponState((prev) => ({ ...prev, selectedChartWeapon: null }))
           }
           selectedChartWeapon={weaponState.selectedChartWeapon}
+          enemy={isDamageOnEnemy ? selectedEnemy : null}
         />
       )}
       {weaponState.selectedWeapons.length > 0 && (
@@ -251,16 +269,15 @@ export default function Home() {
               ? getWeaponAttackRating(weaponState.weaponInfo)
               : undefined
           }
+          setWeaponInfo={(weapon: Weapon) => {
+            setWeaponState((prev) => ({ ...prev, weaponInfo: weapon }));
+          }}
+          affinityOptions={weaponsData.weapons.filter(
+            (weapon) => weapon.name === weaponState.weaponInfo?.name
+          )}
         />
       )}
-      {/* <pre className="w-full p-4 rounded-lg bg-secondary">
-        <code>
-          {JSON.stringify(,
-            null,
-            2
-          )}
-        </code>
-      </pre> */}
+
       <WeaponsTable
         updateWeaponInfo={updateWeaponInfo}
         selectedWeapons={weaponState.selectedWeapons}

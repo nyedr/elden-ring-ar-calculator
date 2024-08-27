@@ -33,8 +33,7 @@ const parseDamageValues = (value: string): number => {
 };
 
 const getWeapons = () => {
-  const { weapons: weaponsData, weaponsCount: weaponsCountData } =
-    setWeaponsData();
+  const { weapons: weaponsData } = setWeaponsData();
 
   const weapons: Weapon[] = weaponsData ?? ([] as Weapon[]);
 
@@ -308,15 +307,10 @@ const getWeapons = () => {
     return weaponsMap.get(weaponName);
   };
 
-  const findAllWeapons = (weaponNames: string[]) => {
-    return weaponNames.map((weaponName) => weaponsMap.get(weaponName));
-  };
-
   return {
     weapons,
     weaponsCount: weapons.length,
     findWeapon,
-    findAllWeapons,
   };
 };
 

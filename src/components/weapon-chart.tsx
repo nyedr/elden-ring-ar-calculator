@@ -4,23 +4,27 @@ import { Icons } from "./icons";
 import DynamicStyledChart, { ChartItem } from "./ui/chart";
 import React from "react";
 import { Character } from "@/hooks/useCharacter";
-import { calculateWeaponDamage } from "@/lib/calc/damage";
+import { calculateEnemyDamage, calculateWeaponDamage } from "@/lib/calc/damage";
 import { DamageType, allSimplifiedDamageTypes } from "@/lib/data/weapon-data";
+import { Enemy } from "@/lib/data/enemy-data";
 
 interface WeaponChartProps {
   selectedChartWeapon: Weapon;
   removeSelectedChartWeapon: () => void;
   character: Character;
+  enemy: Enemy | null;
 }
 
 const getWeaponARBreakdownData = (
   character: Character,
   weapon: Weapon,
-  damageType: DamageType
+  damageType: DamageType,
+  enemy: Enemy | null
 ): ChartItem => ({
   label: `${damageType}`,
   data: weapon.levels.map((_, level) => {
     const attackRating = calculateWeaponDamage(character, weapon, level);
+
     return {
       primary: level,
       secondary: Math.floor(attackRating.damages[damageType].total),
@@ -46,6 +50,7 @@ export default function WeaponChart({
   selectedChartWeapon,
   removeSelectedChartWeapon,
   character,
+  enemy,
 }: WeaponChartProps) {
   const [{ activeSeriesIndex, activeDatumIndex }, setState] = React.useState({
     activeSeriesIndex: -1,
@@ -58,7 +63,8 @@ export default function WeaponChart({
         getWeaponARBreakdownData(
           character,
           selectedChartWeapon,
-          damageType as DamageType
+          damageType as DamageType,
+          enemy
         )
       )
       .filter(
@@ -73,7 +79,7 @@ export default function WeaponChart({
     }
 
     return breakdownData;
-  }, [character, selectedChartWeapon]);
+  }, [character, selectedChartWeapon, enemy]);
 
   const colorsByDamageType = {
     [DamageType.Physical]: "#202C39",

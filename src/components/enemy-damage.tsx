@@ -5,6 +5,7 @@ import {
   numberWithCommas,
   getOptimalPoiseBrakeSequence,
   parseMove,
+  getDamageValues,
 } from "@/lib/utils";
 import {
   Select,
@@ -26,47 +27,50 @@ interface EnemyDamageProps {
 }
 
 export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
-  const weaponAttackOptions = Object.keys(attackRating.weapon.motionValues)
+  const weaponAttackOptions = Object.keys(
+    getDamageValues(attackRating.weapon.motionValues)
+  )
     .filter(
       (key) => !!attackRating.weapon.motionValues[key as keyof DamageValues]
     )
     .map((key) => ({ label: key.slice(3), value: key }));
-  const oneHandedOptions = weaponAttackOptions.filter((option) =>
-    option.value.startsWith("1h")
-  );
-  const twoHandedOptions = weaponAttackOptions.filter((option) =>
-    option.value.startsWith("2h")
-  );
 
-  // TODO: Update options to only have on of each attack type
+  const weaponOptions = {
+    oneHanded: weaponAttackOptions.filter((option) =>
+      option.value.startsWith("1h")
+    ),
+    twoHanded: weaponAttackOptions.filter((option) =>
+      option.value.startsWith("2h")
+    ),
+  };
 
   const [isTwoHanding, setIsTwoHanding] = useState(false);
   const [weaponAttack, setWeaponAttack] = useState<{
     oneHanded: string;
     twoHanded: string;
   }>({
-    oneHanded: oneHandedOptions[0]?.value ?? "",
-    twoHanded: twoHandedOptions[0]?.value ?? "",
+    oneHanded: weaponOptions.oneHanded[0]?.value ?? "",
+    twoHanded: weaponOptions.twoHanded[0]?.value ?? "",
   });
 
   const oneHandedPoiseBreak = useMemo(
     () =>
-      oneHandedOptions.reduce((obj, key) => {
+      weaponOptions.oneHanded.reduce((obj, key) => {
         obj[key.value] =
           attackRating.weapon.poiseDmg[key.value as keyof DamageValues];
         return obj;
       }, {} as Record<string, number | null>),
-    [oneHandedOptions, attackRating.weapon.poiseDmg]
+    [weaponOptions.oneHanded, attackRating.weapon.poiseDmg]
   );
 
   const twoHandedPoiseBreak = useMemo(
     () =>
-      twoHandedOptions.reduce((obj, key) => {
+      weaponOptions.twoHanded.reduce((obj, key) => {
         obj[key.value] =
           attackRating.weapon.poiseDmg[key.value as keyof DamageValues];
         return obj;
       }, {} as Record<string, number | null>),
-    [twoHandedOptions, attackRating.weapon.poiseDmg]
+    [weaponOptions.twoHanded, attackRating.weapon.poiseDmg]
   );
 
   const optimalPoiseBreakSequence = useMemo(
@@ -103,7 +107,10 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
 
   if (!enemyDamage) return null;
 
-  if (oneHandedOptions.length === 0 || twoHandedOptions.length === 0) {
+  if (
+    weaponOptions.oneHanded.length === 0 ||
+    weaponOptions.twoHanded.length === 0
+  ) {
     // If there are no motion values for the weapon, display a simple damage bar
     // This weapon is likely a bow or ballista type weapon
     return (
@@ -145,13 +152,14 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
             <SelectGroup>
-              {(isTwoHanding ? twoHandedOptions : oneHandedOptions).map(
-                (option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                )
-              )}
+              {(isTwoHanding
+                ? weaponOptions.twoHanded
+                : weaponOptions.oneHanded
+              ).map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {parseMove(option.value)}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
