@@ -13,6 +13,8 @@ export const attributesData = [
   { id: "Arc", min: 7, damage: true, name: "Arcane" },
 ];
 
+import type { Attributes as AttackAttributes } from "@/lib/data/attributes";
+
 const attributes = [
   "Vig",
   "Min",
@@ -24,22 +26,34 @@ const attributes = [
   "Arc",
 ] as const;
 
-export type Attributes = {
+export type CharacterAttributes = {
   [key in (typeof attributes)[number]]: number;
 };
 
+export const getAttackAttributes = (
+  attributes: CharacterAttributes
+): AttackAttributes => {
+  return {
+    arc: attributes.Arc,
+    dex: attributes.Dex,
+    str: attributes.Str,
+    int: attributes.Int,
+    fai: attributes.Fai,
+  } satisfies AttackAttributes;
+};
+
 export interface Character {
-  attributes: Attributes;
+  attributes: CharacterAttributes;
   level: number;
   isTwoHanding: boolean;
 }
 
-export function getCharacterLevel(attributes: Attributes): number {
+export function getCharacterLevel(attributes: CharacterAttributes): number {
   let statSum = Object.values(attributes).reduce((acc, val) => acc + val, 0);
   return statSum - 79;
 }
 
-const defaultAttributes: Attributes = {
+const defaultAttributes: CharacterAttributes = {
   Vig: 10,
   Min: 10,
   End: 10,
@@ -64,7 +78,10 @@ export default function useCharacter() {
     );
   }, [character.attributes]);
 
-  function setCharacterAttribute(attribute: keyof Attributes, value: number) {
+  function setCharacterAttribute(
+    attribute: keyof CharacterAttributes,
+    value: number
+  ) {
     const newCharacterLevel = getCharacterLevel({
       ...character.attributes,
       [attribute]: value,
@@ -82,5 +99,6 @@ export default function useCharacter() {
     setCharacterAttribute,
     setIsTwoHanding: (isTwoHanding: boolean) =>
       setCharacter({ ...character, isTwoHanding }),
+    getAttackAttributes,
   };
 }

@@ -3,10 +3,14 @@ import { Button } from "./ui/button";
 import { Icons } from "./icons";
 import DynamicStyledChart, { ChartItem } from "./ui/chart";
 import React from "react";
-import { Character } from "@/hooks/useCharacter";
-import { calculateEnemyDamage, calculateWeaponDamage } from "@/lib/calc/damage";
-import { DamageType, allSimplifiedDamageTypes } from "@/lib/data/weapon-data";
+import { Character, getAttackAttributes } from "@/hooks/useCharacter";
 import { Enemy } from "@/lib/data/enemy-data";
+import { getWeaponAttack } from "@/lib/calc/calculator";
+import {
+  allDamageTypes,
+  AttackPowerType,
+  getDamageTypeKey,
+} from "@/lib/data/attackPowerTypes";
 
 interface WeaponChartProps {
   selectedChartWeapon: Weapon;
@@ -18,16 +22,27 @@ interface WeaponChartProps {
 const getWeaponARBreakdownData = (
   character: Character,
   weapon: Weapon,
-  damageType: DamageType,
+  damageType: AttackPowerType,
   enemy: Enemy | null
 ): ChartItem => ({
-  label: `${damageType}`,
-  data: weapon.levels.map((_, level) => {
-    const attackRating = calculateWeaponDamage(character, weapon, level);
+  label: `${getDamageTypeKey(damageType)}`,
+  data: weapon.attack.map((_, level) => {
+    const attackRating = getWeaponAttack({
+      weapon,
+      attributes: getAttackAttributes(character.attributes),
+      upgradeLevel: level,
+    });
+
+    if (!attackRating.attackPower[damageType]) {
+      return {
+        primary: level,
+        secondary: 0,
+      };
+    }
 
     return {
       primary: level,
-      secondary: Math.floor(attackRating.damages[damageType].total),
+      secondary: Math.floor(attackRating.attackPower[damageType].total),
     };
   }),
 });
@@ -37,11 +52,16 @@ const getWeaponSpellScalingData = (
   weapon: Weapon
 ): ChartItem => ({
   label: "Spell Scaling",
-  data: weapon.levels.map((_, level) => {
-    const attackRating = calculateWeaponDamage(character, weapon, level);
+  data: weapon.attack.map((_, level) => {
+    const attackRating = getWeaponAttack({
+      weapon,
+      attributes: getAttackAttributes(character.attributes),
+      upgradeLevel: level,
+    });
+
     return {
       primary: level,
-      secondary: attackRating.spellScaling,
+      secondary: attackRating.spellScaling[AttackPowerType.MAGIC] ?? 0,
     };
   }),
 });
@@ -58,21 +78,24 @@ export default function WeaponChart({
   });
 
   const data = React.useMemo(() => {
-    const breakdownData = allSimplifiedDamageTypes
+    const breakdownData = allDamageTypes
       .map((damageType) =>
         getWeaponARBreakdownData(
           character,
           selectedChartWeapon,
-          damageType as DamageType,
+          damageType as AttackPowerType,
           enemy
         )
       )
       .filter(
         (data) =>
-          (data.data[selectedChartWeapon.maxUpgradeLevel].secondary ?? 0) > 0
+          (data.data[selectedChartWeapon.attack.length - 1].secondary ?? 0) > 0
       );
 
-    if (selectedChartWeapon.canCastSpells) {
+    if (
+      selectedChartWeapon.sorceryTool ||
+      selectedChartWeapon.incantationTool
+    ) {
       breakdownData.push(
         getWeaponSpellScalingData(character, selectedChartWeapon)
       );
@@ -82,11 +105,11 @@ export default function WeaponChart({
   }, [character, selectedChartWeapon, enemy]);
 
   const colorsByDamageType = {
-    [DamageType.Physical]: "#202C39",
-    [DamageType.Magic]: "#008DD5",
-    [DamageType.Fire]: "#F03A47",
-    [DamageType.Lightning]: "#F8C537",
-    [DamageType.Holy]: "#ECE4B7",
+    [getDamageTypeKey(AttackPowerType.PHYSICAL)]: "#202C39",
+    [getDamageTypeKey(AttackPowerType.MAGIC)]: "#008DD5",
+    [getDamageTypeKey(AttackPowerType.FIRE)]: "#F03A47",
+    [getDamageTypeKey(AttackPowerType.LIGHTNING)]: "#F8C537",
+    [getDamageTypeKey(AttackPowerType.HOLY)]: "#ECE4B7",
     "Spell Scaling": "#6C5B7B",
   };
 

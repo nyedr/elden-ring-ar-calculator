@@ -1,4 +1,8 @@
-import { Attributes, attributesData, Character } from "@/hooks/useCharacter";
+import {
+  CharacterAttributes,
+  attributesData,
+  Character,
+} from "@/hooks/useCharacter";
 import { Label } from "./ui/label";
 import { Slider } from "./ui/slider";
 import NumberTextField from "./ui/number-input";
@@ -7,15 +11,18 @@ import { Switch } from "./ui/switch";
 
 interface CharacterStatsProps {
   character: Character;
-  setCharacterAttribute: (attribute: keyof Attributes, value: number) => void;
+  setCharacterAttribute: (
+    attribute: keyof CharacterAttributes,
+    value: number
+  ) => void;
   setIsTwoHanding: (isTwoHanding: boolean) => void;
   isTwoHanding: boolean;
 }
 
 interface AttributeInputProps {
-  attribute: keyof Attributes;
+  attribute: keyof CharacterAttributes;
   value: number;
-  onAttributeChanged(attribute: keyof Attributes, value: number): void;
+  onAttributeChanged(attribute: keyof CharacterAttributes, value: number): void;
 }
 
 export const AttributeInput = memo(function AttributeInput({
@@ -69,7 +76,10 @@ export default function CharacterStats({
   return (
     <form className="flex flex-col w-full gap-4">
       {(
-        Object.entries(character.attributes) as [keyof Attributes, number][]
+        Object.entries(character.attributes) as [
+          keyof CharacterAttributes,
+          number
+        ][]
       ).map(([key, value]) => {
         const attributeMetadata = attributesData.find(
           (attr) => attr.id === key

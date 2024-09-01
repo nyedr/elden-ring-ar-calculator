@@ -1,8 +1,3 @@
-import {
-  allStatusEffects,
-  weaponAffinities,
-  weaponTypes,
-} from "@/lib/data/weapon-data";
 import { WeaponSearch, WeaponSearchProps } from "./weapon-search";
 import { Button } from "./ui/button";
 import { Weapon } from "@/lib/data/weapon";
@@ -16,27 +11,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MultiSelect } from "./ui/multi-select";
+import { MultiSelect, MultiSelectOption } from "./ui/multi-select";
 import { Label } from "./ui/label";
-import { specialAndRegularLevelsDict } from "@/lib/utils";
+import { mapToEntries, specialAndRegularLevelsDict } from "@/lib/utils";
 import { WeaponState } from "@/app/page";
 import { ComboboxItem } from "./ui/combobox";
-import { WeaponFilter } from "@/lib/calc/weapons-filter";
 import { EnemySearch } from "./enemy-search";
 import AppManual from "./app-manual";
+import { WeaponFilter } from "@/lib/filters/weapons-filter";
+import {
+  weaponTypeLabels,
+  affinityOptions,
+  damageTypeIcons,
+} from "@/lib/uiUtils";
+import { WeaponType } from "@/lib/data/weaponTypes";
+import {
+  allStatusTypes,
+  AttackPowerType,
+  getDamageTypeKey,
+} from "@/lib/data/attackPowerTypes";
+import Image from "next/image";
 
 export interface WeaponsTableControlProps
   extends Omit<WeaponSearchProps, "items"> {
   setWeaponFilter: Dispatch<SetStateAction<WeaponFilter>>;
   weaponFilter: WeaponFilter;
   setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
-  setFilteredWeapons: () => void;
-  updateWeaponInfo: (weaponName: string) => void;
+  updateWeaponInfo: (name: string) => void;
   weaponSearchOptions: ComboboxItem[];
   weaponState: WeaponState;
   setWeaponState: Dispatch<SetStateAction<WeaponState>>;
-  isTwoHanding: boolean;
-  setIsTwoHanding: (isTwoHanding: boolean) => void;
   isDamageOnEnemy: boolean;
   setIsDamageOnEnemy: React.Dispatch<React.SetStateAction<boolean>>;
   enemySearchOptions: ComboboxItem[];
@@ -48,37 +52,93 @@ export default function WeaponsTableControl({
   weaponSearchOptions,
   setSelectedWeapons,
   setSelectedChartWeapon,
-  setFilteredWeapons,
   updateWeaponInfo,
   setWeaponFilter,
   weaponFilter,
   setWeaponState,
   weaponState,
-  isTwoHanding,
-  setIsTwoHanding,
   isDamageOnEnemy,
   setIsDamageOnEnemy,
   enemySearchOptions,
   setSelectedEnemy,
 }: WeaponsTableControlProps) {
-  const weaponTypeDropdownOptions = weaponTypes.map(({ name }) => ({
-    label: name,
-    value: name,
-  }));
   const [isManualOpen, setIsManualOpen] = useState(false);
+  const [localWeaponFilter, setLocalWeaponFilter] =
+    useState<WeaponFilter>(weaponFilter);
 
-  const setSelectedWeaponTypes = (selectedWeaponTypes: string[]) =>
-    setWeaponFilter((prev) => ({ ...prev, selectedWeaponTypes }));
-  const setSelectedStatusEffects = (selectedStatusEffects: string[]) =>
-    setWeaponFilter((prev) => ({
+  const weaponTypeDropdownOptions = mapToEntries(weaponTypeLabels).map(
+    ([weaponType, label]: [WeaponType, string]) => ({
+      label,
+      value: weaponType.toString(),
+    })
+  );
+
+  const setSelectedWeaponTypes = (selectedWeaponTypes: string[]) => {
+    setLocalWeaponFilter((prev) => ({
       ...prev,
-      selectedStatusEffects,
+      selectedWeaponTypes: new Set(selectedWeaponTypes.map((type) => +type)),
     }));
-  const setSelectedWeaponAffinities = (selectedWeaponAffinities: string[]) =>
-    setWeaponFilter((prev) => ({
+  };
+
+  const statusTypeDropDownOptions = [
+    ...allStatusTypes.slice(0, allStatusTypes.length - 1).map((statusType) => ({
+      label: getDamageTypeKey(statusType),
+      value: statusType.toString(),
+      icon: damageTypeIcons.get(statusType)
+        ? ({ className }: { className: string }) => (
+            <Image
+              src={damageTypeIcons.get(statusType) ?? ""}
+              alt={getDamageTypeKey(statusType)}
+              width={24}
+              height={24}
+              className={className}
+            />
+          )
+        : undefined,
+    })),
+    {
+      label: "None",
+      value: "None" as const,
+    },
+  ] as MultiSelectOption[];
+
+  const setSelectedStatusEffects = (selectedStatusEffects: string[]) => {
+    const selectedEffectsSet = new Set(
+      selectedStatusEffects as (AttackPowerType | "None")[]
+    );
+
+    setLocalWeaponFilter((prev) => ({
       ...prev,
-      selectedWeaponAffinities,
+      selectedStatusEffects: selectedEffectsSet,
     }));
+  };
+
+  const weaponAffinityOptions = mapToEntries(affinityOptions).map(
+    ([affinityId, affinityOption]) => ({
+      label: affinityOption.text,
+      value: affinityId.toString(),
+      icon: affinityOption.icon
+        ? ({ className }: { className: string }) => (
+            <Image
+              src={affinityOption.icon}
+              alt={affinityOption.text}
+              width={24}
+              height={24}
+              className={className}
+            />
+          )
+        : undefined,
+    })
+  ) as MultiSelectOption[];
+
+  const setSelectedWeaponAffinities = (selectedWeaponAffinities: string[]) => {
+    setLocalWeaponFilter((prev) => ({
+      ...prev,
+      selectedWeaponAffinities: new Map(
+        selectedWeaponAffinities.map((id) => [+id, affinityOptions.get(+id)!])
+      ),
+    }));
+  };
 
   return (
     <div className="w-full flex flex-col gap-3 justify-start">
@@ -100,7 +160,9 @@ export default function WeaponsTableControl({
           id="weaponTypes"
           options={weaponTypeDropdownOptions}
           onValueChange={setSelectedWeaponTypes}
-          defaultValue={weaponFilter.selectedWeaponTypes}
+          defaultValue={Array.from(localWeaponFilter.selectedWeaponTypes).map(
+            String
+          )}
           placeholder="Weapon Types"
         />
       </div>
@@ -111,14 +173,11 @@ export default function WeaponsTableControl({
         </Label>
         <MultiSelect
           id="statusEffects"
-          options={[...allStatusEffects.slice(), "None"].map(
-            (statusEffect) => ({
-              value: statusEffect,
-              label: statusEffect,
-            })
-          )}
+          options={statusTypeDropDownOptions}
           onValueChange={setSelectedStatusEffects}
-          defaultValue={weaponFilter.selectedStatusEffects}
+          defaultValue={Array.from(localWeaponFilter.selectedStatusEffects).map(
+            String
+          )}
           placeholder="Status Effects"
         />
       </div>
@@ -133,12 +192,11 @@ export default function WeaponsTableControl({
 
         <MultiSelect
           id="weaponAffinities"
-          options={[...weaponAffinities].map((affinity) => ({
-            value: affinity,
-            label: affinity,
-          }))}
+          options={weaponAffinityOptions}
           onValueChange={setSelectedWeaponAffinities}
-          defaultValue={weaponFilter.selectedWeaponAffinities}
+          defaultValue={Array.from(
+            localWeaponFilter.selectedWeaponAffinities.keys()
+          ).map(String)}
           placeholder="Affinities"
         />
       </div>
@@ -154,12 +212,10 @@ export default function WeaponsTableControl({
               (level) => level[2] === e
             );
             if (level) {
-              setWeaponState((prev) => {
-                return {
-                  ...prev,
-                  selectedWeaponLevel: level,
-                };
-              });
+              setWeaponState((prev) => ({
+                ...prev,
+                selectedWeaponLevel: level,
+              }));
             }
           }}
         >
@@ -186,7 +242,11 @@ export default function WeaponsTableControl({
       />
 
       <div className="flex items-center gap-3 mt-2">
-        <Button onClick={setFilteredWeapons} size="lg" className="w-full">
+        <Button
+          onClick={() => setWeaponFilter(localWeaponFilter)}
+          size="lg"
+          className="w-full"
+        >
           Filter weapons
         </Button>
         <Button

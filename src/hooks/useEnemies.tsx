@@ -4,21 +4,21 @@ import { Enemy, NewGame } from "@/lib/data/enemy-data";
 import { useState, useEffect, useMemo, useCallback } from "react";
 
 import {
-  filterEnemiesByLocation,
   filterEnemiesByDrop,
-} from "@/lib/calc/enemies-filter";
+  filterEnemiesByLocation,
+} from "@/lib/filters/enemies-filter";
 
-import enemiesNG from "@/lib/data/csv/enemies/enemiesNG.json";
-import enemiesNGPlus from "@/lib/data/csv/enemies/enemiesNG+.json";
-import enemiesNGPlus2 from "@/lib/data/csv/enemies/enemiesNG+2.json";
-import enemiesNGPlus3 from "@/lib/data/csv/enemies/enemiesNG+3.json";
-import enemiesNGPlus4 from "@/lib/data/csv/enemies/enemiesNG+4.json";
-import enemiesNGPlus5 from "@/lib/data/csv/enemies/enemiesNG+5.json";
-import enemiesNGPlus6 from "@/lib/data/csv/enemies/enemiesNG+6.json";
-import enemiesNGPlus7 from "@/lib/data/csv/enemies/enemiesNG+7.json";
+import enemiesNG from "@/public/data/enemies/enemiesNG.json";
+import enemiesNGPlus from "@/public/data/enemies/enemiesNG+.json";
+import enemiesNGPlus2 from "@/public/data/enemies/enemiesNG+2.json";
+import enemiesNGPlus3 from "@/public/data/enemies/enemiesNG+3.json";
+import enemiesNGPlus4 from "@/public/data/enemies/enemiesNG+4.json";
+import enemiesNGPlus5 from "@/public/data/enemies/enemiesNG+5.json";
+import enemiesNGPlus6 from "@/public/data/enemies/enemiesNG+6.json";
+import enemiesNGPlus7 from "@/public/data/enemies/enemiesNG+7.json";
 import { EmemyFilterData } from "@/app/enemies/page";
 
-const enemiesByNewGame = {
+const enemieDataByNewGame = {
   [NewGame.NG]: enemiesNG,
   [NewGame.NGPlus]: enemiesNGPlus,
   [NewGame.NGPlus2]: enemiesNGPlus2,
@@ -35,33 +35,21 @@ export default function useEnemies() {
   const [isDamageOnEnemy, setIsDamageOnEnemy] = useState(false);
   const [newGame, setNewGame] = useState<NewGame>(NewGame.NG);
 
+  // Update enemies data and selected enemy when the new game mode changes
   useEffect(() => {
-    const enemies = enemiesByNewGame[newGame] as Enemy[];
+    const enemies = enemieDataByNewGame[newGame] as Enemy[];
     setEnemiesData(enemies);
-    setSelectedEnemy(
-      (prev) => enemies.find((enemy) => enemy.id === prev?.id) ?? null
+    setSelectedEnemy((prev) =>
+      prev ? enemies.find((enemy) => enemy.id === prev.id) ?? null : null
     );
   }, [newGame]);
 
-  const filterEnemies = useCallback((enemiesFilterData: EmemyFilterData) => {
-    const enemiesFilteredByLocation = filterEnemiesByLocation(
-      enemiesNG as Enemy[],
-      enemiesFilterData.location
+  // Memoize the filtered enemies map
+  const enemiesMap = useMemo(() => {
+    return new Map<string, Enemy>(
+      enemiesData.map((enemy) => [enemy.name, enemy])
     );
-
-    const enemiesFilteredByDrop = filterEnemiesByDrop(
-      enemiesFilteredByLocation,
-      enemiesFilterData.drop
-    );
-
-    setEnemiesData(enemiesFilteredByDrop);
-  }, []);
-
-  const enemiesMap = useMemo(
-    () =>
-      new Map<string, Enemy>(enemiesData.map((enemy) => [enemy.name, enemy])),
-    [enemiesData]
-  );
+  }, [enemiesData]);
 
   const findEnemy = useCallback(
     (name: string) => {
@@ -81,8 +69,25 @@ export default function useEnemies() {
   );
 
   const resetEnemiesData = useCallback(() => {
-    setEnemiesData(enemiesByNewGame[newGame] as Enemy[]);
+    setEnemiesData(enemieDataByNewGame[newGame] as Enemy[]);
   }, [newGame]);
+
+  const filterEnemies = useCallback(
+    (enemiesFilterData: EmemyFilterData) => {
+      const enemiesFilteredByLocation = filterEnemiesByLocation(
+        enemieDataByNewGame[newGame] as Enemy[],
+        enemiesFilterData.location
+      );
+
+      const enemiesFilteredByDrop = filterEnemiesByDrop(
+        enemiesFilteredByLocation,
+        enemiesFilterData.drop
+      );
+
+      setEnemiesData(enemiesFilteredByDrop);
+    },
+    [newGame]
+  );
 
   return {
     enemiesData,

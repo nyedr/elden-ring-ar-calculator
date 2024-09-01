@@ -34,7 +34,7 @@ import {
 } from "./data-table/toolbar";
 import { Pagination } from "./data-table/pagination";
 import { cn } from "@/lib/utils";
-import { AttackRating } from "@/lib/data/attackRating";
+import { WeaponAttackResult } from "@/lib/calc/calculator";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -118,20 +118,23 @@ export function DataTable<TData, TValue>({
 
     // Select the rows that are in the selectedItems array
     const selectedWeaponNames = selectedItems?.map(
-      (item) => (item as AttackRating).weapon.weaponName
+      (item) => (item as WeaponAttackResult).weapon.name
     );
     table
       .getRowModel()
       .rows.forEach(
         (row) =>
           selectedWeaponNames?.includes(
-            (row.original as AttackRating).weapon.weaponName
+            (row.original as WeaponAttackResult).weapon.name
           ) && row.toggleSelected()
       );
 
     // Check if any filtered weapons have non-zero spell scaling
+    // TODO: Test this with the actual data
     const hasNonZeroSpellScaling = data.some(
-      (item) => (item as AttackRating).spellScaling !== 0
+      (item) =>
+        (item as WeaponAttackResult).weapon.incantationTool ||
+        (item as WeaponAttackResult).weapon.sorceryTool
     );
 
     // Update column visibility based on the check

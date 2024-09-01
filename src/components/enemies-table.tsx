@@ -1,17 +1,20 @@
 "use client";
 
-import { allNewGames, Enemy, NewGame } from "@/lib/data/enemy-data";
+import {
+  allEnemyDamageTypes,
+  allNewGames,
+  damageTypeToImageName,
+  Enemy,
+  NewGame,
+} from "@/lib/data/enemy-data";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./ui/data-table";
-import {
-  allDamageTypes,
-  damageTypeToImageName,
-  StatusEffect,
-} from "@/lib/data/weapon-data";
-import { statusEffectToImageName } from "@/lib/data/weapon-data";
+
 import Image from "next/image";
 import { cn, numberWithCommas } from "@/lib/utils";
 import { Button, buttonVariants } from "./ui/button";
+import { allStatusTypes, getDamageTypeKey } from "@/lib/data/attackPowerTypes";
+import { damageTypeIcons } from "@/lib/uiUtils";
 
 interface EnemiesTableProps {
   enemiesData: Enemy[];
@@ -141,7 +144,7 @@ export default function EnemiesTable({
       header: "Dmg Negations",
       accessorKey: "damageNegation",
       columns: [
-        ...allDamageTypes.map(
+        ...allEnemyDamageTypes.map(
           (damageType, index) =>
             ({
               header: ({ column }) => (
@@ -192,10 +195,12 @@ export default function EnemiesTable({
       header: "Status Resistances",
       accessorKey: "resistances",
       columns: [
-        ...Object.keys(statusEffectToImageName).map((statusEffect, index) => {
-          const status = statusEffect as StatusEffect;
+        ...allStatusTypes.map((statusEffect, index) => {
+          const status = getDamageTypeKey(
+            statusEffect
+          ) as keyof Enemy["resistances"];
           return {
-            accessorKey: statusEffect,
+            accessorKey: getDamageTypeKey(statusEffect),
             accessorFn: ({ resistances }) => resistances[status],
             invertSorting: true,
             header: ({ column }) => (
@@ -205,18 +210,14 @@ export default function EnemiesTable({
                 }
                 variant="ghost"
                 className="px-2"
-                title={statusEffect}
+                title={getDamageTypeKey(statusEffect)}
                 size="sm"
               >
                 <Image
-                  alt={statusEffect}
+                  alt={getDamageTypeKey(statusEffect)}
                   width={24}
                   height={24}
-                  src={`/${
-                    statusEffectToImageName[
-                      statusEffect as keyof typeof statusEffectToImageName
-                    ]
-                  }.webp`}
+                  src={damageTypeIcons.get(statusEffect) ?? ""}
                   className="mx-auto"
                 />
               </Button>

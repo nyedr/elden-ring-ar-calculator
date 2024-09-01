@@ -10,9 +10,9 @@ import Combobox, { ComboboxItem } from "./ui/combobox";
 export interface WeaponSearchProps {
   items: ComboboxItem[];
   setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
-  findWeapon: (weaponName: string) => Weapon | undefined;
+  findWeapon: (name: string) => Weapon | undefined;
   setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
-  updateWeaponInfo: (weaponName: string) => void;
+  updateWeaponInfo: (name: string) => void;
 }
 
 const DROPDOWN_ITEMS_SHOWN_LIMIT = 50;
@@ -26,12 +26,12 @@ export function WeaponSearch({
 }: WeaponSearchProps) {
   const [value, setValue] = React.useState("");
 
-  const addSelectedWeapon = (weaponName: string) => {
-    const weapon = findWeapon(weaponName);
+  const addSelectedWeapon = (name: string) => {
+    const weapon = findWeapon(name);
     if (weapon) {
       setSelectedWeapons((prev) => [...(prev || []), weapon]);
     } else {
-      console.error(`Weapon "${weaponName}" not found.`);
+      console.error(`Weapon "${name}" not found.`);
     }
   };
 

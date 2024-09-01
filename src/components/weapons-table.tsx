@@ -1,35 +1,40 @@
 import { Weapon } from "@/lib/data/weapon";
 import { Checkbox } from "./ui/checkbox";
-import { Character } from "@/hooks/useCharacter";
+import { Character, getAttackAttributes } from "@/hooks/useCharacter";
 import { DataTable } from "./ui/data-table";
-import { scalingRating } from "@/lib/calc/scaling";
-import { AttackRating } from "@/lib/data/attackRating";
 import Image from "next/image";
-import {
-  damageAttributeKeys,
-  DamageType,
-  damageTypeToImageName,
-  statusEffectToImageName,
-} from "@/lib/data/weapon-data";
 import { Button, buttonVariants } from "./ui/button";
 import { Icons } from "./icons";
 import { ColumnDef } from "@tanstack/react-table";
-import { cn } from "@/lib/utils";
-import {
-  calculateWeaponDamage,
-  isDamageTypeAffectedByUnmetRequirements,
-} from "@/lib/calc/damage";
+import { capitalize, cn } from "@/lib/utils";
 import { allNewGames, NewGame } from "@/lib/data/enemy-data";
+import { getWeaponAttack, WeaponAttackResult } from "@/lib/calc/calculator";
+import {
+  damageTypeIcons,
+  damageTypeLabels,
+  getAttributeScalingTier,
+  getSpellScaling,
+  getTotalDamageAttackPower,
+  getTotalEnemyDamage,
+} from "@/lib/uiUtils";
+import {
+  allDamageTypes,
+  allStatusTypes,
+  AttackPowerType,
+  getDamageTypeKey,
+} from "@/lib/data/attackPowerTypes";
+import { allAttributes } from "@/lib/data/attributes";
 
 interface WeaponsTableProps {
   character: Character;
-  weaponAttackRatings: AttackRating[];
+  weaponAttackRatings: WeaponAttackResult[];
   selectedWeapons: Weapon[];
   setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
-  updateWeaponInfo: (weaponName: string) => void;
+  updateWeaponInfo: (name: string) => void;
   setSelectedChartWeapon: (weapon: Weapon) => void;
   isDamageOnEnemy: boolean;
   setNewGame: React.Dispatch<React.SetStateAction<NewGame>>;
+  isLoading?: boolean;
 }
 
 // TODO: Sort secondarily by weapon AR
@@ -43,11 +48,12 @@ export default function WeaponsTable({
   setSelectedChartWeapon,
   isDamageOnEnemy,
   setNewGame,
+  isLoading,
 }: WeaponsTableProps) {
-  const weaponsColumns: ColumnDef<AttackRating>[] = [
+  const weaponsColumns: ColumnDef<WeaponAttackResult>[] = [
     {
       header: "General Info",
-      accessorKey: "weapon",
+      accessorKey: "upgradeLevel",
       enableSorting: false,
       columns: [
         {
@@ -56,8 +62,7 @@ export default function WeaponsTable({
             <Checkbox
               checked={
                 !!selectedWeapons.find(
-                  (weapon) =>
-                    weapon.weaponName === row.original.weapon.weaponName
+                  (weapon) => weapon.name === row.original.weapon.name
                 )
               }
               onCheckedChange={(value) => {
@@ -81,9 +86,9 @@ export default function WeaponsTable({
           },
         },
         {
-          accessorKey: "weaponName",
+          accessorKey: "name",
           invertSorting: true,
-          accessorFn: ({ weapon }) => weapon.weaponName,
+          accessorFn: ({ weapon }) => weapon.name,
           header: ({ column }) => {
             return (
               <Button
@@ -100,14 +105,14 @@ export default function WeaponsTable({
           },
           cell: ({ row }) => (
             <span
-              onClick={() => updateWeaponInfo(row.original.weapon.weaponName)}
+              onClick={() => updateWeaponInfo(row.original.weapon.name)}
               className={buttonVariants({
                 variant: "link",
                 size: "sm",
                 className: "px-0 h-auto cursor-pointer",
               })}
             >
-              {row.original.weapon.weaponName}
+              {row.original.weapon.name}
             </span>
           ),
           meta: {
@@ -117,6 +122,8 @@ export default function WeaponsTable({
         },
         {
           accessorKey: "spellScaling",
+          accessorFn: ({ spellScaling, weapon }) =>
+            getSpellScaling(weapon, spellScaling),
           invertSorting: true,
           header: ({ column }) => (
             <Button
@@ -133,34 +140,11 @@ export default function WeaponsTable({
           ),
           cell: ({ row }) => (
             <span>
-              {Math.floor(row.original.spellScaling) || (
-                <Icons.minus className="text-secondary w-4 h-4 mx-auto" />
-              )}
+              {Math.floor(
+                getSpellScaling(row.original.weapon, row.original.spellScaling)
+              ) || <Icons.minus className="text-secondary w-4 h-4 mx-auto" />}
             </span>
           ),
-          meta: {
-            cellClassName: "border border-secondary text-center",
-            headerClassName: "py-0 px-2",
-          },
-        },
-        {
-          accessorKey: "weight",
-          accessorFn: ({ weapon }) => weapon.weight,
-          invertSorting: true,
-          header: ({ column }) => (
-            <Button
-              variant="ghost"
-              title="Weight"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              size="sm"
-              className="px-2"
-            >
-              Wt
-            </Button>
-          ),
-          cell: ({ row }) => <span>{row.original.weapon.weight}</span>,
           meta: {
             cellClassName: "border border-secondary text-center",
             headerClassName: "py-0 px-2",
@@ -170,71 +154,68 @@ export default function WeaponsTable({
     },
     {
       header: () => <span>Attack Power</span>,
-      accessorKey: "damages",
+      accessorKey: "attackPower",
       columns: [
-        ...Object.entries(damageTypeToImageName).map(
-          ([damageType, imageName]) => {
-            return {
-              accessorKey: damageType,
-              accessorFn: ({ damages, enemyDamages }) =>
-                isDamageOnEnemy
-                  ? enemyDamages[damageType as DamageType]
-                  : damages[damageType as DamageType].total,
-              invertSorting: true,
-              header: ({ column }) => (
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    column.toggleSorting(column.getIsSorted() === "asc")
-                  }
-                  title={`${damageType} Attack`}
-                  size="sm"
-                  className="px-2 min-w-9"
-                >
-                  <Image
-                    alt={damageType}
-                    width={24}
-                    height={24}
-                    src={`/${imageName}.webp`}
-                    className="mx-auto"
-                  />
-                </Button>
-              ),
-              cell: ({ row }) => (
-                <span
-                  className={
-                    isDamageTypeAffectedByUnmetRequirements(
-                      row.original,
-                      damageType as DamageType
-                    )
-                      ? "text-red-500"
-                      : ""
-                  }
-                >
-                  {(isDamageOnEnemy
-                    ? Math.floor(
-                        row.original.enemyDamages[
-                          damageType as keyof typeof damageTypeToImageName
-                        ] ?? 0
-                      )
-                    : Math.floor(
-                        row.original.damages[
-                          damageType as keyof typeof damageTypeToImageName
-                        ].total
-                      )) || (
-                    <Icons.minus className="text-secondary w-4 h-4 mx-auto" />
-                  )}
-                </span>
-              ),
-              meta: {
-                cellClassName: "text-center",
-                headerClassName: "py-0 px-2",
-              },
-            } as ColumnDef<AttackRating>;
-          }
-        ),
+        ...allDamageTypes.map((damageType) => {
+          return {
+            accessorKey: String(damageType),
+            accessorFn: ({ enemyDamages, attackPower }) => {
+              if (isDamageOnEnemy && enemyDamages) {
+                return enemyDamages[damageType] ?? 0;
+              }
+
+              return attackPower[damageType as AttackPowerType]?.total ?? 0;
+            },
+            invertSorting: true,
+            header: ({ column }) => (
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
+                title={`${getDamageTypeKey(damageType)} Attack`}
+                size="sm"
+                className="px-2 min-w-9"
+              >
+                <Image
+                  alt={getDamageTypeKey(damageType)}
+                  width={24}
+                  height={24}
+                  src={damageTypeIcons.get(damageType) ?? ""}
+                  className="mx-auto"
+                />
+              </Button>
+            ),
+            cell: ({ row }) => (
+              <span
+                className={
+                  row.original.ineffectiveAttackPowerTypes.includes(
+                    damageType as AttackPowerType
+                  )
+                    ? "text-red-500"
+                    : ""
+                }
+              >
+                {Math.floor(
+                  isDamageOnEnemy && row.original.enemyDamages
+                    ? row.original.enemyDamages[damageType] ?? 0
+                    : row.original.attackPower[damageType as AttackPowerType]
+                        ?.total ?? 0
+                ) || <Icons.minus className="text-secondary w-4 h-4 mx-auto" />}
+              </span>
+            ),
+            meta: {
+              cellClassName: "text-center",
+              headerClassName: "py-0 px-2",
+            },
+          } as ColumnDef<WeaponAttackResult>;
+        }),
         {
-          accessorKey: isDamageOnEnemy ? "enemyAR" : "getAR",
+          accessorKey: isDamageOnEnemy ? "enemyDamages" : "attackPower",
+          accessorFn: ({ enemyDamages, attackPower }) =>
+            isDamageOnEnemy && enemyDamages
+              ? getTotalEnemyDamage(enemyDamages)
+              : getTotalDamageAttackPower(attackPower),
           invertSorting: true,
           header: ({ column }) => (
             <Button
@@ -252,16 +233,15 @@ export default function WeaponsTable({
             <span
               className={cn(
                 "font-semibold",
-                Object.values(row.original.requirementsMet).filter(Boolean)
-                  .length !== 5
+                row.original.ineffectiveAttackPowerTypes.length > 0
                   ? "text-red-500"
                   : ""
               )}
             >
               {Math.floor(
-                isDamageOnEnemy
-                  ? Math.floor(row.original.enemyAR ?? 0)
-                  : row.original.getAR
+                isDamageOnEnemy && row.original.enemyDamages
+                  ? getTotalEnemyDamage(row.original.enemyDamages)
+                  : getTotalDamageAttackPower(row.original.attackPower)
               )}
             </span>
           ),
@@ -275,13 +255,13 @@ export default function WeaponsTable({
     },
     {
       header: () => <span>Scaling</span>,
-      accessorKey: "level",
+      accessorKey: "ineffectiveAttributes",
       columns: [
-        ...damageAttributeKeys.map((attribute) => {
+        ...allAttributes.map((attribute) => {
           return {
             accessorKey: attribute,
-            accessorFn: ({ weapon }) =>
-              weapon.levels[weapon.maxUpgradeLevel][attribute],
+            accessorFn: ({ upgradeLevel, weapon }) =>
+              weapon.attributeScaling[upgradeLevel][attribute] ?? 0,
             invertSorting: true,
             header: ({ column }) => (
               <Button
@@ -292,25 +272,22 @@ export default function WeaponsTable({
                 size="sm"
                 className="px-2"
               >
-                {attribute}
+                {capitalize(attribute)}
               </Button>
             ),
             cell: ({ row }) => {
-              const scaling =
-                row.original.weapon.levels[row.original.weapon.maxUpgradeLevel][
-                  attribute
-                ];
+              const scaling = getAttributeScalingTier(
+                row.original.weapon,
+                attribute,
+                row.original.upgradeLevel
+              );
+
+              const isAffected =
+                row.original.ineffectiveAttributes.includes(attribute);
+
               return (
-                <span
-                  className={
-                    row.original.requirementsMet[attribute] === false
-                      ? "text-red-500"
-                      : ""
-                  }
-                >
-                  {scaling > 0 ? (
-                    scalingRating(scaling)
-                  ) : (
+                <span className={isAffected ? "text-red-500" : ""}>
+                  {scaling ?? (
                     <Icons.minus className="text-secondary w-4 h-4 mx-auto" />
                   )}
                 </span>
@@ -320,25 +297,22 @@ export default function WeaponsTable({
               cellClassName: cn("text-center"),
               headerClassName: "py-0 px-2",
             },
-          } as ColumnDef<AttackRating>;
+          } as ColumnDef<WeaponAttackResult>;
         }),
       ],
     },
-
     {
-      accessorKey: "statusEffects",
+      accessorKey: "weapon",
       header: () => <span>Status Effects</span>,
       columns: [
-        ...Object.keys(statusEffectToImageName)
+        ...allStatusTypes
           // Exclude the last status effect - Death Blight
-          .slice(0, Object.keys(statusEffectToImageName).length - 1)
+          .slice(0, allStatusTypes.length - 1)
           .map((statusEffect, index) => {
             return {
-              accessorKey: statusEffect,
-              accessorFn: ({ statusEffects }) =>
-                statusEffects[
-                  statusEffect as keyof typeof statusEffectToImageName
-                ],
+              accessorKey: String(statusEffect),
+              accessorFn: ({ attackPower }) =>
+                attackPower[statusEffect as AttackPowerType]?.total ?? 0,
               invertSorting: true,
               header: ({ column }) => (
                 <Button
@@ -347,18 +321,17 @@ export default function WeaponsTable({
                     column.toggleSorting(column.getIsSorted() === "asc")
                   }
                   size="sm"
-                  title={statusEffect}
+                  title={damageTypeLabels.get(statusEffect)}
                   className="p-2 min-w-9"
                 >
                   <Image
-                    alt={statusEffect}
+                    alt={
+                      damageTypeLabels.get(statusEffect) ??
+                      getDamageTypeKey(statusEffect)
+                    }
                     width={24}
                     height={24}
-                    src={`/${
-                      statusEffectToImageName[
-                        statusEffect as keyof typeof statusEffectToImageName
-                      ]
-                    }.webp`}
+                    src={damageTypeIcons.get(statusEffect) ?? ""}
                     className="mx-auto"
                   />
                 </Button>
@@ -366,9 +339,8 @@ export default function WeaponsTable({
               cell: ({ row }) => (
                 <span>
                   {Math.floor(
-                    row.original.statusEffects[
-                      statusEffect as keyof typeof statusEffectToImageName
-                    ]
+                    row.original.attackPower[statusEffect as AttackPowerType]
+                      ?.total ?? 0
                   ) || (
                     <Icons.minus className="text-secondary mx-auto w-4 h-4" />
                   )}
@@ -381,7 +353,7 @@ export default function WeaponsTable({
                 ),
                 headerClassName: "py-0 px-2",
               },
-            } as ColumnDef<AttackRating>;
+            } as ColumnDef<WeaponAttackResult>;
           }),
       ],
     },
@@ -411,20 +383,22 @@ export default function WeaponsTable({
       <DataTable
         columns={weaponsColumns}
         data={weaponAttackRatings}
+        isLoading={isLoading}
         filterBy={{
-          accessorKey: "weaponName",
+          accessorKey: "name",
           label: "Weapon",
         }}
         isSelectable={true}
         selectedItems={selectedWeapons.map((weapon) => {
-          return calculateWeaponDamage(
-            character,
+          return getWeaponAttack({
             weapon,
-            weapon.maxUpgradeLevel
-          );
+            attributes: getAttackAttributes(character.attributes),
+            twoHanding: character.isTwoHanding,
+            upgradeLevel: weapon.attack.length - 1,
+          });
         })}
         defaultSortBy={{
-          id: isDamageOnEnemy ? "enemyAR" : "getAR",
+          id: isDamageOnEnemy ? "enemyDamages" : "attackPower",
           desc: false,
         }}
         customSelect={

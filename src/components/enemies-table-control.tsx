@@ -1,5 +1,5 @@
 import { EmemyFilterData } from "@/app/enemies/page";
-import { allEnemyDrops, allEnemyLocations, Enemy } from "@/lib/data/enemy-data";
+import { allEnemyDrops, allEnemyLocations } from "@/lib/data/enemy-data";
 import { Label } from "./ui/label";
 import Combobox from "./ui/combobox";
 import { Button } from "./ui/button";

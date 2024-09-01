@@ -13,6 +13,7 @@ import {
   WandSparkles,
   CircleHelp,
   Infinity,
+  ExternalLink,
 } from "lucide-react";
 import react from "react";
 
@@ -35,6 +36,7 @@ export enum IconName {
   WAND_SPARKLES = "wandSparkles",
   GITHUB = "gitHub",
   HELP = "circleHelp",
+  EXTERNAL_LINK = "externalLink",
 }
 
 export const Icons: Record<
@@ -54,6 +56,7 @@ export const Icons: Record<
   [IconName.CHECK]: Check,
   [IconName.CHEVRON_DOWN]: ChevronDown,
   [IconName.WAND_SPARKLES]: WandSparkles,
+  [IconName.EXTERNAL_LINK]: ExternalLink,
   [IconName.GITHUB]: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path

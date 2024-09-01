@@ -6,19 +6,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AttackRating } from "@/lib/data/attackRating";
-import { allStatusEffects, Enemy } from "@/lib/data/enemy-data";
 import {
-  allDamageTypes,
+  allEnemyDamageTypes,
   damageTypeToImageName,
-  statusEffectToImageName,
-} from "@/lib/data/weapon-data";
+  Enemy,
+} from "@/lib/data/enemy-data";
+
 import Image from "next/image";
+import { WeaponAttackResult } from "@/lib/calc/calculator";
+import { allStatusTypes, getDamageTypeKey } from "@/lib/data/attackPowerTypes";
 import { Icons } from "./icons";
+import { damageTypeIcons } from "@/lib/uiUtils";
 
 interface EnemyInfoTablesProps {
   enemy: Enemy;
-  attackRating?: AttackRating;
+  attackRating?: WeaponAttackResult;
 }
 
 export default function EnemyInfoTables({
@@ -31,7 +33,7 @@ export default function EnemyInfoTables({
         <TableHeader className="border-b-2 border-secondary">
           <TableRow>
             <TableHead className="sm:w-32"></TableHead>
-            {allDamageTypes.map((damageType, index) => (
+            {allEnemyDamageTypes.map((damageType, index) => (
               <TableHead className="text-center" key={index}>
                 {damageTypeToImageName.hasOwnProperty(damageType) ? (
                   <Image
@@ -56,7 +58,7 @@ export default function EnemyInfoTables({
         <TableBody>
           <TableRow>
             <TableCell>Dmg Negation</TableCell>
-            {allDamageTypes.map((damage, index) => (
+            {allEnemyDamageTypes.map((damage, index) => (
               <TableCell className="text-center" key={index}>
                 {Math.floor(enemy.damageNegation[damage])}
               </TableCell>
@@ -64,7 +66,7 @@ export default function EnemyInfoTables({
           </TableRow>
           <TableRow>
             <TableCell>Flat Defence</TableCell>
-            {allDamageTypes.map((damage, index) => (
+            {allEnemyDamageTypes.map((damage, index) => (
               <TableCell className="text-center" key={index}>
                 {Math.floor(+enemy.defence[damage])}
               </TableCell>
@@ -76,18 +78,14 @@ export default function EnemyInfoTables({
         <TableHeader className="border-b-2 border-secondary">
           <TableRow>
             <TableHead className="sm:w-32"></TableHead>
-            {allStatusEffects.map((statusEffect, index) => (
+            {allStatusTypes.map((statusEffect, index) => (
               <TableHead className="text-center" key={index}>
                 <Image
-                  alt={statusEffect}
-                  title={statusEffect}
+                  alt={getDamageTypeKey(statusEffect)}
+                  title={getDamageTypeKey(statusEffect)}
                   width={24}
                   height={24}
-                  src={`/${
-                    statusEffectToImageName[
-                      statusEffect as keyof typeof statusEffectToImageName
-                    ]
-                  }.webp`}
+                  src={damageTypeIcons.get(statusEffect) ?? ""}
                   className="mx-auto"
                 />
               </TableHead>
@@ -97,30 +95,42 @@ export default function EnemyInfoTables({
         <TableBody>
           <TableRow>
             <TableCell>Resistances</TableCell>
-            {allStatusEffects.map((statusEffect, index) => (
-              <TableCell className="text-center" key={index}>
-                {enemy.resistances[statusEffect] === "Immune"
-                  ? "Inf"
-                  : enemy.resistances[statusEffect]}
-              </TableCell>
-            ))}
+            {allStatusTypes.map((statusEffect, index) => {
+              const statusEffectKey = getDamageTypeKey(statusEffect);
+              const enemyResistance =
+                enemy.resistances[
+                  statusEffectKey as keyof typeof enemy.resistances
+                ];
+
+              return (
+                <TableCell className="text-center" key={index}>
+                  {enemyResistance === "Immune" ? "Inf" : enemyResistance}
+                </TableCell>
+              );
+            })}
           </TableRow>
           {!!attackRating && (
             <TableRow>
               <TableCell>Min hits</TableCell>
-              {allStatusEffects.map((statusEffect, index) => (
-                <TableCell className="text-center" key={index}>
-                  {enemy.resistances[statusEffect] === "Immune" ||
-                  attackRating.statusEffects[statusEffect] === 0 ? (
-                    <Icons.minus className="text-secondary w-4 h-4 mx-auto" />
-                  ) : (
-                    Math.ceil(
-                      enemy.resistances[statusEffect] /
-                        attackRating.statusEffects[statusEffect]
-                    )
-                  )}
-                </TableCell>
-              ))}
+              {allStatusTypes.map((statusEffect, index) => {
+                const statusEffectKey = getDamageTypeKey(statusEffect);
+                const enemyResistance =
+                  enemy.resistances[
+                    statusEffectKey as keyof typeof enemy.resistances
+                  ];
+                const passive =
+                  attackRating.attackPower[statusEffect]?.total || 0;
+
+                return (
+                  <TableCell className="text-center" key={index}>
+                    {enemyResistance === "Immune" || !passive ? (
+                      <Icons.minus className="text-secondary w-4 h-4 mx-auto" />
+                    ) : (
+                      Math.ceil(enemyResistance / passive)
+                    )}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           )}
         </TableBody>

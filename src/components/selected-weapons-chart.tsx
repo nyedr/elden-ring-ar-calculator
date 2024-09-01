@@ -8,8 +8,8 @@ import DynamicStyledChart, { ChartData } from "./ui/chart";
 interface WeaponArGraphProps {
   data: ChartData;
   clearSelectedWeapons: () => void;
-  removeSelectedWeapon?: (weaponName: string) => void;
-  updateWeaponInfo: (weaponName: string) => void;
+  removeSelectedWeapon?: (name: string) => void;
+  updateWeaponInfo: (name: string) => void;
 }
 
 export default function SelectedWeaponsChart({
@@ -22,6 +22,8 @@ export default function SelectedWeaponsChart({
     activeSeriesIndex: -1,
     activeDatumIndex: -1,
   });
+
+  console.log("Selected weapons data:", data);
 
   return (
     <div className="h-[500px] w-full flex flex-col">

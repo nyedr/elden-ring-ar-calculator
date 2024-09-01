@@ -16,10 +16,9 @@ import SelectedWeaponsChart from "./selected-weapons-chart";
 import { EnemySearch } from "./enemy-search";
 import { Button } from "./ui/button";
 import WeaponsTable from "./weapons-table";
-import { AttackRating } from "@/lib/data/attackRating";
-import getWeapons from "@/lib/data/getWeapons";
-import { useMemo } from "react";
-import { calculateWeaponDamage } from "@/lib/calc/damage";
+import useWeapons from "@/hooks/useWeapons";
+import { getWeaponAttack, WeaponAttackResult } from "@/lib/calc/calculator";
+import { Character, getAttackAttributes } from "@/hooks/useCharacter";
 
 interface AppManualProps {
   isOpen: boolean;
@@ -27,9 +26,9 @@ interface AppManualProps {
 }
 
 export default function AppManual({ isOpen, closeManual }: AppManualProps) {
-  const weaponsData = useMemo(() => getWeapons(), []);
+  const weaponsData = useWeapons();
 
-  const dummyCharacter = {
+  const dummyCharacter: Character = {
     attributes: {
       Str: 10,
       Dex: 10,
@@ -44,12 +43,13 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
     level: 1,
   };
 
-  const getWeaponAttackRating = (weapon: Weapon): AttackRating => {
-    return calculateWeaponDamage(
-      dummyCharacter,
+  const getWeaponAttackRating = (weapon: Weapon): WeaponAttackResult => {
+    return getWeaponAttack({
       weapon,
-      weapon.maxUpgradeLevel
-    );
+      attributes: getAttackAttributes(dummyCharacter.attributes),
+      twoHanding: dummyCharacter.isTwoHanding,
+      upgradeLevel: Math.min(weapon.attack.length - 1),
+    });
   };
 
   const dummyWeaponData = [

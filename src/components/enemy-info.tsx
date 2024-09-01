@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
-import { AttackRating } from "@/lib/data/attackRating";
 import { Enemy } from "@/lib/data/enemy-data";
 import { numberWithCommas } from "@/lib/utils";
 import EnemyInfoTables from "./enemy-info-tables";
@@ -23,13 +22,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Weapon } from "@/lib/data/weapon";
+import { affinityOptions } from "@/lib/uiUtils";
+import { WeaponAttackResult } from "@/lib/calc/calculator";
 
 export interface EnemyInfoProps {
-  attackRating?: AttackRating;
+  attackRating?: WeaponAttackResult;
   enemy: Enemy;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  affinityOptions?: Weapon[];
+  weaponAffinityOptions?: Weapon[];
   setWeaponInfo?: (weapon: Weapon) => void;
 }
 
@@ -38,7 +39,7 @@ export default function EnemyInfo({
   attackRating,
   isOpen,
   setIsOpen,
-  affinityOptions,
+  weaponAffinityOptions,
   setWeaponInfo,
 }: EnemyInfoProps) {
   return (
@@ -94,37 +95,46 @@ export default function EnemyInfo({
                   : ""}
               </span>
             </DialogDescription>
-            {attackRating && affinityOptions && setWeaponInfo && (
+            {attackRating && weaponAffinityOptions && setWeaponInfo && (
               <DialogDescription className="text-primary flex w-full items-center justify-between">
                 <strong>Affinity</strong>
 
                 <Select
-                  disabled={affinityOptions.length === 1}
+                  disabled={weaponAffinityOptions.length === 1}
                   onValueChange={(value) => {
                     setWeaponInfo(
-                      affinityOptions.find(
-                        (weapon) =>
-                          weapon.affinity === (value === "Default" ? "" : value)
+                      weaponAffinityOptions.find(
+                        (weapon) => weapon.affinityId === +value
                       ) ?? attackRating.weapon
                     );
                   }}
-                  defaultValue={attackRating.weapon.affinity || "Default"}
+                  defaultValue={
+                    String(attackRating.weapon.affinityId) || "Default"
+                  }
                 >
                   <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Weapons Level" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
                     <SelectGroup>
-                      {affinityOptions
-                        .map((weapon) => weapon.affinity)
-                        .map((affinity) => (
-                          <SelectItem
-                            key={affinity || "Default"}
-                            value={affinity || "Default"}
-                          >
-                            {affinity || "Default"}
-                          </SelectItem>
-                        ))}
+                      {weaponAffinityOptions
+                        .map((weapon) => weapon.affinityId)
+                        .map((affinity) => {
+                          const affinityOption = affinityOptions.get(affinity);
+
+                          if (!affinityOption) {
+                            return null;
+                          }
+
+                          return (
+                            <SelectItem
+                              key={affinityOption.text}
+                              value={String(affinity)}
+                            >
+                              {affinityOption.text}
+                            </SelectItem>
+                          );
+                        })}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -135,7 +145,7 @@ export default function EnemyInfo({
 
         <EnemyInfoTables attackRating={attackRating} enemy={enemy} />
 
-        {attackRating?.enemyAR && (
+        {attackRating?.enemyDamages && (
           <EnemyDamage attackRating={attackRating} enemy={enemy} />
         )}
 

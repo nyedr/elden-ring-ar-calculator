@@ -1,5 +1,3 @@
-import { calculateEnemyDamage } from "@/lib/calc/damage";
-import { AttackRating } from "@/lib/data/attackRating";
 import { Enemy } from "@/lib/data/enemy-data";
 import {
   numberWithCommas,
@@ -18,92 +16,154 @@ import {
 import { useMemo, useState, useCallback } from "react";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
-import { DamageValues } from "@/lib/data/weapon-data";
+
 import { Badge } from "./ui/badge";
+import {
+  calculateDamageAgainstEnemy,
+  WeaponAttackResult,
+} from "@/lib/calc/calculator";
+import { getTotalEnemyDamage } from "@/lib/uiUtils";
+import {
+  DamageValues,
+  isDamageValuesKey,
+  MotionValues,
+} from "@/lib/data/weapon";
 
 interface EnemyDamageProps {
-  attackRating: AttackRating;
+  attackRating: WeaponAttackResult;
   enemy: Enemy;
 }
 
+const HealthBar = ({
+  enemyDamage,
+  healthPoints,
+}: {
+  enemyDamage: WeaponAttackResult["enemyDamages"];
+  healthPoints: number;
+}) => {
+  if (!enemyDamage) return null;
+
+  return (
+    <>
+      <div className="w-full overflow-hidden h-4 rounded-md mt-2 bg-secondary">
+        <div
+          className={`h-full bg-red-700`}
+          style={{
+            width: `${
+              (getTotalEnemyDamage(enemyDamage) / healthPoints) * 100
+            }%`,
+          }}
+        ></div>
+      </div>
+
+      <div className="w-full flex items-center justify-between">
+        <span>
+          Hits to kill:{" "}
+          {Math.ceil(healthPoints / getTotalEnemyDamage(enemyDamage))}
+        </span>
+        <span>
+          {numberWithCommas(Math.floor(getTotalEnemyDamage(enemyDamage)))} /{" "}
+          {numberWithCommas(healthPoints)}
+        </span>
+      </div>
+    </>
+  );
+};
+
 export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
-  const weaponAttackOptions = Object.keys(
-    getDamageValues(attackRating.weapon.motionValues)
-  )
-    .filter(
-      (key) => !!attackRating.weapon.motionValues[key as keyof DamageValues]
-    )
-    .map((key) => ({ label: key.slice(3), value: key }));
+  // Generate weapon attack options and categorize them into one-handed and two-handed.
+  const weaponAttackOptions = useMemo(() => {
+    const damageVals = getDamageValues(attackRating.weapon.motionValues);
+    return Object.keys(damageVals)
+      .filter(
+        (key) => !!attackRating.weapon.motionValues[key as keyof MotionValues]
+      )
+      .map((key) => ({ label: key.slice(3), value: key }));
+  }, [attackRating.weapon.motionValues]);
 
-  const weaponOptions = {
-    oneHanded: weaponAttackOptions.filter((option) =>
-      option.value.startsWith("1h")
-    ),
-    twoHanded: weaponAttackOptions.filter((option) =>
-      option.value.startsWith("2h")
-    ),
-  };
+  const weaponOptions = useMemo(
+    () => ({
+      oneHanded: weaponAttackOptions.filter((option) =>
+        option.value.startsWith("1h")
+      ),
+      twoHanded: weaponAttackOptions.filter((option) =>
+        option.value.startsWith("2h")
+      ),
+    }),
+    [weaponAttackOptions]
+  );
 
+  // Initialize state for two-handing and selected weapon attack
   const [isTwoHanding, setIsTwoHanding] = useState(false);
-  const [weaponAttack, setWeaponAttack] = useState<{
-    oneHanded: string;
-    twoHanded: string;
-  }>({
+  const [weaponAttack, setWeaponAttack] = useState({
     oneHanded: weaponOptions.oneHanded[0]?.value ?? "",
     twoHanded: weaponOptions.twoHanded[0]?.value ?? "",
   });
 
-  const oneHandedPoiseBreak = useMemo(
-    () =>
-      weaponOptions.oneHanded.reduce((obj, key) => {
-        obj[key.value] =
-          attackRating.weapon.poiseDmg[key.value as keyof DamageValues];
-        return obj;
-      }, {} as Record<string, number | null>),
-    [weaponOptions.oneHanded, attackRating.weapon.poiseDmg]
-  );
+  const oneHandedPoiseBreak = useMemo(() => {
+    const result: Record<string, number | null> = {};
+    weaponOptions.oneHanded.forEach((option) => {
+      result[option.value] =
+        attackRating.weapon.poiseDamage[option.value as keyof DamageValues] ??
+        null;
+    });
+    return result;
+  }, [weaponOptions.oneHanded, attackRating.weapon.poiseDamage]);
 
-  const twoHandedPoiseBreak = useMemo(
-    () =>
-      weaponOptions.twoHanded.reduce((obj, key) => {
-        obj[key.value] =
-          attackRating.weapon.poiseDmg[key.value as keyof DamageValues];
-        return obj;
-      }, {} as Record<string, number | null>),
-    [weaponOptions.twoHanded, attackRating.weapon.poiseDmg]
-  );
+  const twoHandedPoiseBreak = useMemo(() => {
+    const result: Record<string, number | null> = {};
+    weaponOptions.twoHanded.forEach((option) => {
+      result[option.value] =
+        attackRating.weapon.poiseDamage[option.value as keyof DamageValues] ??
+        null;
+    });
+    return result;
+  }, [weaponOptions.twoHanded, attackRating.weapon.poiseDamage]);
 
-  const optimalPoiseBreakSequence = useMemo(
-    () =>
-      getOptimalPoiseBrakeSequence(
-        isTwoHanding ? twoHandedPoiseBreak : oneHandedPoiseBreak,
-        enemy.poise.effective
-      ),
-    [
-      isTwoHanding,
-      twoHandedPoiseBreak,
-      oneHandedPoiseBreak,
-      enemy.poise.effective,
-    ]
-  );
+  const optimalPoiseBreakSequence = useMemo(() => {
+    const sequence = getOptimalPoiseBrakeSequence(
+      isTwoHanding ? twoHandedPoiseBreak : oneHandedPoiseBreak,
+      enemy.poise.effective
+    );
+    return sequence;
+  }, [
+    isTwoHanding,
+    twoHandedPoiseBreak,
+    oneHandedPoiseBreak,
+    enemy.poise.effective,
+  ]);
 
-  const enemyDamage = useMemo(
-    () =>
-      calculateEnemyDamage(
-        attackRating,
-        enemy,
-        attackRating.weapon.motionValues[
-          (isTwoHanding
-            ? weaponAttack.twoHanded
-            : weaponAttack.oneHanded) as keyof DamageValues
-        ] ?? 100
-      ).enemyAR,
-    [attackRating, enemy, isTwoHanding, weaponAttack]
-  );
+  const damageType = isTwoHanding
+    ? weaponAttack.twoHanded
+    : weaponAttack.oneHanded;
+
+  // Ensure damageType is a damage value key
+  const validatedDamageType = isDamageValuesKey(damageType)
+    ? damageType
+    : "1h R1 1";
+
+  const enemyDamage = useMemo(() => {
+    const damageCalculation = calculateDamageAgainstEnemy(
+      attackRating,
+      enemy,
+      validatedDamageType
+    ).enemyDamages;
+    return damageCalculation;
+  }, [attackRating, enemy, validatedDamageType]);
 
   const handleSwitchChange = useCallback(() => {
     setIsTwoHanding((prev) => !prev);
   }, []);
+
+  const handleWeaponChange = useCallback(
+    (value: string) => {
+      setWeaponAttack((prev) => ({
+        ...prev,
+        [isTwoHanding ? "twoHanded" : "oneHanded"]: value,
+      }));
+    },
+    [isTwoHanding]
+  );
 
   if (!enemyDamage) return null;
 
@@ -111,27 +171,9 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
     weaponOptions.oneHanded.length === 0 ||
     weaponOptions.twoHanded.length === 0
   ) {
-    // If there are no motion values for the weapon, display a simple damage bar
-    // This weapon is likely a bow or ballista type weapon
+    // Handling edge cases for specific weapon types with no attack options
     return (
-      <div className="flex flex-col gap-2 w-full">
-        <div className="w-full overflow-hidden h-4 rounded-md mt-2 bg-secondary">
-          <div
-            className={`h-full bg-red-700`}
-            style={{
-              width: `${(enemyDamage / enemy.healthPoints) * 100}%`,
-            }}
-          />
-        </div>
-        <div className="w-full flex items-center justify-between">
-          <span>
-            Hits to kill: {Math.ceil(enemy.healthPoints / enemyDamage)}
-          </span>
-          <span>
-            {Math.floor(enemyDamage)} / {numberWithCommas(enemy.healthPoints)}
-          </span>
-        </div>
-      </div>
+      <HealthBar enemyDamage={enemyDamage} healthPoints={enemy.healthPoints} />
     );
   }
 
@@ -139,16 +181,11 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
     <div className="flex flex-col gap-2 w-full">
       <div className="w-full flex justify-between items-center gap-3">
         <Select
-          value={isTwoHanding ? weaponAttack.twoHanded : weaponAttack.oneHanded}
-          onValueChange={(value) =>
-            setWeaponAttack({
-              ...weaponAttack,
-              [isTwoHanding ? "twoHanded" : "oneHanded"]: value,
-            })
-          }
+          value={damageType}
+          onValueChange={(value) => handleWeaponChange(value)}
         >
           <SelectTrigger className="max-w-fit">
-            <SelectValue placeholder="Weapons Level" />
+            <SelectValue placeholder="Select Attack" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
             <SelectGroup>
@@ -163,6 +200,7 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
             </SelectGroup>
           </SelectContent>
         </Select>
+
         <div className="flex items-center space-x-2">
           <Label className="whitespace-nowrap" htmlFor="isTwoHanding">
             Two Handing
@@ -175,20 +213,7 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
         </div>
       </div>
 
-      <div className="w-full overflow-hidden h-4 rounded-md mt-2 bg-secondary">
-        <div
-          className={`h-full bg-red-700`}
-          style={{
-            width: `${(enemyDamage / enemy.healthPoints) * 100}%`,
-          }}
-        />
-      </div>
-      <div className="w-full flex items-center justify-between">
-        <span>Hits to kill: {Math.ceil(enemy.healthPoints / enemyDamage)}</span>
-        <span>
-          {Math.floor(enemyDamage)} / {numberWithCommas(enemy.healthPoints)}
-        </span>
-      </div>
+      <HealthBar enemyDamage={enemyDamage} healthPoints={enemy.healthPoints} />
 
       <div className="flex sm:items-center flex-col sm:flex-row gap-2 w-full">
         <span className="whitespace-nowrap font-semibold">

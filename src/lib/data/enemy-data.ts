@@ -1,4 +1,39 @@
-import { DamageType, StatusEffect } from "./weapon-data";
+export enum EnemyDamageType {
+  Magic = "Magic",
+  Fire = "Fire",
+  Lightning = "Lightning",
+  Holy = "Holy",
+  Physical = "Physical",
+  Pierce = "Pierce",
+  Slash = "Slash",
+  Strike = "Strike",
+}
+
+export const allSimplifiedDamageTypes = [
+  EnemyDamageType.Physical,
+  EnemyDamageType.Magic,
+  EnemyDamageType.Fire,
+  EnemyDamageType.Lightning,
+  EnemyDamageType.Holy,
+];
+
+export const allEnemyDamageTypes = [
+  EnemyDamageType.Physical,
+  EnemyDamageType.Magic,
+  EnemyDamageType.Fire,
+  EnemyDamageType.Lightning,
+  EnemyDamageType.Holy,
+  EnemyDamageType.Pierce,
+  EnemyDamageType.Slash,
+  EnemyDamageType.Strike,
+];
+
+export const allPhysicalDamageTypes = [
+  EnemyDamageType.Physical,
+  EnemyDamageType.Pierce,
+  EnemyDamageType.Slash,
+  EnemyDamageType.Strike,
+];
 
 export interface Poise {
   base: number;
@@ -6,16 +41,6 @@ export interface Poise {
   effective: number;
   regenDelay: number;
 }
-
-export const allStatusEffects = [
-  StatusEffect.Poison,
-  StatusEffect.Bleed,
-  StatusEffect.Scarlet_Rot,
-  StatusEffect.Frost,
-  StatusEffect.Sleep,
-  StatusEffect.Madness,
-  StatusEffect.Death_Blight,
-];
 
 export enum NewGame {
   NG = "NG",
@@ -46,6 +71,24 @@ export interface EnemyDrop {
   quantity: number;
 }
 
+export enum StatusEffect {
+  Poison = "Poison",
+  Bleed = "Bleed",
+  Scarlet_Rot = "Scarlet Rot",
+  Frost = "Frost",
+  Sleep = "Sleep",
+  Madness = "Madness",
+  Death_Blight = "Death Blight",
+}
+
+export const damageTypeToImageName = {
+  [EnemyDamageType.Physical]: "standardAffinity",
+  [EnemyDamageType.Magic]: "magicAffinity",
+  [EnemyDamageType.Fire]: "fireAffinity",
+  [EnemyDamageType.Lightning]: "lightningAffinity",
+  [EnemyDamageType.Holy]: "sacredAffinity",
+};
+
 export interface Enemy {
   id: number;
   name: string;
@@ -53,10 +96,10 @@ export interface Enemy {
   healthPoints: number;
   dlcClearHealthPoints: number | null;
   defence: {
-    [key in DamageType]: number;
+    [key in EnemyDamageType]: number;
   };
   damageNegation: {
-    [key in DamageType]: number;
+    [key in EnemyDamageType]: number;
   };
   poise: Poise;
   resistances: {

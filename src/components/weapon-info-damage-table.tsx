@@ -6,32 +6,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AttackRating, Damage } from "@/lib/data/attackRating";
-import { allSimplifiedDamageTypes } from "@/lib/data/weapon-data";
 import { Icons } from "./icons";
-
-export interface WeaponAttributes {
-  Physical: Damage;
-  Magic: Damage;
-  Fire: Damage;
-  Lightning: Damage;
-  Holy: Damage;
-}
+import { WeaponAttackResult } from "@/lib/calc/calculator";
+import { allDamageTypes } from "@/lib/data/attackPowerTypes";
 
 interface WeaponTableProps {
-  attackRating: AttackRating;
+  attackRating: WeaponAttackResult;
 }
 
 export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
-  const weaponDamages = allSimplifiedDamageTypes
-    .slice()
-    .map((type) => attackRating.damages[type].weapon);
-  const weaponScaled = allSimplifiedDamageTypes
-    .slice()
-    .map((type) => attackRating.damages[type].scaled);
-  const weaponTotal = allSimplifiedDamageTypes
-    .slice()
-    .map((type) => attackRating.damages[type].total);
+  const weaponDamages = allDamageTypes.map(
+    (type) => attackRating.attackPower[type]?.weapon
+  );
+  const weaponScaled = allDamageTypes.map(
+    (type) => attackRating.attackPower[type]?.scaled
+  );
+  const weaponTotal = allDamageTypes.map(
+    (type) => attackRating.attackPower[type]?.total
+  );
 
   return (
     <Table className="mt-5">
@@ -50,7 +42,9 @@ export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
           <TableCell>Attack</TableCell>
           {weaponDamages.map((damage, index) => (
             <TableCell key={index}>
-              {Math.floor(damage) || (
+              {damage ? (
+                Math.floor(damage)
+              ) : (
                 <Icons.minus className="text-secondary w-4 h-4" />
               )}
             </TableCell>
@@ -59,8 +53,13 @@ export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
         <TableRow>
           <TableCell>Scaled</TableCell>
           {weaponScaled.map((damage, index) => (
-            <TableCell className={damage < 0 ? "text-red-500" : ""} key={index}>
-              {Math.floor(damage) || (
+            <TableCell
+              className={(damage ?? -1) < 0 ? "text-red-500" : ""}
+              key={index}
+            >
+              {damage ? (
+                Math.floor(damage)
+              ) : (
                 <Icons.minus className="text-secondary w-4 h-4" />
               )}
             </TableCell>
@@ -70,7 +69,9 @@ export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
           <TableCell>Total</TableCell>
           {weaponTotal.map((damage, index) => (
             <TableCell key={index}>
-              {Math.floor(damage) || (
+              {damage ? (
+                Math.floor(damage)
+              ) : (
                 <Icons.minus className="text-secondary w-4 h-4" />
               )}
             </TableCell>

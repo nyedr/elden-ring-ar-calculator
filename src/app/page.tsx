@@ -2,65 +2,63 @@
 
 import useCharacter from "@/hooks/useCharacter";
 import CharacterStats from "@/components/character-stats";
-import getWeapons from "@/lib/data/getWeapons";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Weapon } from "@/lib/data/weapon";
 import WeaponsTableControl from "@/components/weapons-table-control";
 import WeaponsTable from "@/components/weapons-table";
 import {
-  allStatusEffects,
-  weaponAffinities,
-  weaponTypes,
-} from "@/lib/data/weapon-data";
-import { filterWeapons, WeaponFilter } from "@/lib/calc/weapons-filter";
+  defaultWeaponFilter,
+  filterWeapons,
+  WeaponFilter,
+} from "@/lib/filters/weapons-filter";
 import Header from "@/components/header";
 import SelectedWeaponsChart from "@/components/selected-weapons-chart";
 import {
-  getWeaponsLevelsData,
-  specialAndRegularLevelsDict,
   removeDuplicateNames,
+  specialAndRegularLevelsDict,
+  getWeaponsLevelsData,
 } from "@/lib/utils";
 import { useDebouncedValue } from "@/hooks/useDebounceValue";
 import WeaponChart from "@/components/weapon-chart";
-import WeaponInfo from "@/components/weapon-info";
-import { calculateEnemyDamage, calculateWeaponDamage } from "@/lib/calc/damage";
+import { WeaponInfoProps } from "@/components/weapon-info";
 import { ComboboxItem } from "@/components/ui/combobox";
 import useEnemies from "@/hooks/useEnemies";
-import EnemyInfo from "@/components/enemy-info";
-
-const defaultWeaponTypesSelected = weaponTypes.map((type) => type.name);
-const defaultStatusEffectsSelected = [...allStatusEffects.slice(), "None"];
-const defaultWeaponAffinitiesSelected = [...weaponAffinities.slice()];
+import useWeapons from "@/hooks/useWeapons";
+import {
+  calculateDamageAgainstEnemy,
+  getWeaponAttack,
+} from "@/lib/calc/calculator";
+import ExtraInfo from "@/components/extra-info";
 
 export interface WeaponState {
   selectedWeapons: Weapon[];
   selectedChartWeapon: Weapon | null;
   weaponInfo: Weapon | null;
-  isWeaponInfoOpen: boolean;
   selectedWeaponLevel: [number, number, string];
 }
 
 export default function Home() {
-  const { character, setCharacterAttribute, setIsTwoHanding } = useCharacter();
+  const {
+    character,
+    setCharacterAttribute,
+    setIsTwoHanding,
+    getAttackAttributes,
+  } = useCharacter();
 
-  const initialWeaponsData = useMemo(() => getWeapons(), []);
-  const [weaponsData, setWeaponsData] = useState(initialWeaponsData);
+  const weaponsData = useWeapons();
 
-  const [weaponFilter, setWeaponFilter] = useState<WeaponFilter>({
-    selectedWeaponTypes: defaultWeaponTypesSelected,
-    selectedStatusEffects: defaultStatusEffectsSelected,
-    selectedWeaponAffinities: defaultWeaponAffinitiesSelected,
-  });
-  const [isEnemyInfoOpen, setIsEnemyInfoOpen] = useState(false);
+  const [weaponFilter, setWeaponFilter] =
+    useState<WeaponFilter>(defaultWeaponFilter);
 
   const [weaponState, setWeaponState] = useState<WeaponState>({
     selectedWeapons: [],
     selectedChartWeapon: null,
     weaponInfo: null,
-    isWeaponInfoOpen: false,
     selectedWeaponLevel:
       specialAndRegularLevelsDict[specialAndRegularLevelsDict.length - 1],
   });
+
+  const [isExtraInfoOpen, setIsExtraInfoOpen] = useState(false);
 
   const {
     enemiesData,
@@ -73,29 +71,34 @@ export default function Home() {
 
   const getWeaponAttackRating = useCallback(
     (weapon: Weapon) => {
-      if (!selectedEnemy || !isDamageOnEnemy) {
-        return calculateWeaponDamage(
-          character,
-          weapon,
-          Math.min(weaponState.selectedWeaponLevel[0], weapon.maxUpgradeLevel)
-        );
+      const attackRating = getWeaponAttack({
+        weapon,
+        attributes: getAttackAttributes(character.attributes),
+        twoHanding: character.isTwoHanding,
+        upgradeLevel: Math.min(
+          weaponState.selectedWeaponLevel[0],
+          weapon?.attack?.length - 1
+        ),
+      });
+
+      if (selectedEnemy && isDamageOnEnemy) {
+        return calculateDamageAgainstEnemy(attackRating, selectedEnemy);
       }
 
-      return calculateEnemyDamage(
-        calculateWeaponDamage(
-          character,
-          weapon,
-          Math.min(weaponState.selectedWeaponLevel[0], weapon.maxUpgradeLevel)
-        ),
-        selectedEnemy
-      );
+      return attackRating;
     },
-    [character, selectedEnemy, isDamageOnEnemy, weaponState.selectedWeaponLevel]
+    [
+      character,
+      selectedEnemy,
+      isDamageOnEnemy,
+      getAttackAttributes,
+      weaponState.selectedWeaponLevel,
+    ]
   );
 
   const updateWeaponInfo = useCallback(
-    (weaponName: string) => {
-      const weapon = weaponsData.findWeapon(weaponName);
+    (name: string) => {
+      const weapon = weaponsData.findWeapon(name);
 
       if (!weapon) return;
 
@@ -103,46 +106,34 @@ export default function Home() {
         setWeaponState((prev) => ({
           ...prev,
           weaponInfo: weapon,
-          isWeaponInfoOpen: false,
         }));
 
-        setIsEnemyInfoOpen(true);
+        setIsExtraInfoOpen(true);
       }
 
       setWeaponState((prev) => ({
         ...prev,
         weaponInfo: weapon,
-        isWeaponInfoOpen: true,
       }));
+
+      setIsExtraInfoOpen(true);
     },
     [weaponsData, isDamageOnEnemy, selectedEnemy]
   );
 
   useEffect(() => {}, [character.attributes, selectedEnemy, isDamageOnEnemy]);
 
-  const setFilteredWeapons = useCallback(() => {
-    const filteredWeapons = filterWeapons(
-      initialWeaponsData.weapons,
-      weaponFilter
-    );
-
-    setWeaponsData((prev) => ({
-      ...prev,
-      weapons: filteredWeapons,
-    }));
-  }, [initialWeaponsData, character, weaponFilter]);
-
-  const weaponSearchOptions: ComboboxItem[] = initialWeaponsData.weapons.map(
+  const weaponSearchOptions: ComboboxItem[] = weaponsData.weapons.map(
     (weapon) => ({
-      value: weapon.weaponName,
-      label: weapon.weaponName,
+      value: weapon.name,
+      label: weapon.name,
     })
   );
 
   const removeSelectedWeaponByName = useCallback(
-    (weaponName: string) => {
+    (name: string) => {
       const updatedSelectedWeapons = weaponState.selectedWeapons.filter(
-        (weapon) => weapon.weaponName !== weaponName
+        (weapon) => weapon.name !== name
       );
       setWeaponState((prev) => ({
         ...prev,
@@ -176,14 +167,7 @@ export default function Home() {
       <Header />
       <div className="flex sm:flex-row flex-col justify-center h-full w-full gap-5 sm:justify-between">
         {/*
-            TODO: Create a character build page and move this there
-            Replace this component with a field of Number inputs for each attack attribute
-            With floating labels
-
-            Above it should be a select that allows you to select the character build from 
-            a list of saved builds from the character build page
-
-            Above that should be two selects and a multi select for the body buff, aura buff, and other buffs
+            TODO: Add two selects and a multi select for body buffs, aura buffs, and other buffs
             Character type should be updated to accomodate for this extra data
         */}
         <CharacterStats
@@ -194,31 +178,43 @@ export default function Home() {
             setIsTwoHanding,
           }}
         />
-        {weaponState.weaponInfo && (
-          <WeaponInfo
-            character={character}
-            isWeaponInfoOpen={weaponState.isWeaponInfoOpen && !isDamageOnEnemy}
-            setIsWeaponInfoOpen={(isOpen: boolean) => {
-              setWeaponState((prev) => ({ ...prev, isWeaponInfoOpen: isOpen }));
-            }}
-            weapon={weaponState.weaponInfo}
-            setWeaponInfo={(weapon: Weapon) => {
-              setWeaponState((prev) => ({ ...prev, weaponInfo: weapon }));
-            }}
-            affinityOptions={weaponsData.weapons.filter(
-              (weapon) => weapon.name === weaponState.weaponInfo?.name
-            )}
-          />
-        )}
+
+        <ExtraInfo
+          enemy={
+            selectedEnemy && weaponState.weaponInfo
+              ? {
+                  enemy: selectedEnemy,
+                  attackRating: getWeaponAttackRating(weaponState.weaponInfo),
+                }
+              : undefined
+          }
+          weapon={
+            weaponState.weaponInfo
+              ? ({
+                  weapon: weaponState.weaponInfo,
+                  character,
+                } as Omit<WeaponInfoProps, "isOpen" | "setIsOpen">)
+              : undefined
+          }
+          setWeaponInfo={(weapon: Weapon) => {
+            setWeaponState((prev) => ({ ...prev, weaponInfo: weapon }));
+          }}
+          setIsOpen={setIsExtraInfoOpen}
+          isOpen={isExtraInfoOpen}
+          weaponAffinityOptions={weaponsData.weapons.filter(
+            (weapon) => weapon.weaponName === weaponState.weaponInfo?.weaponName
+          )}
+          isDamageOnEnemy={isDamageOnEnemy}
+        />
+
         <WeaponsTableControl
           {...{
             findWeapon: weaponsData.findWeapon,
             weaponSearchOptions,
             setSelectedWeapons: updateSelectedWeapons,
+            setSelectedChartWeapon: updateSelectedChartWeapon,
             setWeaponFilter,
             weaponFilter,
-            setSelectedChartWeapon: updateSelectedChartWeapon,
-            setFilteredWeapons,
             updateWeaponInfo,
             weaponState,
             setWeaponState,
@@ -246,6 +242,7 @@ export default function Home() {
           enemy={isDamageOnEnemy ? selectedEnemy : null}
         />
       )}
+
       {weaponState.selectedWeapons.length > 0 && (
         <SelectedWeaponsChart
           clearSelectedWeapons={() =>
@@ -259,32 +256,45 @@ export default function Home() {
           removeSelectedWeapon={removeSelectedWeaponByName}
         />
       )}
-      {selectedEnemy && (
-        <EnemyInfo
-          enemy={selectedEnemy}
-          isOpen={isEnemyInfoOpen}
-          setIsOpen={setIsEnemyInfoOpen}
-          attackRating={
-            weaponState.weaponInfo
-              ? getWeaponAttackRating(weaponState.weaponInfo)
-              : undefined
-          }
-          setWeaponInfo={(weapon: Weapon) => {
-            setWeaponState((prev) => ({ ...prev, weaponInfo: weapon }));
-          }}
-          affinityOptions={weaponsData.weapons.filter(
-            (weapon) => weapon.name === weaponState.weaponInfo?.name
+
+      {/* <pre className="w-full p-3 rounded-md bg-secondary">
+        <code>
+          {JSON.stringify(
+            weaponsData.weapons[3]
+              ? {
+                  enemyDamage: calculateDamageAgainstEnemy(
+                    getWeaponAttackRating(weaponsData.weapons[2]),
+                    enemiesData[3]
+                  ),
+                  enemy: enemiesData[3],
+                  attackRating: {
+                    ...getWeaponAttackRating(weaponsData.weapons[3]),
+                    weapon: {
+                      ...weaponsData.weapons[3],
+                      calcCorrectGraphs: null,
+                    },
+                  },
+                  weapon: {
+                    ...weaponsData.weapons[3],
+                    calcCorrectGraphs: null,
+                  },
+                }
+              : null,
+            null,
+            2
           )}
-        />
-      )}
+        </code>
+      </pre> */}
 
       <WeaponsTable
         updateWeaponInfo={updateWeaponInfo}
         selectedWeapons={weaponState.selectedWeapons}
         character={useDebouncedValue(character)}
-        weaponAttackRatings={weaponsData.weapons.map((weapon) =>
-          getWeaponAttackRating(weapon)
+        weaponAttackRatings={filterWeapons(
+          weaponsData.weapons.map(getWeaponAttackRating),
+          weaponFilter
         )}
+        isLoading={weaponsData.isLoading && weaponsData.weapons.length === 0}
         setNewGame={setNewGame}
         setSelectedWeapons={updateSelectedWeapons}
         setSelectedChartWeapon={updateSelectedChartWeapon}

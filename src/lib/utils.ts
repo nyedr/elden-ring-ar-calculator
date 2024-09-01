@@ -1,13 +1,20 @@
 import Papa from "papaparse";
-import { maxSpecialUpgradeLevel } from "./uiUtils";
+import {
+  getSpellScaling,
+  getTotalDamageAttackPower,
+  getTotalEnemyDamage,
+  maxSpecialUpgradeLevel,
+} from "./uiUtils";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Weapon } from "./data/weapon";
-import { calculateEnemyDamage, calculateWeaponDamage } from "./calc/damage";
-import { Character } from "@/hooks/useCharacter";
-import { ChartData } from "@/components/ui/chart";
+import { DamageValues, MotionValues, Weapon } from "./data/weapon";
+import { Character, getAttackAttributes } from "@/hooks/useCharacter";
+import { ChartData, ChartItem } from "@/components/ui/chart";
 import { Enemy } from "@/lib/data/enemy-data";
-import { DamageValues } from "./data/weapon-data";
+import {
+  getWeaponAttack,
+  calculateDamageAgainstEnemy,
+} from "./calc/calculator";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,6 +26,67 @@ export const parseCSV = <T>(csv: string) => {
     skipEmptyLines: true,
   }) as Papa.ParseResult<T>;
 };
+
+export async function fetchAndParseCSV(
+  api_url: string,
+  withoutHeaders: boolean = false
+): Promise<any[]> {
+  try {
+    const response = await fetch(api_url);
+    const csvData = await response.text();
+
+    const lines = csvData.split("\n");
+    const dataWithoutHeaders = lines.slice(1).join("\n");
+
+    const results = Papa.parse(withoutHeaders ? dataWithoutHeaders : csvData, {
+      header: true,
+      skipEmptyLines: true,
+    });
+
+    if (results.errors.length > 0) {
+      console.error("Errors parsing the CSV file:", results.errors, results);
+    }
+
+    return results.data;
+  } catch (error) {
+    console.error("Error fetching the CSV file:", error);
+    return [];
+  }
+}
+
+export const mapToObject = <K extends string | number, V>(
+  map: Map<K, V>
+): Record<K, V> => {
+  const obj: Record<K, V> = {} as Record<K, V>;
+
+  map.forEach((value, key) => {
+    obj[key] = value;
+  });
+
+  return obj;
+};
+
+export const mapToEntries = <K extends string | number, V>(
+  map: Map<K, V>
+): [K, V][] => {
+  const entries: [K, V][] = [];
+
+  map.forEach((value, key) => {
+    entries.push([key, value]);
+  });
+
+  return entries;
+};
+
+export function getEnumKeyByEnumValue<
+  TEnumKey extends string,
+  TEnumVal extends string | number
+>(myEnum: { [key in TEnumKey]: TEnumVal }, enumValue: TEnumVal): string {
+  const keys = (Object.keys(myEnum) as TEnumKey[]).filter(
+    (x) => myEnum[x] === enumValue
+  );
+  return keys.length > 0 ? keys[0] : "";
+}
 
 export const specialAndRegularLevelsDict = [
   [0, 0, "+0 / +0"],
@@ -80,72 +148,92 @@ export const getWeaponsLevelsData = (
     selectedEnemy: Enemy | null;
     isDamageOnEnemy: boolean;
   }
-) => {
+): ChartItem[] => {
   const maxWeaponLevels = selectedWeapons.map(
-    (weapon) => weapon.maxUpgradeLevel
+    (weapon) => weapon.attack.length - 1
   );
-
-  console.log(maxWeaponLevels);
 
   const { isConsistentLevels, levelsArr } = <LevelsArray>(
     createLevelsArray(maxWeaponLevels)
   );
 
-  console.log(isConsistentLevels, levelsArr);
-
-  const isEnemyDamage = enemyData.isDamageOnEnemy && enemyData.selectedEnemy;
+  const isEnemyDamage =
+    enemyData.isDamageOnEnemy && enemyData.selectedEnemy !== null;
 
   const selectedWeaponsData = selectedWeapons.map((weapon) => {
     if (isConsistentLevels) {
       return {
-        label: `${weapon.weaponName}`,
+        label: `${weapon.name}`,
         data: levelsArr.map((level) => {
-          let damage = calculateWeaponDamage(
-            character,
+          let damage = getWeaponAttack({
             weapon,
-            level as number
-          );
+            attributes: getAttackAttributes(character.attributes),
+            twoHanding: character.isTwoHanding,
+            upgradeLevel: Math.min(level, weapon.attack.length - 1),
+          });
 
-          if (isEnemyDamage) {
-            damage = calculateEnemyDamage(damage, enemyData.selectedEnemy!);
+          console.log("Inpus:", {
+            damage,
+            isEnemyDamage: !!(isEnemyDamage && !!enemyData.selectedEnemy),
+            selectedEnemy: enemyData.selectedEnemy,
+          });
+
+          if (isEnemyDamage && enemyData.selectedEnemy) {
+            damage = calculateDamageAgainstEnemy(
+              damage,
+              enemyData.selectedEnemy
+            );
           }
 
-          const totalDamage = isEnemyDamage ? damage.enemyAR : damage.getAR;
+          const totalDamage =
+            isEnemyDamage && damage.enemyDamages !== undefined
+              ? getTotalEnemyDamage(damage.enemyDamages) ?? 0
+              : getTotalDamageAttackPower(damage.attackPower);
 
           return {
             primary: level,
-            secondary: damage.spellScaling || totalDamage,
+            secondary: Math.floor(
+              weapon.incantationTool || weapon.sorceryTool
+                ? getSpellScaling(weapon, damage.spellScaling)
+                : totalDamage
+            ),
           } as ChartData[0]["data"][0];
         }),
       };
     } else {
       return {
-        label: `${weapon.weaponName}`,
+        label: `${weapon.name}`,
         data: (levelsArr as [number, number, string][]).map(
           ([regularLevel, specialLevel, label]) => {
             const isSpecialLevel =
-              weapon.maxUpgradeLevel === maxSpecialUpgradeLevel;
-            let damage = calculateWeaponDamage(
-              character,
+              weapon.attack.length - 1 === maxSpecialUpgradeLevel;
+
+            let damage = getWeaponAttack({
               weapon,
-              isSpecialLevel ? specialLevel : regularLevel
-            );
+              attributes: getAttackAttributes(character.attributes),
+              twoHanding: character.isTwoHanding,
+              upgradeLevel: isSpecialLevel ? specialLevel : regularLevel,
+            });
 
             if (isEnemyDamage) {
-              damage = calculateEnemyDamage(damage, enemyData.selectedEnemy!);
+              damage = calculateDamageAgainstEnemy(
+                damage,
+                enemyData.selectedEnemy!
+              );
             }
 
-            const totalDamage = isEnemyDamage ? damage.enemyAR : damage.getAR;
-
-            console.log(
-              weapon.maxUpgradeLevel,
-              totalDamage,
-              isSpecialLevel ? specialLevel : regularLevel
-            );
+            const totalDamage =
+              isEnemyDamage && damage.enemyDamages !== undefined
+                ? getTotalEnemyDamage(damage.enemyDamages) ?? 0
+                : getTotalDamageAttackPower(damage.attackPower);
 
             return {
               primary: label,
-              secondary: damage.spellScaling || totalDamage,
+              secondary: Math.floor(
+                weapon.incantationTool || weapon.sorceryTool
+                  ? getSpellScaling(weapon, damage.spellScaling)
+                  : totalDamage
+              ),
             } as ChartData[0]["data"][0];
           }
         ),
@@ -173,6 +261,7 @@ export const removeDuplicateNames = (arr: any[]) => {
   });
 };
 
+// TODO: Upgrade optiaml poise break sequence algorithm
 export const getOptimalPoiseBrakeSequence = (
   poiseDmg: Record<string, number | null>,
   poiseTarget: number
@@ -184,23 +273,26 @@ export const getOptimalPoiseBrakeSequence = (
   let sequence: string[] = [];
   let currentPoise = 0;
 
-  // First, try to get as close as possible without exceeding the target
+  // Efficiently find the closest possible match
   for (let [move, dmg] of validMoves) {
-    while (currentPoise + dmg! <= poiseTarget) {
+    const poiseValue = dmg!;
+    if (currentPoise + poiseValue >= poiseTarget) {
       sequence.push(move);
-      currentPoise += dmg!;
-      if (currentPoise >= poiseTarget) {
-        return sequence;
+      return sequence;
+    } else {
+      const numHits = Math.floor((poiseTarget - currentPoise) / poiseValue);
+      if (numHits > 0) {
+        sequence.push(...Array(numHits).fill(move));
+        currentPoise += numHits * poiseValue;
       }
     }
   }
 
   // If no exact match is possible, add the smallest possible move to exceed the poise target
-  for (let [move, dmg] of validMoves.reverse()) {
-    if (currentPoise < poiseTarget) {
-      sequence.push(move);
-      currentPoise += dmg!;
-      if (currentPoise >= poiseTarget) {
+  if (currentPoise < poiseTarget) {
+    for (let [move, dmg] of validMoves.reverse()) {
+      if (dmg! > 0) {
+        sequence.push(move);
         break;
       }
     }
@@ -219,7 +311,7 @@ export const parseMove = (move: string): string => {
   return move;
 };
 
-export const getDamageValues = (damageValues: DamageValues) => {
+export const getDamageValues = (damageValues: DamageValues | MotionValues) => {
   return {
     "1h R1 1": damageValues["1h R1 1"],
     "1h R2 1": damageValues["1h R2 1"],
@@ -236,4 +328,8 @@ export const getDamageValues = (damageValues: DamageValues) => {
     "2h Jumping R1": damageValues["2h Jumping R1"],
     "2h Jumping R2": damageValues["2h Jumping R2"],
   };
+};
+
+export const capitalize = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };

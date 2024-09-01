@@ -1,8 +1,14 @@
 import fs from "fs";
 import path from "path";
-import Papa from "papaparse";
-import { Enemy, EnemyData, EnemyDrop, NewGame } from "./enemy-data";
-import { DamageType, StatusEffect } from "./weapon-data";
+import {
+  Enemy,
+  EnemyDamageType,
+  EnemyData,
+  EnemyDrop,
+  NewGame,
+  StatusEffect,
+} from "./enemy-data";
+import { fetchAndParseCSV } from "../utils";
 
 // Constants
 const SPREADSHEET_ID = "1BVwmKqB8pvuyJkSTGYOM2kAJxFMQ0jVsc6aKYz_Upes";
@@ -17,33 +23,6 @@ const spreadSheetGids = [
   [473411466, NewGame.NGPlus6],
   [1181312165, NewGame.NGPlus7],
 ];
-
-async function fetchAndParseCSV(
-  api_url: string,
-  withoutHeaders: boolean = false
-): Promise<any[]> {
-  try {
-    const response = await fetch(api_url);
-    const csvData = await response.text();
-
-    const lines = csvData.split("\n");
-    const dataWithoutHeaders = lines.slice(1).join("\n");
-
-    const results = Papa.parse(withoutHeaders ? dataWithoutHeaders : csvData, {
-      header: true,
-      skipEmptyLines: true,
-    });
-
-    if (results.errors.length > 0) {
-      console.error("Errors parsing the CSV file:", results.errors, results);
-    }
-
-    return results.data;
-  } catch (error) {
-    console.error("Error fetching the CSV file:", error);
-    return [];
-  }
-}
 
 const parseRes = (res: string): number | "Immune" => {
   if (res === "Immune") {
@@ -131,24 +110,24 @@ export const updateEnemies = async (update: boolean = false) => {
         dlcClearHealthPoints:
           data.dlcClear !== "-" ? +data.dlcClear.replace(",", "") : null,
         defence: {
-          [DamageType.Physical]: +data.Phys,
-          [DamageType.Strike]: +data.Strike,
-          [DamageType.Slash]: +data.Slash,
-          [DamageType.Pierce]: +data.Pierce,
-          [DamageType.Magic]: +data.Magic,
-          [DamageType.Fire]: +data.Fire,
-          [DamageType.Lightning]: +data.Ltng,
-          [DamageType.Holy]: +data.Holy,
+          [EnemyDamageType.Physical]: +data.Phys,
+          [EnemyDamageType.Strike]: +data.Strike,
+          [EnemyDamageType.Slash]: +data.Slash,
+          [EnemyDamageType.Pierce]: +data.Pierce,
+          [EnemyDamageType.Magic]: +data.Magic,
+          [EnemyDamageType.Fire]: +data.Fire,
+          [EnemyDamageType.Lightning]: +data.Ltng,
+          [EnemyDamageType.Holy]: +data.Holy,
         },
         damageNegation: {
-          [DamageType.Physical]: +data.Phys_1,
-          [DamageType.Strike]: +data.Strike_1,
-          [DamageType.Slash]: +data.Slash_1,
-          [DamageType.Pierce]: +data.Pierce_1,
-          [DamageType.Magic]: +data.Magic_1,
-          [DamageType.Fire]: +data.Fire_1,
-          [DamageType.Lightning]: +data.Ltng_1,
-          [DamageType.Holy]: +data.Holy_1,
+          [EnemyDamageType.Physical]: +data.Phys_1,
+          [EnemyDamageType.Strike]: +data.Strike_1,
+          [EnemyDamageType.Slash]: +data.Slash_1,
+          [EnemyDamageType.Pierce]: +data.Pierce_1,
+          [EnemyDamageType.Magic]: +data.Magic_1,
+          [EnemyDamageType.Fire]: +data.Fire_1,
+          [EnemyDamageType.Lightning]: +data.Ltng_1,
+          [EnemyDamageType.Holy]: +data.Holy_1,
         },
         poise: {
           base: +data.Base,
@@ -176,10 +155,7 @@ export const updateEnemies = async (update: boolean = false) => {
     const enemiesJson = JSON.stringify(enemies);
 
     if (update) {
-      const outputDir = path.resolve(
-        process.cwd(),
-        `./src/lib/data/csv/enemies`
-      );
+      const outputDir = path.resolve(process.cwd(), `./public/data/enemies`);
       const filePath = path.resolve(outputDir, `enemies${NG}.json`);
 
       console.log(`Updating ${filePath}`);

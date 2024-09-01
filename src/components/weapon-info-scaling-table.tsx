@@ -7,29 +7,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Icons } from "./icons";
-import { damageAttributeKeys } from "@/lib/data/weapon-data";
 import { Weapon } from "@/lib/data/weapon";
-import { scalingRating } from "@/lib/calc/scaling";
-import { Attributes } from "@/hooks/useCharacter";
-import { meetsWeaponRequirement } from "@/lib/calc/damage";
+import { allAttributes, Attributes } from "@/lib/data/attributes";
+import { capitalize } from "@/lib/utils";
+import { getAttributeScalingTier } from "@/lib/uiUtils";
 
 interface WeaponScalingTableProps {
   weapon: Weapon;
   level: number;
-  characterAttributes: Attributes;
+  attributes: Attributes;
 }
 
 export default function WeaponScalingTable({
   weapon,
   level,
-  characterAttributes,
+  attributes,
 }: WeaponScalingTableProps) {
-  const weaponRequirements = damageAttributeKeys.map(
+  const weaponRequirements = allAttributes.map(
     (key) => weapon.requirements[key]
   );
-  const weaponScaling = damageAttributeKeys.map((key) => ({
+  const weaponScaling = allAttributes.map((key) => ({
     key,
-    scaling: weapon.levels[level][key],
+    scaling: weapon.attributeScaling[level][key],
   }));
 
   return (
@@ -37,8 +36,8 @@ export default function WeaponScalingTable({
       <TableHeader className="border-b-2 border-secondary">
         <TableRow>
           <TableHead className="sm:w-32"></TableHead>
-          {damageAttributeKeys.map((key, index) => (
-            <TableHead key={index}>{key}</TableHead>
+          {allAttributes.map((key, index) => (
+            <TableHead key={index}>{capitalize(key)}</TableHead>
           ))}
         </TableRow>
       </TableHeader>
@@ -48,15 +47,16 @@ export default function WeaponScalingTable({
           {weaponScaling.map(({ key, scaling }, index) => (
             <TableCell
               className={
-                meetsWeaponRequirement(weapon, key, characterAttributes) ===
-                false
+                weapon.requirements[key]! <= attributes[key] === false
                   ? "text-red-500"
                   : ""
               }
               key={index}
             >
               {scaling ? (
-                `${scalingRating(scaling)} (${Math.floor(scaling * 100)})`
+                `${getAttributeScalingTier(weapon, key, level)} (${Math.floor(
+                  scaling * 100
+                )})`
               ) : (
                 <Icons.minus className="text-secondary w-4 h-4" />
               )}
