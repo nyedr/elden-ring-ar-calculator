@@ -275,7 +275,7 @@ export const parsePoiseDamage = (poiseDamage: string) => {
   return parseInt(poiseDamage);
 };
 
-// TODO: Upgrade optiaml poise break sequence algorithm
+// TODO: Upgrade optiaml poise break sequence algorithm?
 export const getOptimalPoiseBrakeSequence = (
   poiseDmg: Record<string, number | null>,
   poiseTarget: number

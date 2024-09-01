@@ -42,26 +42,35 @@ const isStatusEffectsSelected = (
   attackRating: WeaponAttackResult,
   selectedStatusEffects: Set<AttackPowerType | "None">
 ): boolean => {
-  const statusEffectKeys = Object.keys(attackRating.attackPower).filter((key) =>
-    isStatusType(+key)
-  ) as unknown as AttackPowerType[];
+  const statusEffectKeys = Object.keys(attackRating.attackPower)
+    .filter((key) => isStatusType(+key))
+    .map((key) => String(key)) as unknown as AttackPowerType[];
 
   const hasStatusEffect = statusEffectKeys.length > 0;
 
+  // Case 1: "None" is the only selected effect
   if (selectedStatusEffects.has("None") && selectedStatusEffects.size === 1) {
     return !hasStatusEffect;
   }
 
+  const hasSelectedStatusEffect = statusEffectKeys.some((key) =>
+    selectedStatusEffects.has(+key)
+  );
+
   // Case 2: "None" and other effects are selected
   if (selectedStatusEffects.has("None") && selectedStatusEffects.size > 1) {
-    return (
-      !hasStatusEffect ||
-      statusEffectKeys.some((key) => selectedStatusEffects.has(key))
-    );
+    return !hasStatusEffect || hasSelectedStatusEffect;
   }
 
-  // Case 3: No "None" selected
-  return statusEffectKeys.some((key) => selectedStatusEffects.has(key));
+  // console.log(
+  //   "statusEffectKeys",
+  //   statusEffectKeys,
+  //   hasSelectedStatusEffect,
+  //   selectedStatusEffects
+  // );
+
+  // Case 3: No "None" is selected, only specific effects
+  return hasSelectedStatusEffect;
 };
 
 const isWeaponAffinitySelected = (

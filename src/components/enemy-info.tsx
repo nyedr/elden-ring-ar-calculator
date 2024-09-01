@@ -67,7 +67,6 @@ export default function EnemyInfo({
               <span>{numberWithCommas(enemy.healthPoints)}</span>
             </DialogDescription>
             <DialogDescription className="text-primary flex w-full items-center justify-between">
-              {/* TODO: Poise not being displayed correctly */}
               <strong>Poise</strong>
               <span>{Math.floor(enemy.poise.base)}</span>
             </DialogDescription>

@@ -102,14 +102,16 @@ export default function WeaponsTableControl({
     },
   ] as MultiSelectOption[];
 
-  const setSelectedStatusEffects = (selectedStatusEffects: string[]) => {
-    const selectedEffectsSet = new Set(
-      selectedStatusEffects as (AttackPowerType | "None")[]
+  const setSelectedStatusEffects = (selectedEffects: string[]) => {
+    const selectedStatusEffects = new Set(
+      selectedEffects.map((type) =>
+        type === "None" ? type : (+type as AttackPowerType)
+      )
     );
 
     setLocalWeaponFilter((prev) => ({
       ...prev,
-      selectedStatusEffects: selectedEffectsSet,
+      selectedStatusEffects,
     }));
   };
 
@@ -174,7 +176,9 @@ export default function WeaponsTableControl({
         <MultiSelect
           id="statusEffects"
           options={statusTypeDropDownOptions}
-          onValueChange={setSelectedStatusEffects}
+          onValueChange={(selectedStatusEffects) =>
+            setSelectedStatusEffects(selectedStatusEffects)
+          }
           defaultValue={Array.from(localWeaponFilter.selectedStatusEffects).map(
             String
           )}

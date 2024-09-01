@@ -8,7 +8,6 @@ const weaponPoiseDamageGID = 1512110930;
 const extraWeaponDataGID = 809407445;
 const weaponMotionValuesGID = 0;
 
-// TODO: Organize types
 export interface ExtraWeaponDataResult {
   // Weapon name; this is the join key
   Weapon: string;
