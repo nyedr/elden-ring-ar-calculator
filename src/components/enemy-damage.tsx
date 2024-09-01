@@ -81,17 +81,26 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
       .map((key) => ({ label: key.slice(3), value: key }));
   }, [attackRating.weapon.motionValues]);
 
+  const isEnemyABoss = enemy.name.includes("Boss");
+  const riposteType = isEnemyABoss ? "Riposte (Large PvE)" : "Riposte";
+
   const weaponOptions = useMemo(
     () => ({
-      oneHanded: weaponAttackOptions.filter((option) =>
-        option.value.startsWith("1h")
+      oneHanded: weaponAttackOptions.filter(
+        (option) =>
+          option.value.startsWith("1h") ||
+          ["Backstab", riposteType].includes(option.value)
       ),
-      twoHanded: weaponAttackOptions.filter((option) =>
-        option.value.startsWith("2h")
+      twoHanded: weaponAttackOptions.filter(
+        (option) =>
+          option.value.startsWith("2h") ||
+          ["Backstab", riposteType].includes(option.value)
       ),
     }),
-    [weaponAttackOptions]
+    [weaponAttackOptions, riposteType]
   );
+
+  console.log(weaponOptions);
 
   // Initialize state for two-handing and selected weapon attack
   const [isTwoHanding, setIsTwoHanding] = useState(false);
@@ -100,7 +109,7 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
     twoHanded: weaponOptions.twoHanded[0]?.value ?? "",
   });
 
-  const oneHandedPoiseBreak = useMemo(() => {
+  const oneHandedPoiseDamages = useMemo(() => {
     const result: Record<string, number | null> = {};
     weaponOptions.oneHanded.forEach((option) => {
       result[option.value] =
@@ -110,7 +119,7 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
     return result;
   }, [weaponOptions.oneHanded, attackRating.weapon.poiseDamage]);
 
-  const twoHandedPoiseBreak = useMemo(() => {
+  const twoHandedPoiseDamages = useMemo(() => {
     const result: Record<string, number | null> = {};
     weaponOptions.twoHanded.forEach((option) => {
       result[option.value] =
@@ -121,15 +130,27 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
   }, [weaponOptions.twoHanded, attackRating.weapon.poiseDamage]);
 
   const optimalPoiseBreakSequence = useMemo(() => {
+    const validOneHandedPoiseDamages = Object.fromEntries(
+      Object.entries(oneHandedPoiseDamages).filter(
+        ([key, value]) => +(value ?? 0) !== 0
+      )
+    );
+
+    const validTwoHandedPoiseDamages = Object.fromEntries(
+      Object.entries(twoHandedPoiseDamages).filter(
+        ([key, value]) => +(value ?? 0) !== 0
+      )
+    );
+
     const sequence = getOptimalPoiseBrakeSequence(
-      isTwoHanding ? twoHandedPoiseBreak : oneHandedPoiseBreak,
+      isTwoHanding ? validOneHandedPoiseDamages : validTwoHandedPoiseDamages,
       enemy.poise.effective
     );
     return sequence;
   }, [
     isTwoHanding,
-    twoHandedPoiseBreak,
-    oneHandedPoiseBreak,
+    oneHandedPoiseDamages,
+    twoHandedPoiseDamages,
     enemy.poise.effective,
   ]);
 

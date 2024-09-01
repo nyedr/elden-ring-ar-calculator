@@ -17,6 +17,7 @@ export const damageValuesKeys = [
   "1h Running R2",
   "1h Jumping R1",
   "1h Jumping R2",
+  "1h Guard Counter",
   "2h R1 1",
   "2h R1 2",
   "2h R1 3",
@@ -31,6 +32,10 @@ export const damageValuesKeys = [
   "2h Running R2",
   "2h Jumping R1",
   "2h Jumping R2",
+  "2h Guard Counter",
+  "Backstab",
+  "Riposte",
+  "Riposte (Large PvE)",
 ] as const;
 
 export const isDamageValuesKey = (

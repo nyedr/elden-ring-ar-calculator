@@ -116,32 +116,32 @@ export function DataTable<TData, TValue>({
     // Set the default page size
     table.setPageSize(DEFAULT_TABLE_PAGE_SIZE);
 
-    // Select the rows that are in the selectedItems array
-    const selectedWeaponNames = selectedItems?.map(
-      (item) => (item as WeaponAttackResult).weapon.name
-    );
-    table
-      .getRowModel()
-      .rows.forEach(
-        (row) =>
-          selectedWeaponNames?.includes(
-            (row.original as WeaponAttackResult).weapon.name
-          ) && row.toggleSelected()
-      );
+    // // Select the rows that are in the selectedItems array
+    // const selectedWeaponNames = selectedItems?.map(
+    //   (item) => (item as WeaponAttackResult).weapon.name
+    // );
+    // table
+    //   .getRowModel()
+    //   .rows.forEach(
+    //     (row) =>
+    //       selectedWeaponNames?.includes(
+    //         (row.original as WeaponAttackResult).weapon.name
+    //       ) && row.toggleSelected()
+    //   );
 
-    // Check if any filtered weapons have non-zero spell scaling
-    // TODO: Test this with the actual data
-    const hasNonZeroSpellScaling = data.some(
-      (item) =>
-        (item as WeaponAttackResult).weapon.incantationTool ||
-        (item as WeaponAttackResult).weapon.sorceryTool
-    );
+    // // Check if any filtered weapons have non-zero spell scaling
+    // // TODO: Test this with the actual data
+    // const hasNonZeroSpellScaling = data.some(
+    //   (item) =>
+    //     (item as WeaponAttackResult).weapon.incantationTool ||
+    //     (item as WeaponAttackResult).weapon.sorceryTool
+    // );
 
-    // Update column visibility based on the check
-    handleColumnVisibilityChange((old) => ({
-      ...old,
-      spellScaling: hasNonZeroSpellScaling,
-    }));
+    // // Update column visibility based on the check
+    // handleColumnVisibilityChange((old) => ({
+    //   ...old,
+    //   spellScaling: hasNonZeroSpellScaling,
+    // }));
   }, [table, selectedItems, data]);
 
   return (

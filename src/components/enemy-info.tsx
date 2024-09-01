@@ -67,15 +67,16 @@ export default function EnemyInfo({
               <span>{numberWithCommas(enemy.healthPoints)}</span>
             </DialogDescription>
             <DialogDescription className="text-primary flex w-full items-center justify-between">
+              {/* TODO: Poise not being displayed correctly */}
               <strong>Poise</strong>
-              <span>{Math.floor(enemy.poise.effective)}</span>
+              <span>{Math.floor(enemy.poise.base)}</span>
             </DialogDescription>
             <DialogDescription className="text-primary flex w-full items-center justify-between">
               <strong className="flex items-center">
                 <span>Poise regen delay</span>
                 <Tooltip
                   text={`Enemy poice will start regenerating at a rate of 13 per
-                      second after ${enemy.poise.regenDelay} seconds of not being
+                      second after ${enemy.poise.effective} seconds of not being
                       hit.`}
                 />
               </strong>

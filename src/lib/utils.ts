@@ -261,12 +261,30 @@ export const removeDuplicateNames = (arr: any[]) => {
   });
 };
 
+export const parsePoiseDamage = (poiseDamage: string) => {
+  if (poiseDamage === "0") {
+    return null;
+  }
+
+  if (poiseDamage.includes("+")) {
+    return poiseDamage
+      .split(" + ")
+      .reduce((acc, val) => acc + parseInt(val), 0);
+  }
+
+  return parseInt(poiseDamage);
+};
+
 // TODO: Upgrade optiaml poise break sequence algorithm
 export const getOptimalPoiseBrakeSequence = (
   poiseDmg: Record<string, number | null>,
   poiseTarget: number
 ): string[] => {
   const validMoves = Object.entries(poiseDmg)
+    .map(
+      ([move, dmg]) =>
+        [move, parsePoiseDamage(String(dmg))] as [string, number | null]
+    )
     .filter(([_, dmg]) => dmg !== null)
     .sort((a, b) => b[1]! - a[1]!); // Sort moves by poise value in descending order
 
@@ -303,11 +321,19 @@ export const getOptimalPoiseBrakeSequence = (
 
 export const parseMove = (move: string): string => {
   const match = move.match(
-    /(1h|2h) (R\d+|Charged R\d+|Running R\d+|Jumping R\d+)/
+    /(1h|2h) (R\d+|Charged R\d+|Running R\d+|Jumping R\d+|Guard Counter)|Riposte/
   );
+
   if (match) {
+    if (match[0].includes("Guard Counter")) {
+      return "Guard Counter";
+    }
+    if (match[0] === "Riposte") {
+      return "Riposte";
+    }
     return match[2];
   }
+
   return move;
 };
 
@@ -327,6 +353,11 @@ export const getDamageValues = (damageValues: DamageValues | MotionValues) => {
     "2h Running R2": damageValues["2h Running R2"],
     "2h Jumping R1": damageValues["2h Jumping R1"],
     "2h Jumping R2": damageValues["2h Jumping R2"],
+    Backstab: damageValues["Backstab"],
+    Riposte: damageValues["Riposte"],
+    "Riposte (Large PvE)": damageValues["Riposte (Large PvE)"],
+    "1h Guard Counter": damageValues["1h Guard Counter"],
+    "2h Guard Counter": damageValues["2h Guard Counter"],
   };
 };
 
