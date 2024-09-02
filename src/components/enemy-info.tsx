@@ -6,9 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Enemy } from "@/lib/data/enemy-data";
-import { numberWithCommas } from "@/lib/utils";
+import { cn, numberWithCommas } from "@/lib/utils";
 import EnemyInfoTables from "./enemy-info-tables";
 import EnemyDamage from "./enemy-damage";
 import Tooltip from "./ui/tooltip";
@@ -24,6 +24,8 @@ import {
 import { Weapon } from "@/lib/data/weapon";
 import { affinityOptions } from "@/lib/uiUtils";
 import { WeaponAttackResult } from "@/lib/calc/calculator";
+import Link from "next/link";
+import { Icons } from "./icons";
 
 export interface EnemyInfoProps {
   attackRating?: WeaponAttackResult;
@@ -52,9 +54,16 @@ export default function EnemyInfo({
           <DialogTitle className="text-2xl">{enemy.name}</DialogTitle>
           {attackRating && (
             <span className="text-xl font-semibold">
-              {attackRating?.weapon.weaponName}
+              <span>{attackRating.weapon.weaponName}</span>
+              <Link
+                target="_blank"
+                className={cn(buttonVariants({ variant: "link" }), "p-0 m-0")}
+                href={attackRating.weapon.url ?? "#"}
+              >
+                <Icons.externalLink className="w-4 h-4 ml-2" />
+              </Link>
             </span>
-          )}{" "}
+          )}
         </DialogHeader>
         <div className="w-full flex flex-col justify-center">
           <div className="grid md:grid-cols-2 md:gap-x-10 gap-y-5">
@@ -75,7 +84,7 @@ export default function EnemyInfo({
                 <span>Poise regen delay</span>
                 <Tooltip
                   text={`Enemy poice will start regenerating at a rate of 13 per
-                      second after ${enemy.poise.effective} seconds of not being
+                      second after ${enemy.poise.regenDelay} seconds of not being
                       hit.`}
                 />
               </strong>

@@ -257,35 +257,6 @@ export default function Home() {
         />
       )}
 
-      {/* <pre className="w-full p-3 rounded-md bg-secondary">
-        <code>
-          {JSON.stringify(
-            weaponsData.weapons[3]
-              ? {
-                  enemyDamage: calculateDamageAgainstEnemy(
-                    getWeaponAttackRating(weaponsData.weapons[2]),
-                    enemiesData[3]
-                  ),
-                  enemy: enemiesData[3],
-                  attackRating: {
-                    ...getWeaponAttackRating(weaponsData.weapons[3]),
-                    weapon: {
-                      ...weaponsData.weapons[3],
-                      calcCorrectGraphs: null,
-                    },
-                  },
-                  weapon: {
-                    ...weaponsData.weapons[3],
-                    calcCorrectGraphs: null,
-                  },
-                }
-              : null,
-            null,
-            2
-          )}
-        </code>
-      </pre> */}
-
       <WeaponsTable
         updateWeaponInfo={updateWeaponInfo}
         selectedWeapons={weaponState.selectedWeapons}

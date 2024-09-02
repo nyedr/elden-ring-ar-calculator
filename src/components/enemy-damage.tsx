@@ -132,13 +132,13 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
   const optimalPoiseBreakSequence = useMemo(() => {
     const validOneHandedPoiseDamages = Object.fromEntries(
       Object.entries(oneHandedPoiseDamages).filter(
-        ([key, value]) => +(value ?? 0) !== 0
+        ([key, value]) => +(value ?? 0) !== 0 && !key.includes("Guard")
       )
     );
 
     const validTwoHandedPoiseDamages = Object.fromEntries(
       Object.entries(twoHandedPoiseDamages).filter(
-        ([key, value]) => +(value ?? 0) !== 0
+        ([key, value]) => +(value ?? 0) !== 0 && !key.includes("Guard")
       )
     );
 
