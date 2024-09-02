@@ -43,9 +43,9 @@ export default function WeaponExtraTable({
               weaponStatusTypes
                 .map(
                   (statusType) =>
-                    `${getDamageTypeKey(statusType)} (${
-                      attackRating.attackPower[statusType]
-                    })`
+                    `${getDamageTypeKey(statusType)} (${Math.floor(
+                      attackRating.attackPower[statusType]?.total!
+                    )})`
                 )
                 .join(", ")
             ) : (
