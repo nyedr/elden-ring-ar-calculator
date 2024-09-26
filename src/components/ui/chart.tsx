@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 import { AxisOptions, Chart } from "react-charts";
-import { Icons } from "../icons";
 
 export type ChartItem = {
   label: string;
@@ -88,7 +87,7 @@ export default function DynamicStyledChart({
 
   return (
     <div className="flex-[2] max-h-[500px] relative m-0 sm:m-4">
-      <div className="w-full mb-3 flex flex-wrap items-center gap-3 justify-evenly">
+      <div className="flex flex-wrap items-center w-full gap-3 mb-3 justify-evenly">
         {data.map((d, i) => (
           <div
             key={i}

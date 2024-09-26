@@ -261,6 +261,7 @@ export function decodeRegulationData({
         calcCorrectGraphs: weaponCalcCorrectGraphs,
         scalingTiers,
         dlc,
+        isSpecialWeapon: attack.length - 1 < 11,
       } as Weapon;
     }
   );

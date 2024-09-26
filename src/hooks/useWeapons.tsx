@@ -45,7 +45,7 @@ export default function useWeapons() {
     return () => {
       isMounted = false; // Cleanup to avoid setting state after unmount
     };
-  }, []); // Removed dependency on `regulationVersionName` as it doesn't affect the logic
+  }, []);
 
   const weaponsMap = useMemo(
     () => new Map(weapons.map((weapon) => [weapon.name, weapon])),

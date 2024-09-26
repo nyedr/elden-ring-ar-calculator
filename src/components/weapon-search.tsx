@@ -5,10 +5,10 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Weapon } from "@/lib/data/weapon";
 import { Icons } from "./icons";
-import Combobox, { ComboboxItem } from "./ui/combobox";
+import Combobox, { SelectItem } from "./ui/combobox";
 
 export interface WeaponSearchProps {
-  items: ComboboxItem[];
+  items: SelectItem[];
   setSelectedWeapons: (func: (prev: Weapon[]) => Weapon[]) => void;
   findWeapon: (name: string) => Weapon | undefined;
   setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
@@ -36,8 +36,10 @@ export function WeaponSearch({
   };
 
   return (
-    <div className="flex items-center gap-3 w-full">
+    <div className="flex items-center w-full gap-3">
       <Combobox
+        hasLabel={false}
+        buttonProps={{ size: "default" }}
         items={items}
         onValueChange={(currentValue) =>
           setValue(currentValue === value ? "" : currentValue)
@@ -51,7 +53,7 @@ export function WeaponSearch({
         variant="ghost"
         title="Add to comparison chart"
       >
-        <Icons.plus className="h-4 w-4" />
+        <Icons.plus className="w-4 h-4" />
       </Button>
       <Button
         onClick={() => {
@@ -60,9 +62,9 @@ export function WeaponSearch({
         }}
         size="icon"
         variant="ghost"
-        title="View damage breakdown chart"
+        title="View scaling chart"
       >
-        <Icons.chart className="h-4 w-4" />
+        <Icons.chart className="w-4 h-4" />
       </Button>
       <Button
         onClick={() => updateWeaponInfo(value)}
@@ -70,7 +72,7 @@ export function WeaponSearch({
         variant="ghost"
         title="View additional information"
       >
-        <Icons.book className="h-4 w-4" />
+        <Icons.book className="w-4 h-4" />
       </Button>
     </div>
   );

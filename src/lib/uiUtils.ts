@@ -1,50 +1,52 @@
-import specialWeaponIcon from "@/public/specialWeapon.webp";
-import standardAffinityIcon from "@/public/standardAffinity.webp";
-import heavyAffinityIcon from "@/public/heavyAffinity.webp";
-import keenAffinityIcon from "@/public/keenAffinity.webp";
-import qualityAffinityIcon from "@/public/qualityAffinity.webp";
-import magicAffinityIcon from "@/public/magicAffinity.webp";
-import coldAffinityIcon from "@/public/coldAffinity.webp";
-import fireAffinityIcon from "@/public/fireAffinity.webp";
-import lightningAffinityIcon from "@/public/lightningAffinity.webp";
-import sacredAffinityIcon from "@/public/sacredAffinity.webp";
-import poisonAffinityIcon from "@/public/poisonAffinity.webp";
-import bloodAffinityIcon from "@/public/bloodAffinity.webp";
-import occultAffinityIcon from "@/public/occultAffinity.webp";
-import scarletRotStatusIcon from "@/public/scarletRotStatus.webp";
-import madnessStatusIcon from "@/public/madnessStatus.webp";
-import sleepStatusIcon from "@/public/sleepStatus.webp";
-import frostStatusIcon from "@/public/frostStatus.webp";
-import poisonStatusIcon from "@/public/poisonStatus.webp";
-import bleedStatusIcon from "@/public/bleedStatus.webp";
-import deathBlightStatusIcon from "@/public/deathBlightStatus.webp";
+const specialWeaponIcon = "/specialWeapon.webp";
+const standardAffinityIcon = "/standardAffinity.webp";
+const heavyAffinityIcon = "/heavyAffinity.webp";
+const keenAffinityIcon = "/keenAffinity.webp";
+const qualityAffinityIcon = "/qualityAffinity.webp";
+const magicAffinityIcon = "/magicAffinity.webp";
+const coldAffinityIcon = "/coldAffinity.webp";
+const fireAffinityIcon = "/fireAffinity.webp";
+const lightningAffinityIcon = "/lightningAffinity.webp";
+const sacredAffinityIcon = "/sacredAffinity.webp";
+const poisonAffinityIcon = "/poisonAffinity.webp";
+const bloodAffinityIcon = "/bloodAffinity.webp";
+const occultAffinityIcon = "/occultAffinity.webp";
+const scarletRotStatusIcon = "/scarletRotStatus.webp";
+const madnessStatusIcon = "/madnessStatus.webp";
+const sleepStatusIcon = "/sleepStatus.webp";
+const frostStatusIcon = "/frostStatus.webp";
+const poisonStatusIcon = "/poisonStatus.webp";
+const bleedStatusIcon = "/bleedStatus.webp";
+const deathBlightStatusIcon = "/deathBlightStatus.webp";
 import { WeaponType } from "./data/weaponTypes";
 import { allDamageTypes, AttackPowerType } from "./data/attackPowerTypes";
-import { StaticImageData } from "next/image";
 import { AttackPower } from "./calc/calculator";
-import { Weapon } from "./data/weapon";
+import { AffinityId, AttackElementCorrect, Weapon } from "./data/weapon";
 import { Attribute } from "./data/attributes";
+import { EnemyType } from "./data/enemy-data";
 
 export interface AffinityOption {
   text: string;
-  icon: StaticImageData;
+  icon: string;
 }
 
-export const affinityOptions = new Map<number, AffinityOption>([
-  [0, { text: "Standard", icon: standardAffinityIcon }],
-  [1, { text: "Heavy", icon: heavyAffinityIcon }],
-  [2, { text: "Keen", icon: keenAffinityIcon }],
-  [3, { text: "Quality", icon: qualityAffinityIcon }],
-  [8, { text: "Magic", icon: magicAffinityIcon }],
-  [4, { text: "Fire", icon: fireAffinityIcon }],
-  [5, { text: "Flame Art", icon: fireAffinityIcon }],
-  [6, { text: "Lightning", icon: lightningAffinityIcon }],
-  [7, { text: "Sacred", icon: sacredAffinityIcon }],
-  [9, { text: "Cold", icon: coldAffinityIcon }],
-  [10, { text: "Poison", icon: poisonAffinityIcon }],
-  [11, { text: "Blood", icon: bloodAffinityIcon }],
-  [12, { text: "Occult", icon: occultAffinityIcon }],
-  [-1, { text: "Unique", icon: specialWeaponIcon }], // Special fake affinity ID for uninfusable weapons
+//
+
+export const affinityOptions = new Map<AffinityId, AffinityOption>([
+  [AffinityId.STANDARD, { text: "Standard", icon: standardAffinityIcon }],
+  [AffinityId.HEAVY, { text: "Heavy", icon: heavyAffinityIcon }],
+  [AffinityId.KEEN, { text: "Keen", icon: keenAffinityIcon }],
+  [AffinityId.QUALITY, { text: "Quality", icon: qualityAffinityIcon }],
+  [AffinityId.MAGIC, { text: "Magic", icon: magicAffinityIcon }],
+  [AffinityId.FIRE, { text: "Fire", icon: fireAffinityIcon }],
+  [AffinityId.FLAME_ART, { text: "Flame Art", icon: fireAffinityIcon }],
+  [AffinityId.LIGHTNING, { text: "Lightning", icon: lightningAffinityIcon }],
+  [AffinityId.SACRED, { text: "Sacred", icon: sacredAffinityIcon }],
+  [AffinityId.COLD, { text: "Cold", icon: coldAffinityIcon }],
+  [AffinityId.POISON, { text: "Poison", icon: poisonAffinityIcon }],
+  [AffinityId.BLOOD, { text: "Blood", icon: bloodAffinityIcon }],
+  [AffinityId.OCCULT, { text: "Occult", icon: occultAffinityIcon }],
+  [AffinityId.UNIQUE, { text: "Unique", icon: specialWeaponIcon }],
 ]);
 
 export const rangedWeaponTypes = [
@@ -197,6 +199,13 @@ export const damageTypeIcons = new Map([
   [AttackPowerType.DEATH_BLIGHT, deathBlightStatusIcon],
 ]);
 
+export const enemyTypeLabels: Map<EnemyType, string> = new Map([
+  [EnemyType.AncientDragon, "Ancient Dragon"],
+  [EnemyType.Dragon, "Dragon/Wyrm"],
+  [EnemyType.Undead, "Those Who Live in Death"],
+  [EnemyType.Void, "Void"],
+]);
+
 export const getTotalDamageAttackPower = (
   attackPower: Partial<Record<AttackPowerType, AttackPower>>
 ) => {
@@ -292,4 +301,27 @@ export function toSpecialUpgradeLevel(regularUpgradeLevel: number) {
  */
 export function toRegularUpgradeLevel(specialUpgradeLevel: number) {
   return Math.floor(specialUpgradeLevel * 2.5);
+}
+
+// Assuming AttackPowerType and Attribute are already defined
+export function getScalingMultiplier(
+  attackElementCorrect: AttackElementCorrect, // The weapon's attackElementCorrect object
+  attackPowerType: AttackPowerType, // e.g., PHYSICAL, MAGIC, FIRE, etc.
+  attribute: Attribute // e.g., str, dex, int, fai, arc
+): number {
+  // Access the correct damage type (AttackPowerType) and attribute
+  const elementScaling = attackElementCorrect?.[attackPowerType];
+
+  // If the attribute scaling exists and is "true", return full scaling (1.0)
+  if (elementScaling?.[attribute] === true) {
+    return 1.0; // Full scaling
+  }
+
+  // If the attribute scaling exists and is a number, return that as the scaling multiplier
+  if (typeof elementScaling?.[attribute] === "number") {
+    return elementScaling[attribute] as number;
+  }
+
+  // If no scaling is found, return 0 (no scaling for this attribute)
+  return 0;
 }

@@ -5,8 +5,9 @@ import {
   getDamageTypeKey,
 } from "../data/attackPowerTypes";
 import { allAttributes, Attribute, Attributes } from "../data/attributes";
-import { Enemy } from "../data/enemy-data";
+import { Enemy, EnemyType } from "../data/enemy-data";
 import {
+  EnemyDamageMultiplier,
   isDamageValuesKey,
   MotionValues,
   Weapon,
@@ -113,6 +114,9 @@ export const getWeaponAttack = ({
   for (const attackPowerType of [...allDamageTypes, ...allStatusTypes]) {
     const isDamageType = allDamageTypes.includes(attackPowerType);
 
+    // Todo: Ballista weapons have a different attack power calculation, so this is throwing an error
+    // To replicate: Use a ballista weapon, ex: Rabbath's Cannon. Only throws error sometimes.
+
     const baseAttackPower = weapon.attack[upgradeLevel][attackPowerType] ?? 0;
     if (baseAttackPower || weapon.sorceryTool || weapon.incantationTool) {
       // This weapon's AttackElementCorrectParam determines what attributes each damage type scales
@@ -183,6 +187,32 @@ export const getWeaponAttack = ({
     ineffectiveAttackPowerTypes,
     weapon,
   };
+};
+
+export const adjustEnemyDamageForWeaponMultipliers = (
+  enemyDamageMultipliers: EnemyDamageMultiplier,
+  enemy: Enemy,
+  enemyDamages: Partial<Record<AttackPowerType, number>>
+): Partial<Record<AttackPowerType, number>> => {
+  const enemyTypes = Object.keys(enemy.types).filter(
+    (type) => enemy.types[type as EnemyType]
+  ) as EnemyType[];
+  let adjustedEnemyDamages: Partial<Record<AttackPowerType, number>> = {
+    ...enemyDamages,
+  };
+
+  for (const enemyType of enemyTypes) {
+    const enemyDamageMultiplier = enemyDamageMultipliers[enemyType];
+
+    if (enemyDamageMultiplier === 1) continue;
+
+    for (const [damageType, damage] of Object.entries(adjustedEnemyDamages)) {
+      const adjustedDamage = damage * enemyDamageMultiplier;
+      adjustedEnemyDamages[+damageType as AttackPowerType] = adjustedDamage;
+    }
+  }
+
+  return adjustedEnemyDamages;
 };
 
 // Function to calculate defense multiplier]
@@ -287,6 +317,20 @@ export const calculateDamageAgainstEnemy = (
 
     enemyDamages[damageType] = finalDamage;
   });
+
+  const enemyHasType = Object.values(enemy.types).filter(Boolean).length > 0;
+  const weaponHasEnemyMultiplier = Object.values(
+    attackRating.weapon.enemyDamageMultipliers
+  ).some((mulitplier) => mulitplier !== 1);
+
+  if (enemyHasType && weaponHasEnemyMultiplier) {
+    const adjustedEnemyDamages = adjustEnemyDamageForWeaponMultipliers(
+      attackRating.weapon.enemyDamageMultipliers,
+      enemy,
+      enemyDamages
+    );
+    return { ...attackRating, enemyDamages: adjustedEnemyDamages };
+  }
 
   return { ...attackRating, enemyDamages };
 };

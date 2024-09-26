@@ -1,18 +1,21 @@
-import fs from "fs";
 import path from "path";
+import fs from "fs";
 import {
   Enemy,
   EnemyDamageType,
   EnemyData,
   EnemyDrop,
+  EnemyType,
+  EnemyTypeData,
   NewGame,
   StatusEffect,
-} from "./enemy-data";
-import { fetchAndParseCSV } from "../utils";
+} from "@/lib/data/enemy-data";
+import { fetchAndParseCSV } from "@/lib/utils";
 
 // Constants
 const SPREADSHEET_ID = "1BVwmKqB8pvuyJkSTGYOM2kAJxFMQ0jVsc6aKYz_Upes";
 const ITEM_DROPS_GID = "1232031815"; // GID for the Item Drops sheet
+const DAMAGE_MULTIPLIER_GID = "12101585"; // New GID for the enemy types sheet
 const spreadSheetGids = [
   [0, NewGame.NG],
   [1675426262, NewGame.NGPlus],
@@ -24,6 +27,7 @@ const spreadSheetGids = [
   [1181312165, NewGame.NGPlus7],
 ];
 
+// Parse resistances helper
 const parseRes = (res: string): number | "Immune" => {
   if (res === "Immune") {
     return "Immune";
@@ -60,9 +64,36 @@ const parseDropInfo = (dropInfo: string): EnemyDrop | null => {
   }
 };
 
-// Function to update enemies with item drops
-export const updateEnemies = async (update: boolean = false) => {
-  // Fetch item drops data
+// Helper function to convert "FALSE" or "TRUE" to boolean
+const parseBoolean = (value: string): boolean => {
+  return value.toLowerCase() === "true";
+};
+
+// Fetch damage multipliers (types data)
+const fetchDamageMultipliers = async (): Promise<
+  Map<number, EnemyTypeData>
+> => {
+  const DAMAGE_MULTIPLIER_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${DAMAGE_MULTIPLIER_GID}`;
+  const damageData = await fetchAndParseCSV(DAMAGE_MULTIPLIER_URL);
+
+  const damageMultipliersMap = new Map<number, EnemyTypeData>();
+
+  damageData.forEach((row) => {
+    const enemyID = +row.ID;
+    const damageMultipliers: EnemyTypeData = {
+      [EnemyType.Void]: parseBoolean(row.Void),
+      [EnemyType.Undead]: parseBoolean(row["Those Who Live in Death"]),
+      [EnemyType.AncientDragon]: parseBoolean(row["Ancient Dragon"]),
+      [EnemyType.Dragon]: parseBoolean(row["Dragon/Wyrm"]),
+    };
+    damageMultipliersMap.set(enemyID, damageMultipliers);
+  });
+
+  return damageMultipliersMap;
+};
+
+// Function to fetch and parse item drops data
+const fetchItemDropsData = async (): Promise<Map<number, EnemyDrop[]>> => {
   const ITEM_DROPS_DATA_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${ITEM_DROPS_GID}`;
   const itemDropsData = await fetchAndParseCSV(ITEM_DROPS_DATA_URL);
 
@@ -86,6 +117,13 @@ export const updateEnemies = async (update: boolean = false) => {
     }
   });
 
+  return dropsMap;
+};
+
+const updateEnemies = async (update: boolean = false): Promise<void> => {
+  const dropsMap = await fetchItemDropsData();
+  const enemyTypesMap = await fetchDamageMultipliers();
+
   for (const [gid, NG] of spreadSheetGids) {
     const ELDEN_RING_ENEMIES_DATA_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
     const enemiesData = await fetchAndParseCSV(
@@ -101,6 +139,12 @@ export const updateEnemies = async (update: boolean = false) => {
     const parseEnemyFromData = (data: EnemyData): Enemy => {
       // Use the map to find drops for the current enemy
       const drops = dropsMap.get(+data.ID) || [];
+      const types = enemyTypesMap.get(+data.ID) || {
+        void: false,
+        undead: false,
+        ancientDragon: false,
+        dragon: false,
+      };
 
       return {
         id: +data.ID,
@@ -144,6 +188,7 @@ export const updateEnemies = async (update: boolean = false) => {
           [StatusEffect.Madness]: parseRes(data.Madness),
           [StatusEffect.Death_Blight]: parseRes(data.Deathblight),
         },
+        types, // Add damage multipliers to the Enemy object
         drops,
       };
     };
@@ -155,7 +200,7 @@ export const updateEnemies = async (update: boolean = false) => {
     const enemiesJson = JSON.stringify(enemies);
 
     if (update) {
-      const outputDir = path.resolve(process.cwd(), `./public/data/enemies`);
+      const outputDir = `${process.cwd()}\\public\\data\\enemies`;
       const filePath = path.resolve(outputDir, `enemies${NG}.json`);
 
       console.log(`Updating ${filePath}`);
@@ -164,4 +209,12 @@ export const updateEnemies = async (update: boolean = false) => {
   }
 };
 
-updateEnemies(true);
+export async function GET() {
+  await updateEnemies(true);
+
+  return new Response("Enemies updated!", {
+    headers: {
+      "content-type": "application/json",
+    },
+  });
+}

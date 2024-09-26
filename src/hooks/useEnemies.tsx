@@ -1,6 +1,6 @@
 "use client";
 
-import { Enemy, NewGame } from "@/lib/data/enemy-data";
+import { Enemy, EnemyTypeData, NewGame } from "@/lib/data/enemy-data";
 import { useState, useEffect, useMemo, useCallback } from "react";
 
 import {
@@ -83,6 +83,15 @@ export default function useEnemies() {
         enemiesFilteredByLocation,
         enemiesFilterData.drop
       );
+
+      if (enemiesFilterData.type !== "None") {
+        const enemiesFilteredByType = enemiesFilteredByDrop.filter(
+          (enemy) => enemy.types[enemiesFilterData.type as keyof EnemyTypeData]
+        );
+
+        setEnemiesData(enemiesFilteredByType);
+        return;
+      }
 
       setEnemiesData(enemiesFilteredByDrop);
     },

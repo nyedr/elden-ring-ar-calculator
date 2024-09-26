@@ -62,13 +62,6 @@ const isStatusEffectsSelected = (
     return !hasStatusEffect || hasSelectedStatusEffect;
   }
 
-  // console.log(
-  //   "statusEffectKeys",
-  //   statusEffectKeys,
-  //   hasSelectedStatusEffect,
-  //   selectedStatusEffects
-  // );
-
   // Case 3: No "None" is selected, only specific effects
   return hasSelectedStatusEffect;
 };
@@ -87,8 +80,6 @@ export const filterWeapons = (
     selectedStatusEffects,
     selectedWeaponAffinities,
   } = weaponFilter;
-
-  console.log("weaponFilter", weaponFilter);
 
   return attackRatings.filter(
     (attackRating) =>

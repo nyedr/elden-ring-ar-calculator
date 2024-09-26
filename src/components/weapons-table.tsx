@@ -82,7 +82,7 @@ export default function WeaponsTable({
           enableHiding: false,
           enableGrouping: true,
           meta: {
-            cellClassName: "p-0 text-center border border-secondary",
+            cellClassName: "p-0 text-center border-2 border-secondary",
           },
         },
         {
@@ -116,8 +116,8 @@ export default function WeaponsTable({
             </span>
           ),
           meta: {
-            cellClassName: "border border-secondary px-0",
-            headerClassName: "text-start px-2",
+            cellClassName: "border-2 border-secondary px-0",
+            headerClassName: "text-start px-2 border-2 border-secondary",
           },
         },
         {
@@ -142,12 +142,14 @@ export default function WeaponsTable({
             <span>
               {Math.floor(
                 getSpellScaling(row.original.weapon, row.original.spellScaling)
-              ) || <Icons.minus className="text-secondary w-4 h-4 mx-auto" />}
+              ) || (
+                <Icons.minus className="w-4 h-4 mx-auto text-secondary-foreground opacity-15" />
+              )}
             </span>
           ),
           meta: {
-            cellClassName: "border border-secondary text-center",
-            headerClassName: "py-0 px-2",
+            cellClassName: "border-2 border-secondary text-center",
+            headerClassName: "py-0 px-2 border-2 border-secondary",
           },
         },
       ],
@@ -155,6 +157,9 @@ export default function WeaponsTable({
     {
       header: () => <span>Attack Power</span>,
       accessorKey: "attackPower",
+      meta: {
+        headerClassName: "py-0 px-2 border-2 border-secondary",
+      },
       columns: [
         ...allDamageTypes.map((damageType) => {
           return {
@@ -201,12 +206,14 @@ export default function WeaponsTable({
                     ? row.original.enemyDamages[damageType] ?? 0
                     : row.original.attackPower[damageType as AttackPowerType]
                         ?.total ?? 0
-                ) || <Icons.minus className="text-secondary w-4 h-4 mx-auto" />}
+                ) || (
+                  <Icons.minus className="w-4 h-4 mx-auto text-secondary-foreground opacity-15" />
+                )}
               </span>
             ),
             meta: {
               cellClassName: "text-center",
-              headerClassName: "py-0 px-2",
+              headerClassName: "py-0 px-2 border-2 border-secondary",
             },
           } as ColumnDef<WeaponAttackResult>;
         }),
@@ -246,8 +253,8 @@ export default function WeaponsTable({
             </span>
           ),
           meta: {
-            cellClassName: "text-center border-r border-secondary",
-            headerClassName: "py-0 px-2",
+            cellClassName: "text-center border-r-2 border-secondary",
+            headerClassName: "py-0 px-2 border-2 border-secondary",
           },
         },
       ],
@@ -256,6 +263,9 @@ export default function WeaponsTable({
     {
       header: () => <span>Scaling</span>,
       accessorKey: "ineffectiveAttributes",
+      meta: {
+        headerClassName: "py-0 px-2 border-2 border-secondary",
+      },
       columns: [
         ...allAttributes.map((attribute) => {
           return {
@@ -288,14 +298,14 @@ export default function WeaponsTable({
               return (
                 <span className={isAffected ? "text-red-500" : ""}>
                   {scaling ?? (
-                    <Icons.minus className="text-secondary w-4 h-4 mx-auto" />
+                    <Icons.minus className="w-4 h-4 mx-auto text-secondary-foreground opacity-15" />
                   )}
                 </span>
               );
             },
             meta: {
               cellClassName: cn("text-center"),
-              headerClassName: "py-0 px-2",
+              headerClassName: "py-0 px-2 border-2 border-secondary",
             },
           } as ColumnDef<WeaponAttackResult>;
         }),
@@ -304,6 +314,9 @@ export default function WeaponsTable({
     {
       accessorKey: "weapon",
       header: () => <span>Status Effects</span>,
+      meta: {
+        headerClassName: "py-0 px-2 border-2 border-secondary",
+      },
       columns: [
         ...allStatusTypes
           // Exclude the last status effect - Death Blight
@@ -342,16 +355,16 @@ export default function WeaponsTable({
                     row.original.attackPower[statusEffect as AttackPowerType]
                       ?.total ?? 0
                   ) || (
-                    <Icons.minus className="text-secondary mx-auto w-4 h-4" />
+                    <Icons.minus className="w-4 h-4 mx-auto text-secondary-foreground opacity-15" />
                   )}
                 </span>
               ),
               meta: {
                 cellClassName: cn(
                   "text-center",
-                  index === 0 ? "border-l border-secondary" : ""
+                  index === 0 ? "border-l-2 border-secondary" : ""
                 ),
-                headerClassName: "py-0 px-2",
+                headerClassName: "py-0 px-2 border-2 border-secondary",
               },
             } as ColumnDef<WeaponAttackResult>;
           }),
@@ -366,14 +379,15 @@ export default function WeaponsTable({
           size="sm"
           className="px-2"
         >
-          <Icons.chart className="h-4 w-4" />
+          <Icons.chart className="w-4 h-4" />
         </Button>
       ),
       enableSorting: false,
       enableHiding: false,
       enableGrouping: true,
       meta: {
-        cellClassName: "p-1 text-center border border-secondary",
+        cellClassName: "p-1 text-center border-2 border-secondary",
+        headerClassName: "border-2 border-secondary",
       },
     },
   ];

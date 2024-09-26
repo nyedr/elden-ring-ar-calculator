@@ -1,6 +1,25 @@
+import { PoiseDamage } from "../utils";
 import { AttackPowerType } from "./attackPowerTypes";
 import { Attribute } from "./attributes";
+import { EnemyType } from "./enemy-data";
 import { WeaponType } from "./weaponTypes";
+
+export enum AffinityId {
+  STANDARD = 0,
+  HEAVY = 1,
+  KEEN = 2,
+  QUALITY = 3,
+  FIRE = 4,
+  FLAME_ART = 5,
+  LIGHTNING = 6,
+  SACRED = 7,
+  MAGIC = 8,
+  COLD = 9,
+  POISON = 10,
+  BLOOD = 11,
+  OCCULT = 12,
+  UNIQUE = -1, // Special fake affinity ID for uninfusable weapons
+}
 
 export const damageValuesKeys = [
   "1h R1 1",
@@ -54,12 +73,9 @@ export type DamageTypes = {
 
 export type MotionValues = DamageTypes;
 
-export interface EnemyDamageMultiplier {
-  void: number;
-  undead: number;
-  ancientDraconic: number;
-  draconic: number;
-}
+export type EnemyDamageMultiplier = {
+  [key in EnemyType]: number;
+};
 
 export type WeaponMove = (typeof damageValuesKeys)[number];
 
@@ -86,7 +102,7 @@ export interface Weapon {
   /**
    * The affinity of the weapon for filtering, see uiUtils.tsx for a full list of vanilla affinities
    */
-  affinityId: number;
+  affinityId: AffinityId;
 
   /**
    * The category of the weapon for filtering
@@ -158,7 +174,7 @@ export interface Weapon {
   /**
    * The amount of poise damage dealt by each attack
    */
-  poiseDamage: DamageValues;
+  poiseDamage: PoiseDamage;
 
   /**
    * The physical damage type of each attack
@@ -176,4 +192,9 @@ export interface Weapon {
    * Multiply by 1000 to match poise as it is displayed for the in-game menu
    */
   hyperArmorPoise: number;
+
+  /**
+   * If true, this weapon is a somber weapon, otherwise it is a normal weapon.
+   */
+  isSpecialWeapon: boolean;
 }

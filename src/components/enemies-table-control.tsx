@@ -1,8 +1,15 @@
 import { EmemyFilterData } from "@/app/enemies/page";
-import { allEnemyDrops, allEnemyLocations } from "@/lib/data/enemy-data";
+import {
+  allEnemyDrops,
+  allEnemyLocations,
+  EnemyType,
+  enemyTypes,
+} from "@/lib/data/enemy-data";
 import { Label } from "./ui/label";
 import Combobox from "./ui/combobox";
 import { Button } from "./ui/button";
+import { CustomSelect } from "./ui/select";
+import { enemyTypeLabels } from "@/lib/uiUtils";
 
 interface EnemiesTableControlProps {
   enemiesFilterData: EmemyFilterData;
@@ -18,15 +25,16 @@ export default function EnemiesTableControl({
   clearFilters,
 }: EnemiesTableControlProps) {
   return (
-    <div className="w-full flex flex-col gap-2 justify-start">
+    <div className="flex flex-col justify-start w-full gap-2">
       <Label
         id="weaponTypesLabel"
         htmlFor="weaponTypes"
-        className="text-sm font-semibold mb-0 mt-2"
+        className="mt-3 mb-0 space-y-2 text-sm font-semibold"
       >
         Location
       </Label>
       <Combobox
+        hasLabel={false}
         items={allEnemyLocations.map((location) => ({
           label: location,
           value: location,
@@ -41,11 +49,12 @@ export default function EnemiesTableControl({
       <Label
         id="weaponTypesLabel"
         htmlFor="weaponTypes"
-        className="text-sm font-semibold mb-0 mt-2"
+        className="mt-3 mb-0 space-y-2 text-sm font-semibold"
       >
         Drop
       </Label>
       <Combobox
+        hasLabel={false}
         items={allEnemyDrops.map((drop) => ({
           label: drop,
           value: drop,
@@ -56,7 +65,28 @@ export default function EnemiesTableControl({
           setEnemiesFilterData((prev) => ({ ...prev, drop }))
         }
       />
-      <div className="flex items-center gap-3 w-full mt-2">
+
+      <CustomSelect
+        containerClassName="mt-3"
+        label="Enemy Type"
+        items={[
+          ...enemyTypes.map((type) => ({
+            label: enemyTypeLabels.get(type)!,
+            value: type,
+          })),
+          {
+            label: "None",
+            value: "None",
+          },
+        ]}
+        onChange={(type: string) =>
+          setEnemiesFilterData((prev) => ({ ...prev, type: type as EnemyType }))
+        }
+        value={enemiesFilterData.type}
+        id="enemyTypes"
+      />
+
+      <div className="flex items-center w-full gap-3 mt-2">
         <Button onClick={() => filterEnemies(enemiesFilterData)}>
           Filter enemies
         </Button>

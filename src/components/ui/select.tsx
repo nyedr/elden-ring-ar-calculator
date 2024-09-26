@@ -4,6 +4,8 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Label } from "./label";
+import { Badge } from "./badge";
 
 const Select = SelectPrimitive.Root;
 
@@ -127,30 +129,58 @@ export interface CustomSelectItem {
   label: string;
 }
 
-export interface CustomSelectProps {
+interface CustomSelectProps {
   onChange: (value: string) => void;
-  value: any;
+  value?: any;
   items: CustomSelectItem[];
+  id?: string;
+  placeholder?: string;
+  label: string;
+  containerClassName?: string;
+  hasBadge?: boolean;
 }
 
-export const CustomSelect = ({ onChange, value, items }: CustomSelectProps) => {
+export const CustomSelect = ({
+  onChange,
+  value,
+  items,
+  id,
+  placeholder,
+  label,
+  containerClassName,
+  hasBadge = false,
+}: CustomSelectProps) => {
   return (
-    <Select onValueChange={onChange} value={value}>
-      <SelectTrigger>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          {items.map((item) => (
-            <SelectItem key={item.value} value={item.value}>
-              <div className={item.icon ? "flex items-center gap-2" : ""}>
-                {item.icon && <item.icon className="w-4 h-4" />}
-                <span>{item.label}</span>
-              </div>
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <div className={cn("w-full space-y-2", containerClassName)}>
+      <Label
+        htmlFor={id}
+        className="flex items-center gap-2 text-sm font-medium"
+      >
+        {label}
+        {hasBadge && (
+          <Badge variant="outline" className="font-normal">
+            {items.length}
+          </Badge>
+        )}
+      </Label>
+
+      <Select onValueChange={onChange} value={value}>
+        <SelectTrigger id={id}>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent className="max-h-[300px]">
+          <SelectGroup>
+            {items.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                <div className={item.icon ? "flex items-center gap-2" : ""}>
+                  {item.icon && <item.icon className="w-4 h-4" />}
+                  <span>{item.label}</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   );
 };

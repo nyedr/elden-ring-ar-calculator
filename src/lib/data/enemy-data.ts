@@ -89,6 +89,24 @@ export const damageTypeToImageName = {
   [EnemyDamageType.Holy]: "sacredAffinity",
 };
 
+export enum EnemyType {
+  Void = "void",
+  Undead = "undead",
+  AncientDragon = "ancientDragon",
+  Dragon = "dragon",
+}
+
+export const enemyTypes = [
+  EnemyType.Void,
+  EnemyType.Undead,
+  EnemyType.AncientDragon,
+  EnemyType.Dragon,
+] as const;
+
+export type EnemyTypeData = {
+  [key in EnemyType]: boolean;
+};
+
 export interface Enemy {
   id: number;
   name: string;
@@ -106,6 +124,7 @@ export interface Enemy {
     [key in StatusEffect]: number | "Immune";
   };
   drops: EnemyDrop[];
+  types: EnemyTypeData;
 }
 
 export interface EnemyData {

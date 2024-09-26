@@ -6,16 +6,16 @@ import { cn } from "@/lib/utils";
 
 export default function Header() {
   return (
-    <header className="w-full flex items-center justify-between gap-5">
+    <header className="flex items-center justify-between w-full gap-5">
       <Link href="/">
-        <h1 className="text-3xl sm:hidden font-bold whitespace-nowrap flex items-center gap-2">
+        <h1 className="flex items-center gap-2 text-3xl font-bold sm:hidden whitespace-nowrap">
           ER v1.13
         </h1>
-        <h1 className="text-3xl hidden sm:flex font-bold whitespace-nowrap items-center gap-2">
+        <h1 className="items-center hidden gap-2 text-3xl font-bold sm:flex whitespace-nowrap">
           Elden Ring v1.13
         </h1>
       </Link>
-      <Link className={buttonVariants({ variant: "link" })} href="/enemies">
+      <Link className={buttonVariants({ variant: "ghost" })} href="/enemies">
         Enemies
       </Link>
       <div className="flex items-center gap-5">

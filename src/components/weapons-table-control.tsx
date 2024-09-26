@@ -3,19 +3,11 @@ import { Button } from "./ui/button";
 import { Weapon } from "@/lib/data/weapon";
 import { Dispatch, SetStateAction, useState } from "react";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { CustomSelectItem, CustomSelect } from "@/components/ui/select";
 import { MultiSelect, MultiSelectOption } from "./ui/multi-select";
 import { Label } from "./ui/label";
 import { mapToEntries, specialAndRegularLevelsDict } from "@/lib/utils";
 import { WeaponState } from "@/app/page";
-import { ComboboxItem } from "./ui/combobox";
 import { EnemySearch } from "./enemy-search";
 import AppManual from "./app-manual";
 import { WeaponFilter } from "@/lib/filters/weapons-filter";
@@ -38,12 +30,12 @@ export interface WeaponsTableControlProps
   weaponFilter: WeaponFilter;
   setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
   updateWeaponInfo: (name: string) => void;
-  weaponSearchOptions: ComboboxItem[];
+  weaponSearchOptions: CustomSelectItem[];
   weaponState: WeaponState;
   setWeaponState: Dispatch<SetStateAction<WeaponState>>;
   isDamageOnEnemy: boolean;
   setIsDamageOnEnemy: React.Dispatch<React.SetStateAction<boolean>>;
-  enemySearchOptions: ComboboxItem[];
+  enemySearchOptions: CustomSelectItem[];
   setSelectedEnemy: (enemy: string) => void;
 }
 
@@ -143,7 +135,7 @@ export default function WeaponsTableControl({
   };
 
   return (
-    <div className="w-full flex flex-col gap-3 justify-start">
+    <div className="flex flex-col justify-start w-full gap-3">
       <WeaponSearch
         {...{
           updateWeaponInfo,
@@ -154,8 +146,8 @@ export default function WeaponsTableControl({
         }}
       />
 
-      <div className="flex items-start flex-col gap-2">
-        <Label htmlFor="weaponTypes" className="text-sm font-semibold mb-0">
+      <div className="flex flex-col items-start gap-2">
+        <Label htmlFor="weaponTypes" className="mb-0 text-sm font-semibold">
           Weapon Types
         </Label>
         <MultiSelect
@@ -169,8 +161,8 @@ export default function WeaponsTableControl({
         />
       </div>
 
-      <div className="flex items-start flex-col gap-2">
-        <Label htmlFor="statusEffects" className="text-sm font-semibold mb-0">
+      <div className="flex flex-col items-start gap-2">
+        <Label htmlFor="statusEffects" className="mb-0 text-sm font-semibold">
           Status Effects
         </Label>
         <MultiSelect
@@ -186,10 +178,10 @@ export default function WeaponsTableControl({
         />
       </div>
 
-      <div className="flex items-start flex-col gap-2">
+      <div className="flex flex-col items-start gap-2">
         <Label
           htmlFor="weaponAffinities"
-          className="text-sm font-semibold mb-0"
+          className="mb-0 text-sm font-semibold"
         >
           Weapon Affinities
         </Label>
@@ -205,38 +197,27 @@ export default function WeaponsTableControl({
         />
       </div>
 
-      <div className="flex items-start flex-col gap-2 mb-1">
-        <Label htmlFor="weaponLevel" className="text-sm font-semibold mb-0">
-          Weapon Level
-        </Label>
-        <Select
-          value={weaponState.selectedWeaponLevel[2]}
-          onValueChange={(e) => {
-            const level = specialAndRegularLevelsDict.find(
-              (level) => level[2] === e
-            );
-            if (level) {
-              setWeaponState((prev) => ({
-                ...prev,
-                selectedWeaponLevel: level,
-              }));
-            }
-          }}
-        >
-          <SelectTrigger id="weaponLevel" className="w-full">
-            <SelectValue placeholder="Weapons Level" />
-          </SelectTrigger>
-          <SelectContent className="max-h-[300px]">
-            <SelectGroup>
-              {specialAndRegularLevelsDict.map((level) => (
-                <SelectItem key={level[2]} value={level[2]}>
-                  {level[2]}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+      <CustomSelect
+        id="weaponLevel"
+        label="Weapon Level"
+        onChange={(e) => {
+          const selectedWeaponLevel = specialAndRegularLevelsDict.find(
+            (level) => level[2] === e
+          );
+
+          if (selectedWeaponLevel) {
+            setWeaponState((prev) => ({
+              ...prev,
+              selectedWeaponLevel,
+            }));
+          }
+        }}
+        value={weaponState.selectedWeaponLevel[2]}
+        items={specialAndRegularLevelsDict.map(([, , level]) => ({
+          value: level,
+          label: level,
+        }))}
+      />
 
       <EnemySearch
         isDamageOnEnemy={isDamageOnEnemy}

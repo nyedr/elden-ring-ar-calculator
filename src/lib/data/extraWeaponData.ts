@@ -1,4 +1,5 @@
-import { fetchAndParseCSV } from "../utils";
+import { fetchAndParseCSV, getPoiseValues } from "../utils";
+import { EnemyType } from "./enemy-data";
 import { DamageValues, damageValuesKeys, Weapon } from "./weapon";
 
 const SPREADSHEET_ID = "1NVIQFIGTl-z0-gXEYVpCa1OnZwbBMTK8mm4P3tyO2hU";
@@ -67,10 +68,10 @@ export const updateWeaponData = async (
     const weaponData = {
       poiseDamage: extraData.saWeaponDamage,
       enemyDamageMultipliers: {
-        void: extraData.weakA_DamageRate,
-        undead: extraData.weakB_DamageRate,
-        ancientDraconic: extraData.weakC_DamageRate,
-        draconic: extraData.weakD_DamageRate,
+        [EnemyType.Void]: extraData.weakA_DamageRate,
+        [EnemyType.Undead]: extraData.weakB_DamageRate,
+        [EnemyType.AncientDragon]: extraData.weakC_DamageRate,
+        [EnemyType.Dragon]: extraData.weakD_DamageRate,
       },
       hyperArmorPoise: extraData.toughnessCorrectRate * 1000,
     };
@@ -90,10 +91,18 @@ export const updateWeaponData = async (
 
       const motionValues = getDamageValues(result);
 
-      weaponsDataMap.set(result.Weapon, {
-        ...weaponData,
-        [key]: motionValues,
-      });
+      weaponsDataMap.set(
+        result.Weapon,
+        key === "poiseDamage"
+          ? {
+              ...weaponData,
+              [key]: getPoiseValues(motionValues),
+            }
+          : {
+              ...weaponData,
+              [key]: motionValues,
+            }
+      );
     }
   }
 

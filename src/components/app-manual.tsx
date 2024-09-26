@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "./ui/separator";
-import { AttributeInput } from "./character-stats";
 import { WeaponSearch } from "./weapon-search";
 import { Weapon } from "@/lib/data/weapon";
 import SelectedWeaponsChart from "./selected-weapons-chart";
@@ -19,6 +18,7 @@ import WeaponsTable from "./weapons-table";
 import useWeapons from "@/hooks/useWeapons";
 import { getWeaponAttack, WeaponAttackResult } from "@/lib/calc/calculator";
 import { Character, getAttackAttributes } from "@/hooks/useCharacter";
+import { AttributeInput } from "./character-stats";
 
 interface AppManualProps {
   isOpen: boolean;
@@ -134,32 +134,34 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
         onXClick={closeManual}
         className="flex flex-col max-h- max-w-[850px] max-[800px]:px-[calc(10vw/2)] sm:max-h-[90%] h-full sm:overflow-y-auto overflow-y-scroll"
       >
-        <DialogHeader className="sm:mt-0 mt-5">
-          <DialogTitle className="text-2xl">App Manual</DialogTitle>
+        <DialogHeader className="mt-5 sm:mt-0">
+          <DialogTitle className="text-2xl">Calculator Manual</DialogTitle>
         </DialogHeader>
-        <div className="w-full flex flex-col gap-3 text-primary">
+        <div className="flex flex-col w-full gap-3 text-primary">
           <DialogDescription className="text-primary">
-            <h2 className="text-lg font-semibold">How to use this app</h2>
+            <h2 className="text-lg font-semibold">
+              How to use this application
+            </h2>
             <p className="text-primary dark:text-muted-foreground">
-              This app is designed to help you compare the attack ratings of
-              different weapons in Elden Ring. You can:
-              <ul className="list-disc list-inside leading-6 mt-1 ml-3">
+              This calculator is designed to help you compare the attack ratings
+              of different weapons in Elden Ring. You can:
+              <ul className="mt-1 ml-3 leading-6 list-disc list-inside">
                 <li>
-                  Filter weapons by weapon type, scaling, and weapon level.
+                  Filter weapons by weapon type, status effects, and affinities.
                 </li>
                 <li>
                   Compare weapons against different enemies to see how their
-                  attack ratings change.
+                  attack damage changes.
                 </li>
               </ul>
             </p>
           </DialogDescription>
           <Separator />
-          <DialogDescription className="text-primary">
+          <DialogDescription className="flex flex-col text-primary">
             <h2 className="text-lg font-semibold">Character Stats</h2>
             <p className="mb-4 text-primary dark:text-muted-foreground">
               Start by inputting your character{"'"}s stats:
-              <ul className="list-disc list-inside leading-6 mt-1 ml-3">
+              <ul className="mt-1 ml-3 leading-6 list-disc list-inside">
                 <li>Use the sliders or number inputs to change attributes.</li>
                 <li>
                   Indicate if you are two-handing your weapon to increase the
@@ -168,29 +170,39 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
               </ul>
             </p>
             <AttributeInput
-              attribute="Str"
+              metadata={{
+                name: "Strength",
+                description: "str",
+              }}
               value={10}
+              attribute="Str"
               onAttributeChanged={() => console.log("Strength changed!")}
             />
+            <span className="mt-4 text-muted-foreground">
+              Note: The two-handing strength bonus only applies to non-paired
+              weapons. So, if you use a paired weapon, you will not get the
+              bonus. However, there will be damage changes due to a difference
+              in motion values.
+            </span>
           </DialogDescription>
           <Separator className="mt-1" />
           <DialogDescription className="text-primary">
             <h2 className="text-lg font-semibold">Select A Weapon By Name</h2>
             <p className="mb-4 text-primary dark:text-muted-foreground">
               Select a weapon by name:
-              <ul className="list-disc list-inside leading-6 mt-1 ml-3">
+              <ul className="mt-1 ml-3 leading-6 list-disc list-inside">
                 <li>
                   Click the <strong>Select weapon</strong> searchable select to
                   filter weapons by name.
                 </li>
                 <li>
                   Once selected, you can:
-                  <ul className="list-disc list-inside leading-6 mt-1 ml-6">
+                  <ul className="mt-1 ml-6 leading-6 list-disc list-inside">
                     <li>
                       Add it to the weapon attack rating comparison chart
                       (Plus).
                     </li>
-                    <li>View its damage breakdown chart (Chart).</li>
+                    <li>View its attribute scaling chart (Chart).</li>
                     <li>See additional weapon information (Book).</li>
                   </ul>
                 </li>
@@ -222,13 +234,14 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
           <Separator className="mt-1" />
 
           <DialogDescription>
-            <h2 className="text-lg font-semibold text-primary mb-1">
+            <h2 className="mb-1 text-lg font-semibold text-primary">
               Select An Enemy By Name
             </h2>
-            <p className="mb-4 text-primary dark:text-muted-foreground">
+            <p className="mb-2 text-primary dark:text-muted-foreground">
               If you have selected an enemy and switched on the{" "}
-              <strong>Enemy Damage</strong> switch, you can:
-              <ul className="list-disc list-inside ml-3 leading-6 mt-1">
+              <strong>Enemy Damage</strong> switch, the effects of the weapon
+              info button (Book) will change, you can now:
+              <ul className="mt-1 ml-3 leading-6 list-disc list-inside">
                 <li>
                   View the enemy{"'"}s information and how the weapon will fare
                   against the enemy.
@@ -239,9 +252,15 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
                 </li>
                 <li>
                   Change the New Game version to see damage dealt on the
-                  selected enemy.
+                  selected enemy (To the right of the table weapon search input,
+                  caps at New Game 7).
                 </li>
               </ul>
+            </p>
+
+            <p className="mb-4 text-primary">
+              <strong>Note:</strong> The weapon AR comparison chart will now
+              display enemy damage instead of AR.
             </p>
 
             <EnemySearch
@@ -254,20 +273,20 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
           <Separator className="mt-1" />
 
           <DialogDescription>
-            <h2 className="text-lg font-semibold text-primary mb-1">
+            <h2 className="mb-1 text-lg font-semibold text-primary">
               Compare Weapons
             </h2>
             <p className="mb-4 text-primary dark:text-muted-foreground">
               Compare weapons by adding them to the weapon attack rating
               comparison chart:
-              <ul className="list-disc list-inside leading-6 mt-1 mb-2 ml-3">
+              <ul className="mt-1 mb-2 ml-3 leading-6 list-disc list-inside">
                 <li>
                   See how the weapon{"'"}s attack rating changes at different
                   weapon levels.
                 </li>
                 <li>
-                  Check a weapons information by clicking on its name at the top
-                  of the chart.
+                  Check a weapon{"'"}s information by clicking on its name at
+                  the chart{"'"}s top.
                 </li>
                 <li>
                   Clear the graph by pressing the X button in the top right
@@ -275,11 +294,11 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
                 </li>
               </ul>
               <span className="text-muted-foreground">
-                Note: Staffs and Seals will chart their Spell Scaling values
+                Note: Staff and Seals will chart their Spell Scaling values
                 instead of their AR.
               </span>
             </p>
-            <div className="w-full relative mx-auto"></div>
+            <div className="relative w-full mx-auto"></div>
             <SelectedWeaponsChart
               updateWeaponInfo={() => console.log("Clearing selected weapons!")}
               clearSelectedWeapons={() =>
@@ -291,12 +310,12 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
           <Separator className="mt-8" />
 
           <DialogDescription>
-            <h2 className="text-lg font-semibold text-primary mb-1">
+            <h2 className="mb-1 text-lg font-semibold text-primary">
               Weapons Table
             </h2>
             <p className="mb-4 text-primary dark:text-muted-foreground">
               View all weapons in a table format:
-              <ul className="list-disc list-inside leading-6 mt-1 ml-3">
+              <ul className="mt-1 ml-3 leading-6 list-disc list-inside">
                 <li>
                   Filter weapons by name, weapon types, weapon level,
                   affinities, and status effects.
@@ -305,14 +324,16 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
                   Sort weapons by all attributes, every column is sortable by
                   clicking on the column header.
                 </li>
-                <li>Click on a weapon{"'"}s name to view its information.</li>
                 <li>
-                  Add a weapon to the comparison chart by selecting it with the
-                  checkbox in the first column.
+                  Click on a weapon{"'"}s name to view its information (Book).
                 </li>
                 <li>
-                  See a weapons damage breakdown by pressing the chart button in
-                  the last column.
+                  Add a weapon to the comparison chart by selecting it with the
+                  checkbox in the first column (Plus).
+                </li>
+                <li>
+                  See a weapon{"'"}s scaling chart by pressing the chart button
+                  in the last column (Chart).
                 </li>
               </ul>
             </p>

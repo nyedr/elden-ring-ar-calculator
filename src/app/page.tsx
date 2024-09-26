@@ -21,7 +21,7 @@ import {
 import { useDebouncedValue } from "@/hooks/useDebounceValue";
 import WeaponChart from "@/components/weapon-chart";
 import { WeaponInfoProps } from "@/components/weapon-info";
-import { ComboboxItem } from "@/components/ui/combobox";
+import { SelectItem } from "@/components/ui/combobox";
 import useEnemies from "@/hooks/useEnemies";
 import useWeapons from "@/hooks/useWeapons";
 import {
@@ -29,13 +29,18 @@ import {
   getWeaponAttack,
 } from "@/lib/calc/calculator";
 import ExtraInfo from "@/components/extra-info";
+import { applyBuffs, filterApplicableBuffs } from "@/lib/data/buffs";
+import { BuffSelection, defaultBuffSelection } from "@/components/buffs-dialog";
 
 export interface WeaponState {
   selectedWeapons: Weapon[];
   selectedChartWeapon: Weapon | null;
   weaponInfo: Weapon | null;
   selectedWeaponLevel: [number, number, string];
+  weaponMove: string | null;
 }
+
+// TODO!: Application is too laggy when changes are being made
 
 export default function Home() {
   const {
@@ -56,8 +61,9 @@ export default function Home() {
     weaponInfo: null,
     selectedWeaponLevel:
       specialAndRegularLevelsDict[specialAndRegularLevelsDict.length - 1],
+    weaponMove: null,
   });
-
+  const [buffs, setBuffs] = useState<BuffSelection>(defaultBuffSelection);
   const [isExtraInfoOpen, setIsExtraInfoOpen] = useState(false);
 
   const {
@@ -71,21 +77,37 @@ export default function Home() {
 
   const getWeaponAttackRating = useCallback(
     (weapon: Weapon) => {
+      const isWeaponUpgradeable =
+        weapon.name !== "Unarmed" && weapon.name !== "Meteorite Staff";
+      const maxUpgradeLevel = weapon.isSpecialWeapon
+        ? weaponState.selectedWeaponLevel[1]
+        : weaponState.selectedWeaponLevel[0];
+
       const attackRating = getWeaponAttack({
         weapon,
         attributes: getAttackAttributes(character.attributes),
         twoHanding: character.isTwoHanding,
-        upgradeLevel: Math.min(
-          weaponState.selectedWeaponLevel[0],
-          weapon?.attack?.length - 1
-        ),
+        upgradeLevel: Math.min(isWeaponUpgradeable ? maxUpgradeLevel : 0),
+      });
+
+      const validBuffs = filterApplicableBuffs({
+        buffs,
+        isTwoHanding: character.isTwoHanding,
+        weaponAttackResult: attackRating,
+        enemy: selectedEnemy || undefined,
+        move: weaponState.weaponMove || undefined,
       });
 
       if (selectedEnemy && isDamageOnEnemy) {
-        return calculateDamageAgainstEnemy(attackRating, selectedEnemy);
+        const enemyDamage = calculateDamageAgainstEnemy(
+          attackRating,
+          selectedEnemy
+        );
+
+        return applyBuffs(validBuffs, enemyDamage, isDamageOnEnemy);
       }
 
-      return attackRating;
+      return applyBuffs(validBuffs, attackRating);
     },
     [
       character,
@@ -93,6 +115,8 @@ export default function Home() {
       isDamageOnEnemy,
       getAttackAttributes,
       weaponState.selectedWeaponLevel,
+      buffs,
+      weaponState.weaponMove,
     ]
   );
 
@@ -123,7 +147,7 @@ export default function Home() {
 
   useEffect(() => {}, [character.attributes, selectedEnemy, isDamageOnEnemy]);
 
-  const weaponSearchOptions: ComboboxItem[] = weaponsData.weapons.map(
+  const weaponSearchOptions: SelectItem[] = weaponsData.weapons.map(
     (weapon) => ({
       value: weapon.name,
       label: weapon.name,
@@ -165,17 +189,14 @@ export default function Home() {
   return (
     <main className="flex flex-col gap-4 items-center w-full max-w-[1420px] px-5 lg:px-0 mx-auto py-4 max-[800px]:px-[calc(10vw/2)]">
       <Header />
-      <div className="flex sm:flex-row flex-col justify-center h-full w-full gap-5 sm:justify-between">
-        {/*
-            TODO: Add two selects and a multi select for body buffs, aura buffs, and other buffs
-            Character type should be updated to accomodate for this extra data
-        */}
+      <div className="flex flex-col justify-center w-full h-full gap-5 sm:flex-row sm:justify-between">
         <CharacterStats
           {...{
-            character,
             setCharacterAttribute,
             isTwoHanding: character.isTwoHanding,
             setIsTwoHanding,
+            setBuffs,
+            buffs,
           }}
         />
 
@@ -185,9 +206,11 @@ export default function Home() {
               ? {
                   enemy: selectedEnemy,
                   attackRating: getWeaponAttackRating(weaponState.weaponInfo),
+                  buffSelection: buffs,
                 }
               : undefined
           }
+          buffSelection={buffs}
           weapon={
             weaponState.weaponInfo
               ? ({
@@ -239,7 +262,6 @@ export default function Home() {
             setWeaponState((prev) => ({ ...prev, selectedChartWeapon: null }))
           }
           selectedChartWeapon={weaponState.selectedChartWeapon}
-          enemy={isDamageOnEnemy ? selectedEnemy : null}
         />
       )}
 
@@ -256,6 +278,10 @@ export default function Home() {
           removeSelectedWeapon={removeSelectedWeaponByName}
         />
       )}
+
+      {/* <pre className="w-full p-4 rounded-md bg-secondary">
+        <code>{JSON.stringify(selectedEnemy, null, 2)}</code>
+      </pre> */}
 
       <WeaponsTable
         updateWeaponInfo={updateWeaponInfo}

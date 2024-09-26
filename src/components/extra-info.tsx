@@ -2,6 +2,7 @@
 
 import EnemyInfo, { EnemyInfoProps } from "@/components/enemy-info";
 import WeaponInfo, { WeaponInfoProps } from "@/components/weapon-info";
+import { BuffSelection } from "./buffs-dialog";
 
 interface EnemyExtraInfoProps {
   enemy?: Omit<EnemyInfoProps, "isOpen" | "setIsOpen">;
@@ -17,6 +18,7 @@ type ExtraInfoProps = (EnemyExtraInfoProps & WeaponExtraInfoProps) & {
   weaponAffinityOptions: any[];
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  buffSelection: BuffSelection;
 };
 
 export default function ExtraInfo(props: ExtraInfoProps) {
@@ -28,6 +30,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
     weaponAffinityOptions,
     isOpen,
     setIsOpen,
+    buffSelection,
   } = props;
 
   if (enemy && isDamageOnEnemy) {
@@ -38,6 +41,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         setIsOpen={setIsOpen}
         setWeaponInfo={setWeaponInfo}
         weaponAffinityOptions={weaponAffinityOptions}
+        buffSelection={buffSelection}
       />
     );
   } else if (weapon && !isDamageOnEnemy) {
@@ -48,6 +52,7 @@ export default function ExtraInfo(props: ExtraInfoProps) {
         setIsOpen={setIsOpen}
         setWeaponInfo={setWeaponInfo}
         weaponAffinityOptions={weaponAffinityOptions}
+        buffSelection={buffSelection}
       />
     );
   }

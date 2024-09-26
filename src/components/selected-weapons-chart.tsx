@@ -23,8 +23,6 @@ export default function SelectedWeaponsChart({
     activeDatumIndex: -1,
   });
 
-  console.log("Selected weapons data:", data);
-
   return (
     <div className="h-[500px] w-full flex flex-col">
       <Button

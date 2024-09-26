@@ -1,8 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": false, // Allow ts-node to emit compiled code
-    "module": "commonjs", // Use commonjs for compatibility with Node.js
-    "moduleResolution": "node" // Use classic Node.js resolution
+    "noEmit": false, // Allow emitting compiled JavaScript
+    "module": "ESNext", // Use ESNext modules to support ESM
+    "moduleResolution": "node", // Use node-style module resolution
+    "esModuleInterop": true, // Enable interop between CommonJS and ES modules
+    "skipLibCheck": true // Skip library type checks to speed up compilation
   }
 }

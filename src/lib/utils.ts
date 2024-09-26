@@ -15,6 +15,8 @@ import {
   getWeaponAttack,
   calculateDamageAgainstEnemy,
 } from "./calc/calculator";
+import { BuffSelection } from "@/components/buffs-dialog";
+import { Buff } from "./data/buffs";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -261,8 +263,8 @@ export const removeDuplicateNames = (arr: any[]) => {
   });
 };
 
-export const parsePoiseDamage = (poiseDamage: string) => {
-  if (poiseDamage === "0") {
+export const parseValue = (poiseDamage: string | null) => {
+  if (poiseDamage === "0" || poiseDamage === null) {
     return null;
   }
 
@@ -275,49 +277,45 @@ export const parsePoiseDamage = (poiseDamage: string) => {
   return parseInt(poiseDamage);
 };
 
-// TODO: Upgrade optiaml poise break sequence algorithm?
-export const getOptimalPoiseBrakeSequence = (
-  poiseDmg: Record<string, number | null>,
-  poiseTarget: number
-): string[] => {
-  const validMoves = Object.entries(poiseDmg)
-    .map(
-      ([move, dmg]) =>
-        [move, parsePoiseDamage(String(dmg))] as [string, number | null]
-    )
-    .filter(([_, dmg]) => dmg !== null)
-    .sort((a, b) => b[1]! - a[1]!); // Sort moves by poise value in descending order
+export function getOptimalPoiseBrakeSequence(
+  poiseDamage: { [move: string]: number | null },
+  targetPoise: number
+): string[] {
+  const entries: [string, number][] = Object.entries(poiseDamage).filter(
+    ([move, damage]) => damage !== null
+  ) as [string, number][]; // Convert the object to an array of [move, damage] pairs
 
-  let sequence: string[] = [];
-  let currentPoise = 0;
+  let closestSum: number | null = null;
+  let bestCombination: string[] = [];
 
-  // Efficiently find the closest possible match
-  for (let [move, dmg] of validMoves) {
-    const poiseValue = dmg!;
-    if (currentPoise + poiseValue >= poiseTarget) {
-      sequence.push(move);
-      return sequence;
-    } else {
-      const numHits = Math.floor((poiseTarget - currentPoise) / poiseValue);
-      if (numHits > 0) {
-        sequence.push(...Array(numHits).fill(move));
-        currentPoise += numHits * poiseValue;
+  // Recursive helper function
+  function findClosest(currentMoves: string[], currentSum: number) {
+    // If current sum meets or exceeds the targetPoise
+    if (currentSum >= targetPoise) {
+      // Check if this is the best combination found so far
+      if (
+        closestSum === null ||
+        currentMoves.length < bestCombination.length ||
+        (currentMoves.length === bestCombination.length &&
+          currentSum < closestSum)
+      ) {
+        closestSum = currentSum;
+        bestCombination = [...currentMoves];
       }
+      return;
+    }
+
+    // Recurse through the entries (reusing moves)
+    for (let [move, damage] of entries) {
+      findClosest([...currentMoves, move], currentSum + damage);
     }
   }
 
-  // If no exact match is possible, add the smallest possible move to exceed the poise target
-  if (currentPoise < poiseTarget) {
-    for (let [move, dmg] of validMoves.reverse()) {
-      if (dmg! > 0) {
-        sequence.push(move);
-        break;
-      }
-    }
-  }
+  // Start recursion with empty combination and sum of 0
+  findClosest([], 0);
 
-  return sequence;
-};
+  return bestCombination;
+}
 
 export const parseMove = (move: string): string => {
   const match = move.match(
@@ -335,6 +333,69 @@ export const parseMove = (move: string): string => {
   }
 
   return move;
+};
+
+export interface PoiseDamage {
+  "1h R1 1": number | null;
+  "1h R2 1": number | null;
+  "1h Charged R2 1": number | null;
+  "1h Running R1": number | null;
+  "1h Running R2": number | null;
+  "1h Jumping R1": number | null;
+  "1h Jumping R2": number | null;
+  "2h R1 1": number | null;
+  "2h R2 1": number | null;
+  "2h Charged R2 1": number | null;
+  "2h Running R1": number | null;
+  "2h Running R2": number | null;
+  "2h Jumping R1": number | null;
+  "2h Jumping R2": number | null;
+  Backstab: number | null;
+  Riposte: number | null;
+  "Riposte (Large PvE)": number | null;
+  "1h Guard Counter": number | null;
+  "2h Guard Counter": number | null;
+}
+
+export const getPoiseValues = (
+  damageValues: DamageValues | MotionValues | PoiseDamage,
+  multiplier: number = 1
+): PoiseDamage => {
+  return {
+    "1h R1 1": (parseValue(String(damageValues["1h R1 1"])) ?? 0) * multiplier,
+    "1h R2 1": (parseValue(String(damageValues["1h R2 1"])) ?? 0) * multiplier,
+    "1h Charged R2 1":
+      (parseValue(String(damageValues["1h Charged R2 1"])) ?? 0) * multiplier,
+    "1h Running R1":
+      (parseValue(String(damageValues["1h Running R1"])) ?? 0) * multiplier,
+    "1h Running R2":
+      (parseValue(String(damageValues["1h Running R2"])) ?? 0) * multiplier,
+    "1h Jumping R1":
+      (parseValue(String(damageValues["1h Jumping R1"])) ?? 0) * multiplier,
+    "1h Jumping R2":
+      (parseValue(String(damageValues["1h Jumping R2"])) ?? 0) * multiplier,
+    "2h R1 1": (parseValue(String(damageValues["2h R1 1"])) ?? 0) * multiplier,
+    "2h R2 1": (parseValue(String(damageValues["2h R2 1"])) ?? 0) * multiplier,
+    "2h Charged R2 1":
+      (parseValue(String(damageValues["2h Charged R2 1"])) ?? 0) * multiplier,
+    "2h Running R1":
+      (parseValue(String(damageValues["2h Running R1"])) ?? 0) * multiplier,
+    "2h Running R2":
+      (parseValue(String(damageValues["2h Running R2"])) ?? 0) * multiplier,
+    "2h Jumping R1":
+      (parseValue(String(damageValues["2h Jumping R1"])) ?? 0) * multiplier,
+    "2h Jumping R2":
+      (parseValue(String(damageValues["2h Jumping R2"])) ?? 0) * multiplier,
+    Backstab: (parseValue(String(damageValues["Backstab"])) ?? 0) * multiplier,
+    Riposte: (parseValue(String(damageValues["Riposte"])) ?? 0) * multiplier,
+    "Riposte (Large PvE)":
+      (parseValue(String(damageValues["Riposte (Large PvE)"])) ?? 0) *
+      multiplier,
+    "1h Guard Counter":
+      (parseValue(String(damageValues["1h Guard Counter"])) ?? 0) * multiplier,
+    "2h Guard Counter":
+      (parseValue(String(damageValues["2h Guard Counter"])) ?? 0) * multiplier,
+  };
 };
 
 export const getDamageValues = (damageValues: DamageValues | MotionValues) => {

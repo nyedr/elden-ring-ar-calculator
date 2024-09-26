@@ -15,6 +15,7 @@ interface WeaponTableProps {
 }
 
 export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
+  console.log(attackRating);
   const weaponDamages = allDamageTypes.map(
     (type) => attackRating.attackPower[type]?.weapon
   );
@@ -45,7 +46,7 @@ export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
               {damage ? (
                 Math.floor(damage)
               ) : (
-                <Icons.minus className="text-secondary w-4 h-4" />
+                <Icons.minus className="w-4 h-4 text-secondary" />
               )}
             </TableCell>
           ))}
@@ -60,7 +61,7 @@ export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
               {damage ? (
                 Math.floor(damage)
               ) : (
-                <Icons.minus className="text-secondary w-4 h-4" />
+                <Icons.minus className="w-4 h-4 text-secondary" />
               )}
             </TableCell>
           ))}
@@ -72,7 +73,7 @@ export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
               {damage ? (
                 Math.floor(damage)
               ) : (
-                <Icons.minus className="text-secondary w-4 h-4" />
+                <Icons.minus className="w-4 h-4 text-secondary" />
               )}
             </TableCell>
           ))}

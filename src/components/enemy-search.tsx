@@ -4,10 +4,10 @@ import * as React from "react";
 
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
-import Combobox, { ComboboxItem } from "./ui/combobox";
+import Combobox, { SelectItem } from "./ui/combobox";
 
 export interface EnemySearchProps {
-  items: ComboboxItem[];
+  items: SelectItem[];
   setSelectedEnemy: (name: string) => void;
   setIsDamageOnEnemy: React.Dispatch<React.SetStateAction<boolean>>;
   isDamageOnEnemy: boolean;
@@ -22,17 +22,21 @@ export function EnemySearch({
   isDamageOnEnemy,
 }: EnemySearchProps) {
   return (
-    <div className="flex items-center gap-3 w-full">
+    <div className="flex items-center w-full gap-3">
       <Combobox
+        hasLabel={false}
         items={items}
+        buttonProps={{
+          size: "default",
+        }}
         onValueChange={(selected) => setSelectedEnemy(selected)}
         maxItemsShown={DROPDOWN_ITEMS_SHOWN_LIMIT}
         label="Enemy"
       />
 
       <Label className="whitespace-nowrap" htmlFor="isTwoHanding">
-        <span className="sm:block hidden">Enemy Damage</span>{" "}
-        <span className="sm:hidden block">Enemy Dmg</span>
+        <span className="hidden sm:block">Enemy Damage</span>{" "}
+        <span className="block sm:hidden">Enemy Dmg</span>
       </Label>
       <Switch
         checked={isDamageOnEnemy}

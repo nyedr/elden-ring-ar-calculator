@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Icons } from "./icons";
 import { Weapon } from "@/lib/data/weapon";
-import { allAttributes, Attributes } from "@/lib/data/attributes";
+import { allAttributes, Attribute, Attributes } from "@/lib/data/attributes";
 import { capitalize } from "@/lib/utils";
 import { getAttributeScalingTier } from "@/lib/uiUtils";
 
@@ -26,9 +26,9 @@ export default function WeaponScalingTable({
   const weaponRequirements = allAttributes.map(
     (key) => weapon.requirements[key]
   );
-  const weaponScaling = allAttributes.map((key) => ({
-    key,
-    scaling: weapon.attributeScaling[level][key],
+  const weaponScaling = allAttributes.map((attribute) => ({
+    attribute: attribute as Attribute,
+    scaling: weapon.attributeScaling[level][attribute],
   }));
 
   return (
@@ -44,21 +44,23 @@ export default function WeaponScalingTable({
       <TableBody>
         <TableRow>
           <TableCell>Scaling</TableCell>
-          {weaponScaling.map(({ key, scaling }, index) => (
+          {weaponScaling.map(({ attribute, scaling }, index) => (
             <TableCell
               className={
-                weapon.requirements[key]! <= attributes[key] === false
+                (weapon.requirements[attribute] ?? 0) > attributes[attribute]
                   ? "text-red-500"
                   : ""
               }
               key={index}
             >
               {scaling ? (
-                `${getAttributeScalingTier(weapon, key, level)} (${Math.floor(
-                  scaling * 100
-                )})`
+                `${getAttributeScalingTier(
+                  weapon,
+                  attribute,
+                  level
+                )} (${Math.floor(scaling * 100)})`
               ) : (
-                <Icons.minus className="text-secondary w-4 h-4" />
+                <Icons.minus className="w-4 h-4 text-secondary" />
               )}
             </TableCell>
           ))}
@@ -67,7 +69,7 @@ export default function WeaponScalingTable({
           <TableCell>Required</TableCell>
           {weaponRequirements.map((value, index) => (
             <TableCell key={index}>
-              {value || <Icons.minus className="text-secondary w-4 h-4" />}
+              {value || <Icons.minus className="w-4 h-4 text-secondary" />}
             </TableCell>
           ))}
         </TableRow>

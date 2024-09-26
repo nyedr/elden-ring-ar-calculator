@@ -4,7 +4,7 @@ import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -18,18 +18,25 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Label } from "./label";
+import { Badge } from "./badge";
 
-export interface ComboboxItem {
+export interface SelectItem {
   value: string;
   label: string;
 }
 
 interface ComboboxProps {
-  items: ComboboxItem[];
+  items: SelectItem[];
   onValueChange: (selected: string) => void;
   maxItemsShown?: number;
   label?: string;
   filter?: (value: string, search: string) => number;
+  defaultValue?: string;
+  hasBadge?: boolean;
+  id?: string;
+  hasLabel?: boolean;
+  buttonProps?: ButtonProps;
 }
 
 const DROPDOWN_ITEMS_SHOWN_LIMIT = 40;
@@ -40,9 +47,14 @@ export default function Combobox({
   maxItemsShown,
   label,
   filter,
+  defaultValue,
+  hasBadge = false,
+  id,
+  hasLabel = true,
+  buttonProps,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(defaultValue);
   const [searchQuery, setSearchQuery] = React.useState("");
 
   const filteredItems = items.filter((item) =>
@@ -50,20 +62,41 @@ export default function Combobox({
   );
 
   return (
-    <div className="flex items-center gap-3 overflow-hidden w-full">
+    <div className="flex items-center w-full gap-3 overflow-hidden">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full justify-between truncate"
-          >
-            {value
-              ? items.find((item) => item.value === value)?.label
-              : `Search ${label?.toLowerCase() ?? "item"}`}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
+          <div className="w-full space-y-2">
+            {hasLabel && (
+              <Label
+                htmlFor={id}
+                className="flex items-center gap-2 text-sm font-medium"
+              >
+                {label}
+                {hasBadge && (
+                  <Badge variant="outline" className="font-normal">
+                    {items.length}
+                  </Badge>
+                )}
+              </Label>
+            )}
+            <Button
+              {...buttonProps}
+              size={buttonProps?.size ?? "sm"}
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className={cn(
+                "justify-between w-full truncate",
+                buttonProps?.className
+              )}
+              id={id}
+            >
+              {value
+                ? items.find((item) => item.value === value)?.label
+                : `Select a ${label?.toLowerCase() ?? "item"}`}
+              <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+            </Button>
+          </div>
         </PopoverTrigger>
         <PopoverContent className="w-[--radix-popover-trigger-width] max-h-[--radix-popover-content-available-height] p-0">
           <Command
@@ -76,6 +109,7 @@ export default function Combobox({
                       .includes(search.toLowerCase());
                   }
             }
+            defaultValue={value}
           >
             <CommandInput
               value={searchQuery}

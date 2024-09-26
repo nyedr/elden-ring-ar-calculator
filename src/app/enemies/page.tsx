@@ -4,14 +4,14 @@ import EnemiesTable from "@/components/enemies-table";
 import EnemyInfo from "@/components/enemy-info";
 import Header from "@/components/header";
 
-import { Enemy } from "@/lib/data/enemy-data";
+import { Enemy, EnemyType } from "@/lib/data/enemy-data";
 import { useState } from "react";
 import EnemiesTableControl from "@/components/enemies-table-control";
 import useEnemies from "@/hooks/useEnemies";
 
 export interface EmemyFilterData {
   location: string;
-  type: string;
+  type: EnemyType | "None";
   drop: string;
 }
 
@@ -19,7 +19,7 @@ export default function Enemies() {
   const [isEnemyInfoOpen, setIsEnemyInfoOpen] = useState(false);
   const [enemiesFilterData, setEnemiesFilterData] = useState<EmemyFilterData>({
     location: "",
-    type: "",
+    type: "None",
     drop: "",
   });
   const {
@@ -37,7 +37,7 @@ export default function Enemies() {
   };
 
   const clearFilters = () => {
-    setEnemiesFilterData({ location: "", type: "", drop: "" });
+    setEnemiesFilterData({ location: "", type: "None", drop: "" });
     resetEnemiesData();
   };
 

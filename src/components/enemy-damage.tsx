@@ -4,6 +4,8 @@ import {
   getOptimalPoiseBrakeSequence,
   parseMove,
   getDamageValues,
+  PoiseDamage,
+  getPoiseValues,
 } from "@/lib/utils";
 import {
   Select,
@@ -23,15 +25,14 @@ import {
   WeaponAttackResult,
 } from "@/lib/calc/calculator";
 import { getTotalEnemyDamage } from "@/lib/uiUtils";
-import {
-  DamageValues,
-  isDamageValuesKey,
-  MotionValues,
-} from "@/lib/data/weapon";
+import { isDamageValuesKey, MotionValues } from "@/lib/data/weapon";
+import { BuffSelection } from "./buffs-dialog";
+import { applyBuffs } from "@/lib/data/buffs";
 
 interface EnemyDamageProps {
   attackRating: WeaponAttackResult;
   enemy: Enemy;
+  buffSelection: BuffSelection;
 }
 
 const HealthBar = ({
@@ -45,7 +46,7 @@ const HealthBar = ({
 
   return (
     <>
-      <div className="w-full overflow-hidden h-4 rounded-md mt-2 bg-secondary">
+      <div className="w-full h-4 mt-2 overflow-hidden rounded-md bg-secondary">
         <div
           className={`h-full bg-red-700`}
           style={{
@@ -56,7 +57,7 @@ const HealthBar = ({
         ></div>
       </div>
 
-      <div className="w-full flex items-center justify-between">
+      <div className="flex items-center justify-between w-full">
         <span>
           Hits to kill:{" "}
           {Math.ceil(healthPoints / getTotalEnemyDamage(enemyDamage))}
@@ -70,7 +71,11 @@ const HealthBar = ({
   );
 };
 
-export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
+export default function EnemyDamage({
+  attackRating,
+  enemy,
+  buffSelection,
+}: EnemyDamageProps) {
   // Generate weapon attack options and categorize them into one-handed and two-handed.
   const weaponAttackOptions = useMemo(() => {
     const damageVals = getDamageValues(attackRating.weapon.motionValues);
@@ -100,8 +105,6 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
     [weaponAttackOptions, riposteType]
   );
 
-  console.log(weaponOptions);
-
   // Initialize state for two-handing and selected weapon attack
   const [isTwoHanding, setIsTwoHanding] = useState(false);
   const [weaponAttack, setWeaponAttack] = useState({
@@ -109,25 +112,56 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
     twoHanded: weaponOptions.twoHanded[0]?.value ?? "",
   });
 
+  const damageType = isTwoHanding
+    ? weaponAttack.twoHanded
+    : weaponAttack.oneHanded;
+
+  const validatedDamageType = isDamageValuesKey(damageType)
+    ? damageType
+    : "1h R1 1";
+
+  const weaponAttackResult = useMemo(() => {
+    const damageCalculation = calculateDamageAgainstEnemy(
+      attackRating,
+      enemy,
+      validatedDamageType
+    );
+    return applyBuffs(
+      buffSelection,
+      {
+        ...damageCalculation,
+        weapon: {
+          ...damageCalculation.weapon,
+          // @ts-ignore
+          poiseDamage: getPoiseValues(damageCalculation.weapon.poiseDamage),
+        },
+      },
+      true,
+      damageType
+    );
+  }, [attackRating, enemy, validatedDamageType, buffSelection, damageType]);
+
   const oneHandedPoiseDamages = useMemo(() => {
     const result: Record<string, number | null> = {};
     weaponOptions.oneHanded.forEach((option) => {
       result[option.value] =
-        attackRating.weapon.poiseDamage[option.value as keyof DamageValues] ??
-        null;
+        weaponAttackResult.weapon.poiseDamage[
+          option.value as keyof PoiseDamage
+        ] ?? null;
     });
     return result;
-  }, [weaponOptions.oneHanded, attackRating.weapon.poiseDamage]);
+  }, [weaponAttackResult.weapon.poiseDamage, weaponOptions.oneHanded]);
 
   const twoHandedPoiseDamages = useMemo(() => {
     const result: Record<string, number | null> = {};
     weaponOptions.twoHanded.forEach((option) => {
       result[option.value] =
-        attackRating.weapon.poiseDamage[option.value as keyof DamageValues] ??
-        null;
+        weaponAttackResult.weapon.poiseDamage[
+          option.value as keyof PoiseDamage
+        ] ?? null;
     });
     return result;
-  }, [weaponOptions.twoHanded, attackRating.weapon.poiseDamage]);
+  }, [weaponAttackResult.weapon.poiseDamage, weaponOptions.twoHanded]);
 
   const optimalPoiseBreakSequence = useMemo(() => {
     const validOneHandedPoiseDamages = Object.fromEntries(
@@ -146,6 +180,7 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
       isTwoHanding ? validOneHandedPoiseDamages : validTwoHandedPoiseDamages,
       enemy.poise.effective
     );
+
     return sequence;
   }, [
     isTwoHanding,
@@ -153,24 +188,6 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
     twoHandedPoiseDamages,
     enemy.poise.effective,
   ]);
-
-  const damageType = isTwoHanding
-    ? weaponAttack.twoHanded
-    : weaponAttack.oneHanded;
-
-  // Ensure damageType is a damage value key
-  const validatedDamageType = isDamageValuesKey(damageType)
-    ? damageType
-    : "1h R1 1";
-
-  const enemyDamage = useMemo(() => {
-    const damageCalculation = calculateDamageAgainstEnemy(
-      attackRating,
-      enemy,
-      validatedDamageType
-    ).enemyDamages;
-    return damageCalculation;
-  }, [attackRating, enemy, validatedDamageType]);
 
   const handleSwitchChange = useCallback(() => {
     setIsTwoHanding((prev) => !prev);
@@ -186,7 +203,7 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
     [isTwoHanding]
   );
 
-  if (!enemyDamage) return null;
+  if (!weaponAttackResult.enemyDamages) return null;
 
   if (
     weaponOptions.oneHanded.length === 0 ||
@@ -194,13 +211,16 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
   ) {
     // Handling edge cases for specific weapon types with no attack options
     return (
-      <HealthBar enemyDamage={enemyDamage} healthPoints={enemy.healthPoints} />
+      <HealthBar
+        enemyDamage={weaponAttackResult.enemyDamages}
+        healthPoints={enemy.healthPoints}
+      />
     );
   }
 
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <div className="w-full flex justify-between items-center gap-3">
+    <div className="flex flex-col w-full gap-2">
+      <div className="flex items-center justify-between w-full gap-3">
         <Select
           value={damageType}
           onValueChange={(value) => handleWeaponChange(value)}
@@ -234,13 +254,16 @@ export default function EnemyDamage({ attackRating, enemy }: EnemyDamageProps) {
         </div>
       </div>
 
-      <HealthBar enemyDamage={enemyDamage} healthPoints={enemy.healthPoints} />
+      <HealthBar
+        enemyDamage={weaponAttackResult.enemyDamages}
+        healthPoints={enemy.healthPoints}
+      />
 
-      <div className="flex sm:items-center flex-col sm:flex-row gap-2 w-full">
-        <span className="whitespace-nowrap font-semibold">
+      <div className="flex flex-col w-full gap-2 sm:items-center sm:flex-row">
+        <span className="font-semibold whitespace-nowrap">
           Efficient poise break:
         </span>
-        <div className="flex items-center gap-2 flex-wrap w-full">
+        <div className="flex flex-wrap items-center w-full gap-2">
           {optimalPoiseBreakSequence.map((move, index) => (
             <Badge variant="secondary" key={move + index} className="text-xs">
               {parseMove(move)}

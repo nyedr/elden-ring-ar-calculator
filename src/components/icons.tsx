@@ -14,6 +14,7 @@ import {
   CircleHelp,
   Infinity,
   ExternalLink,
+  Menu,
 } from "lucide-react";
 import react from "react";
 
@@ -37,6 +38,7 @@ export enum IconName {
   GITHUB = "gitHub",
   HELP = "circleHelp",
   EXTERNAL_LINK = "externalLink",
+  Menu = "menu",
 }
 
 export const Icons: Record<
@@ -49,6 +51,7 @@ export const Icons: Record<
   [IconName.CHART]: ChartLine,
   [IconName.BOOK]: BookOpen,
   [IconName.X]: X,
+  [IconName.Menu]: Menu,
   [IconName.HELP]: CircleHelp,
   [IconName.EYE]: Eye,
   [IconName.CIRCLE_X]: CircleX,

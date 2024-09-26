@@ -118,7 +118,7 @@ export function DataTable<TData, TValue>({
   }, [table, selectedItems, data]);
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 overflow-y-visible">
       {filterBy && (
         <Toolbar
           customSelect={customSelect}
@@ -126,7 +126,7 @@ export function DataTable<TData, TValue>({
           table={table}
         />
       )}
-      <div className="border rounded-md">
+      <div className="border rounded-md overflow-y-clip">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
