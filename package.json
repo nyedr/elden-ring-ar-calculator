@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "update-enemies": "ts-node ./scripts/updateEnemies.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.1",

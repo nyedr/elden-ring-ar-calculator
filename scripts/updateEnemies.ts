@@ -202,19 +202,14 @@ const updateEnemies = async (update: boolean = false): Promise<void> => {
     if (update) {
       const outputDir = `${process.cwd()}\\public\\data\\enemies`;
       const filePath = path.resolve(outputDir, `enemies${NG}.json`);
+      const dirPath = path.dirname(filePath);
+
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
 
       console.log(`Updating ${filePath}`);
       fs.writeFileSync(filePath, enemiesJson);
     }
   }
 };
-
-export async function GET() {
-  await updateEnemies(true);
-
-  return new Response("Enemies updated!", {
-    headers: {
-      "content-type": "application/json",
-    },
-  });
-}
