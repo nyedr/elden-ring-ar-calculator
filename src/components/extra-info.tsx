@@ -21,6 +21,8 @@ type ExtraInfoProps = (EnemyExtraInfoProps & WeaponExtraInfoProps) & {
   buffSelection: BuffSelection;
 };
 
+// TODO: Opening and closing the dialogs is laggy, check for possible side effects
+
 export default function ExtraInfo(props: ExtraInfoProps) {
   const {
     enemy,

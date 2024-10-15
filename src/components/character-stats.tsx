@@ -12,81 +12,28 @@ import NumberTextField from "@/components/ui/number-input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { BuffsDialog, BuffSelection } from "./buffs-dialog";
-import { CharacterAttributes } from "@/hooks/useCharacter";
-import { Buff } from "@/lib/data/buffs";
-
-// Dummy data
-const attributesData = [
-  { id: "vig", name: "Vigor", description: "Affects HP and Fire defense" },
-  { id: "min", name: "Mind", description: "Affects FP and Focus" },
-  {
-    id: "end",
-    name: "Endurance",
-    description: "Affects Stamina and Robustness",
-  },
-  {
-    id: "str",
-    name: "Strength",
-    description: "Affects physical attack power",
-  },
-  {
-    id: "dex",
-    name: "Dexterity",
-    description: "Affects attack power and reduces casting time",
-  },
-  {
-    id: "int",
-    name: "Intelligence",
-    description: "Required to perform glintstone sorceries",
-  },
-  {
-    id: "fai",
-    name: "Faith",
-    description: "Required to perform sacred incantations",
-  },
-  {
-    id: "arc",
-    name: "Arcane",
-    description: "Affects Discovery and some sorceries/incantations",
-  },
-];
-
-export const defaultCharacter: {
-  attributes: CharacterAttributes;
-  level: number;
-} = {
-  attributes: {
-    Vig: 10,
-    Min: 10,
-    End: 10,
-    Str: 10,
-    Dex: 10,
-    Int: 10,
-    Fai: 10,
-    Arc: 10,
-  },
-  level: 1,
-};
+import {
+  Character,
+  CharacterAttributes,
+  getCharacterLevel,
+  attributesData,
+} from "@/hooks/useCharacter";
 
 export interface CharacterStatsProps {
-  character?: typeof defaultCharacter;
+  character: Character;
   setCharacterAttribute: (
-    attribute: keyof typeof defaultCharacter.attributes,
+    attribute: keyof CharacterAttributes,
     value: number
   ) => void;
   setIsTwoHanding: (isTwoHanding: boolean) => void;
-  isTwoHanding: boolean;
   setBuffs: Dispatch<SetStateAction<BuffSelection>>;
   buffs: BuffSelection;
 }
 
 interface AttributeInputProps {
-  attribute: keyof typeof defaultCharacter.attributes;
+  attribute: keyof CharacterAttributes;
   value: number;
-  onAttributeChanged(
-    attribute: keyof typeof defaultCharacter.attributes,
-    value: number
-  ): void;
+  onAttributeChanged(attribute: keyof CharacterAttributes, value: number): void;
   metadata: { name: string; description: string };
 }
 
@@ -122,7 +69,6 @@ export const AttributeInput = memo(function AttributeInput({
             {metadata.description}
           </p>
         </Label>
-        {/* <Badge variant="secondary">{internalValue}</Badge> */}
       </div>
       <div className="flex items-center space-x-2">
         <NumberTextField
@@ -148,8 +94,7 @@ export const AttributeInput = memo(function AttributeInput({
 
 export default function CharacterStats({
   setCharacterAttribute,
-  character = defaultCharacter,
-  isTwoHanding,
+  character,
   setIsTwoHanding,
   setBuffs,
   buffs,
@@ -159,14 +104,14 @@ export default function CharacterStats({
       <h2 className="flex items-center justify-between text-2xl font-semibold leading-none tracking-tight">
         <span>Character Stats</span>
         <Badge variant="secondary" className="text-lg">
-          Level: {character.level}
+          Level: {getCharacterLevel(character.attributes)}
         </Badge>
       </h2>
 
       <div className="grid gap-6 sm:grid-cols-2">
         {(
           Object.entries(character.attributes) as [
-            keyof typeof defaultCharacter.attributes,
+            keyof CharacterAttributes,
             number
           ][]
         ).map(([key, value]) => {
@@ -192,8 +137,8 @@ export default function CharacterStats({
         <div className="flex items-center space-x-2">
           <Switch
             id="isTwoHanding"
-            checked={isTwoHanding}
-            onCheckedChange={() => setIsTwoHanding(!isTwoHanding)}
+            checked={character.isTwoHanding}
+            onCheckedChange={() => setIsTwoHanding(!character.isTwoHanding)}
           />
           <Label htmlFor="isTwoHanding">Two Handing</Label>
         </div>

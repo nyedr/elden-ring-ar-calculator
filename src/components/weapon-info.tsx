@@ -129,7 +129,9 @@ export default function WeaponInfo({
   }, [validBuffs, attackRating, damageType]);
 
   const motionValue = useMemo(() => {
-    return parseValue(weapon.motionValues[damageType as keyof MotionValues]);
+    return (
+      parseValue(weapon.motionValues[damageType as keyof MotionValues]) ?? 100
+    );
   }, [weapon.motionValues, damageType]);
 
   const weaponAttackRating = useMemo(() => {

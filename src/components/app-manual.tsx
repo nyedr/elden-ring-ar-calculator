@@ -40,7 +40,6 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
       Min: 10,
     },
     isTwoHanding: false,
-    level: 1,
   };
 
   const getWeaponAttackRating = (weapon: Weapon): WeaponAttackResult => {

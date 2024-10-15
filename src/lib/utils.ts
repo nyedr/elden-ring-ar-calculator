@@ -264,7 +264,7 @@ export const removeDuplicateNames = (arr: any[]) => {
 };
 
 export const parseValue = (poiseDamage: string | null) => {
-  if (poiseDamage === "0" || poiseDamage === null) {
+  if (!poiseDamage) {
     return null;
   }
 

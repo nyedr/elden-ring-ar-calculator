@@ -37,7 +37,7 @@ interface WeaponsTableProps {
   isLoading?: boolean;
 }
 
-// TODO: Sort secondarily by weapon AR
+// TODO?: Sort secondarily by weapon AR
 
 export default function WeaponsTable({
   character,

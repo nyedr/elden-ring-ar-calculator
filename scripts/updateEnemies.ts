@@ -120,7 +120,7 @@ const fetchItemDropsData = async (): Promise<Map<number, EnemyDrop[]>> => {
   return dropsMap;
 };
 
-const updateEnemies = async (update: boolean = false): Promise<void> => {
+export const updateEnemies = async (update: boolean = false): Promise<void> => {
   const dropsMap = await fetchItemDropsData();
   const enemyTypesMap = await fetchDamageMultipliers();
 

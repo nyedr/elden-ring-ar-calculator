@@ -191,13 +191,11 @@ export default function Home() {
       <Header />
       <div className="flex flex-col justify-center w-full h-full gap-5 sm:flex-row sm:justify-between">
         <CharacterStats
-          {...{
-            setCharacterAttribute,
-            isTwoHanding: character.isTwoHanding,
-            setIsTwoHanding,
-            setBuffs,
-            buffs,
-          }}
+          character={character}
+          setCharacterAttribute={setCharacterAttribute}
+          setIsTwoHanding={setIsTwoHanding}
+          setBuffs={setBuffs}
+          buffs={buffs}
         />
 
         <ExtraInfo
@@ -280,7 +278,9 @@ export default function Home() {
       )}
 
       {/* <pre className="w-full p-4 rounded-md bg-secondary">
-        <code>{JSON.stringify(selectedEnemy, null, 2)}</code>
+        <code>
+          {JSON.stringify(weaponsData.findWeapon("Rabbath's Cannon"), null, 2)}
+        </code>
       </pre> */}
 
       <WeaponsTable

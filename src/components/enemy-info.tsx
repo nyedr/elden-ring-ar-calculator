@@ -85,12 +85,12 @@ export default function EnemyInfo({
             <DialogDescription className="flex items-center justify-between w-full text-primary">
               <strong className="flex items-center">
                 <span>Poise regen delay</span>
-                <Tooltip>
+                <Tooltip defaultOpen={false} delayDuration={400}>
                   <TooltipTrigger>
                     <Icons.circleHelp className="w-4 h-4 ml-2 text-primary" />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-[300px]">
-                    <p>
+                    <p className="p-1 font-medium">
                       Enemy poice will start regenerating at a rate of 13 per
                       second after {enemy.poise.regenDelay} seconds of not being
                       hit.
@@ -103,12 +103,12 @@ export default function EnemyInfo({
             <DialogDescription className="flex items-center justify-between w-full text-primary">
               <strong className="relative flex items-center">
                 <span>DLC Clear Health</span>
-                <Tooltip>
+                <Tooltip defaultOpen={false} delayDuration={400}>
                   <TooltipTrigger>
                     <Icons.circleHelp className="w-4 h-4 ml-2 text-primary" />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-[300px]">
-                    <p>
+                    <p className="p-1 font-medium">
                       Health value used if Promised Consort Radahn was killed in
                       a previous NG cycle.
                     </p>

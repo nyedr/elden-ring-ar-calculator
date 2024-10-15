@@ -44,7 +44,6 @@ export const getAttackAttributes = (
 
 export interface Character {
   attributes: CharacterAttributes;
-  level: number;
   isTwoHanding: boolean;
 }
 
@@ -67,7 +66,6 @@ const defaultAttributes: CharacterAttributes = {
 export default function useCharacter() {
   const [character, setCharacter] = useState<Character>({
     attributes: defaultAttributes,
-    level: getCharacterLevel(defaultAttributes),
     isTwoHanding: false,
   });
 
@@ -82,15 +80,9 @@ export default function useCharacter() {
     attribute: keyof CharacterAttributes,
     value: number
   ) {
-    const newCharacterLevel = getCharacterLevel({
-      ...character.attributes,
-      [attribute]: value,
-    });
-
     setCharacter({
       ...character,
       attributes: { ...character.attributes, [attribute]: value },
-      level: newCharacterLevel,
     });
   }
 

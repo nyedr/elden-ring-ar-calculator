@@ -1,4 +1,4 @@
-import regulationData from "@/public/data/regulation-vanilla-v1.13.json";
+import regulationData from "@/public/data/regulation-vanilla-v1.14.json";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { updateWeaponData } from "@/lib/data/extraWeaponData";
 import {

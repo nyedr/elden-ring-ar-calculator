@@ -9,10 +9,10 @@ export default function Header() {
     <header className="flex items-center justify-between w-full gap-5">
       <Link href="/">
         <h1 className="flex items-center gap-2 text-3xl font-bold sm:hidden whitespace-nowrap">
-          ER v1.13
+          ER v1.15
         </h1>
         <h1 className="items-center hidden gap-2 text-3xl font-bold sm:flex whitespace-nowrap">
-          Elden Ring v1.13
+          Elden Ring v1.15
         </h1>
       </Link>
       <Link className={buttonVariants({ variant: "ghost" })} href="/enemies">

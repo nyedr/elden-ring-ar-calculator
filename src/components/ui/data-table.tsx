@@ -34,7 +34,6 @@ import {
 } from "./data-table/toolbar";
 import { Pagination } from "./data-table/pagination";
 import { cn } from "@/lib/utils";
-import { WeaponAttackResult } from "@/lib/calc/calculator";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
