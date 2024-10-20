@@ -24,6 +24,7 @@ import {
   getDamageTypeKey,
 } from "@/lib/data/attackPowerTypes";
 import { allAttributes } from "@/lib/data/attributes";
+import { memo } from "react";
 
 interface WeaponsTableProps {
   character: Character;
@@ -39,7 +40,7 @@ interface WeaponsTableProps {
 
 // TODO?: Sort secondarily by weapon AR
 
-export default function WeaponsTable({
+const WeaponsTable = memo(function WeaponsTable({
   character,
   weaponAttackRatings,
   setSelectedWeapons,
@@ -428,4 +429,6 @@ export default function WeaponsTable({
       />
     </div>
   );
-}
+});
+
+export default WeaponsTable;

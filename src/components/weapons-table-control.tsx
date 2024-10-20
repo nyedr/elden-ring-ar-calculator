@@ -31,7 +31,8 @@ export interface WeaponsTableControlProps
   setSelectedChartWeapon: (selectedChartWeapon: Weapon | null) => void;
   updateWeaponInfo: (name: string) => void;
   weaponSearchOptions: CustomSelectItem[];
-  weaponState: WeaponState;
+  selectedWeaponLevel: [number, number, string];
+  setSelectedWeaponLevel: Dispatch<SetStateAction<[number, number, string]>>;
   setWeaponState: Dispatch<SetStateAction<WeaponState>>;
   isDamageOnEnemy: boolean;
   setIsDamageOnEnemy: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,7 +49,8 @@ export default function WeaponsTableControl({
   setWeaponFilter,
   weaponFilter,
   setWeaponState,
-  weaponState,
+  selectedWeaponLevel,
+  setSelectedWeaponLevel,
   isDamageOnEnemy,
   setIsDamageOnEnemy,
   enemySearchOptions,
@@ -206,13 +208,10 @@ export default function WeaponsTableControl({
           );
 
           if (selectedWeaponLevel) {
-            setWeaponState((prev) => ({
-              ...prev,
-              selectedWeaponLevel,
-            }));
+            setSelectedWeaponLevel(selectedWeaponLevel);
           }
         }}
-        value={weaponState.selectedWeaponLevel[2]}
+        value={selectedWeaponLevel[2]}
         items={specialAndRegularLevelsDict.map(([, , level]) => ({
           value: level,
           label: level,

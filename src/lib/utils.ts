@@ -174,12 +174,6 @@ export const getWeaponsLevelsData = (
             upgradeLevel: Math.min(level, weapon.attack.length - 1),
           });
 
-          console.log("Inpus:", {
-            damage,
-            isEnemyDamage: !!(isEnemyDamage && !!enemyData.selectedEnemy),
-            selectedEnemy: enemyData.selectedEnemy,
-          });
-
           if (isEnemyDamage && enemyData.selectedEnemy) {
             damage = calculateDamageAgainstEnemy(
               damage,

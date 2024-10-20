@@ -9,6 +9,8 @@ import { useState } from "react";
 import EnemiesTableControl from "@/components/enemies-table-control";
 import useEnemies from "@/hooks/useEnemies";
 
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
 export interface EmemyFilterData {
   location: string;
   type: EnemyType | "None";
@@ -51,12 +53,16 @@ export default function Enemies() {
         clearFilters={clearFilters}
       />
       {selectedEnemy && (
-        <EnemyInfo
-          enemy={selectedEnemy}
-          isOpen={isEnemyInfoOpen}
-          setIsOpen={setIsEnemyInfoOpen}
-        />
+        <Dialog open={isEnemyInfoOpen}>
+          <DialogContent
+            onXClick={() => setIsEnemyInfoOpen(false)}
+            className="flex flex-col max-w-[850px] sm:max-h-[90%] max-[800px]:px-[calc(10vw/2)] h-full sm:h-auto sm:overflow-y-auto overflow-y-scroll"
+          >
+            <EnemyInfo enemy={selectedEnemy} />
+          </DialogContent>
+        </Dialog>
       )}
+
       <EnemiesTable
         setNewGame={setNewGame}
         setSelectedEnemy={setEnemyInfo}

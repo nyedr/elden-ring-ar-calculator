@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export const attributesData = [
   { id: "Vig", min: 9, damage: false, name: "Vigor" },
@@ -64,33 +64,32 @@ const defaultAttributes: CharacterAttributes = {
 };
 
 export default function useCharacter() {
-  const [character, setCharacter] = useState<Character>({
-    attributes: defaultAttributes,
-    isTwoHanding: false,
-  });
+  const [attributes, setAttributes] =
+    useState<CharacterAttributes>(defaultAttributes);
+  const [isTwoHanding, setIsTwoHanding] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem(
-      "characterAttributes",
-      JSON.stringify(character.attributes)
-    );
-  }, [character.attributes]);
+    localStorage.setItem("characterAttributes", JSON.stringify(attributes));
+  }, [attributes]);
 
   function setCharacterAttribute(
     attribute: keyof CharacterAttributes,
     value: number
   ) {
-    setCharacter({
-      ...character,
-      attributes: { ...character.attributes, [attribute]: value },
+    setAttributes({
+      ...attributes,
+      [attribute]: value,
     });
   }
+
+  const character = useMemo(
+    () => ({ attributes, isTwoHanding }),
+    [attributes, isTwoHanding]
+  );
 
   return {
     character,
     setCharacterAttribute,
-    setIsTwoHanding: (isTwoHanding: boolean) =>
-      setCharacter({ ...character, isTwoHanding }),
-    getAttackAttributes,
+    setIsTwoHanding: (isTwoHanding: boolean) => setIsTwoHanding(isTwoHanding),
   };
 }

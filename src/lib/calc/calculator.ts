@@ -117,6 +117,9 @@ export const getWeaponAttack = ({
     // Todo: Ballista weapons have a different attack power calculation, so this is throwing an error
     // To replicate: Use a ballista weapon, ex: Rabbath's Cannon. Only throws error sometimes.
 
+    // if (weapon.name === "Rabbath's Cannon")
+    //   console.log(JSON.stringify(weapon.attack[upgradeLevel]), attackPowerType);
+
     const baseAttackPower = weapon.attack[upgradeLevel][attackPowerType] ?? 0;
     if (baseAttackPower || weapon.sorceryTool || weapon.incantationTool) {
       // This weapon's AttackElementCorrectParam determines what attributes each damage type scales

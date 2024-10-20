@@ -159,10 +159,7 @@ export const uniqueBuffs: Buff[] = [
     effectType: ["All damage"],
     multipliers: [{ stance: 1, damage: 2, stamina: 1 }],
     id: 453,
-    applicable: ({ enemy }) => {
-      console.log("Sacred Order enemy:", enemy);
-      return enemy?.types.undead || false;
-    },
+    applicable: ({ enemy }) => enemy?.types.undead || false,
   },
   {
     id: 68,
@@ -353,13 +350,7 @@ export const tears: Buff[] = [
     effectType: ["Charged Attack"],
     multipliers: [{ stance: 1, damage: 1.15, stamina: 1 }],
     id: 111,
-    applicable: ({ move, weaponAttackResult }) => {
-      console.log(
-        "Spiked Cracked Tear move:",
-        move,
-        move?.toLowerCase().includes("charged") || false,
-        weaponAttackResult
-      );
+    applicable: ({ move }) => {
       return move?.toLowerCase().includes("charged") || false;
     },
   },

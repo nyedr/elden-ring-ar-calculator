@@ -1,204 +1,119 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button, buttonVariants } from "./ui/button";
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import { Heart, Shield, Dna, Droplet } from "lucide-react";
 import { Enemy } from "@/lib/data/enemy-data";
-import { cn, numberWithCommas } from "@/lib/utils";
 import EnemyInfoTables from "./enemy-info-tables";
-import EnemyDamage from "./enemy-damage";
-
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Weapon } from "@/lib/data/weapon";
-import { affinityOptions } from "@/lib/uiUtils";
-import { WeaponAttackResult } from "@/lib/calc/calculator";
-import Link from "next/link";
-import { Icons } from "./icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { BuffSelection } from "./buffs-dialog";
+import { Icons } from "./icons";
+import { capitalize } from "@/lib/utils";
 
-export interface EnemyInfoProps {
-  attackRating?: WeaponAttackResult;
-  enemy: Enemy;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  weaponAffinityOptions?: Weapon[];
-  setWeaponInfo?: (weapon: Weapon) => void;
-  buffSelection?: BuffSelection;
+export default function EnemyInfo({ enemy }: { enemy: Enemy }) {
+  return (
+    <div className="flex flex-col w-full overflow-x-hidden">
+      <div className="flex flex-col items-start w-full gap-1 mb-5">
+        <span className="text-xl font-bold text-primary">{enemy.name}</span>
+        <p className="text-sm text-muted-foreground">{enemy.location}</p>
+      </div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-4">
+          <InfoItem
+            icon={<Heart className="w-5 h-5" />}
+            label="Health"
+            value={enemy.healthPoints.toLocaleString()}
+          />
+          <InfoItem
+            icon={<Shield className="w-5 h-5" />}
+            label="Poise"
+            value={enemy.poise.base}
+          />
+          <InfoItem
+            icon={<Shield className="w-5 h-5" />}
+            label="Poise regen delay"
+            value={`${enemy.poise.regenDelay}s`}
+            tooltip={`Enemy poice will start regenerating at a rate of 13 per
+                    second after ${enemy.poise.regenDelay} seconds of not being
+                    hit.`}
+          />
+        </div>
+        <div className="space-y-4">
+          <InfoItem
+            icon={<Heart className="w-5 h-5" />}
+            label="DLC Clear Health"
+            value={(enemy.dlcClearHealthPoints ?? "").toLocaleString()}
+            tooltip={
+              "Health value used if Promised Consort Radahn was killed in a previous NG cycle."
+            }
+          />
+          <InfoItem
+            icon={<Dna className="w-5 h-5" />}
+            label="Types"
+            value={Object.entries(enemy.types)
+              .filter(([, value]) => value)
+              .map(([key]) => capitalize(key))
+              .join(", ")}
+          />
+        </div>
+      </div>
+
+      <EnemyInfoTables enemy={enemy} />
+
+      <div className="mt-6">
+        <h3 className="flex items-center mb-3 text-lg font-semibold">
+          <Droplet className="w-5 h-5 mr-2" />
+          Drops
+        </h3>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {enemy.drops.map((drop) => (
+            <Badge
+              key={drop.drop}
+              variant="outline"
+              className="justify-between p-2 px-3"
+            >
+              <span>{drop.drop}</span>
+              <span className="text-xs">
+                {drop.quantity && `x${drop.quantity}`} ({drop.baseDropChance}
+                %)
+                {drop.isAffectedByDiscovery && " (Discovery)"}
+              </span>
+            </Badge>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default function EnemyInfo({
-  enemy,
-  attackRating,
-  isOpen,
-  setIsOpen,
-  weaponAffinityOptions,
-  setWeaponInfo,
-  buffSelection,
-}: EnemyInfoProps) {
+export function InfoItem({
+  icon,
+  label,
+  value,
+  tooltip,
+}: {
+  icon?: React.ReactNode;
+  label: string;
+  value: string | number;
+  tooltip?: string;
+}) {
   return (
-    <Dialog open={isOpen}>
-      <DialogContent
-        onXClick={() => setIsOpen(false)}
-        className="flex flex-col max-w-[850px] sm:max-h-[90%] max-[800px]:px-[calc(10vw/2)] h-full sm:h-auto sm:overflow-y-auto overflow-y-scroll"
-      >
-        <DialogHeader className="mt-5 sm:mt-0">
-          <DialogTitle className="text-2xl">{enemy.name}</DialogTitle>
-          {attackRating && (
-            <span className="text-xl font-semibold">
-              <span>{attackRating.weapon.weaponName}</span>
-              <Link
-                target="_blank"
-                className={cn(buttonVariants({ variant: "link" }), "p-0 m-0")}
-                href={attackRating.weapon.url ?? "#"}
-              >
-                <Icons.externalLink className="w-4 h-4 ml-2" />
-              </Link>
-            </span>
+    <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-2">
+        {icon}
+        <span className="relative flex items-center font-medium">
+          <span>{label}</span>
+          {tooltip && (
+            <Tooltip defaultOpen={false} delayDuration={400}>
+              <TooltipTrigger>
+                <Icons.circleHelp className="w-4 h-4 ml-2 text-primary" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[300px]">
+                <p className="p-1 font-medium">{tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
           )}
-        </DialogHeader>
-        <div className="flex flex-col justify-center w-full">
-          <div className="grid md:grid-cols-2 md:gap-x-10 gap-y-5">
-            <DialogDescription className="flex justify-between w-full text-primary">
-              <strong>Location</strong>
-              <span className="text-right">{enemy.location}</span>
-            </DialogDescription>
-            <DialogDescription className="flex items-center justify-between w-full text-primary">
-              <strong>Health</strong>
-              <span>{numberWithCommas(enemy.healthPoints)}</span>
-            </DialogDescription>
-            <DialogDescription className="flex items-center justify-between w-full text-primary">
-              <strong>Poise</strong>
-              <span>{Math.floor(enemy.poise.base)}</span>
-            </DialogDescription>
-            <DialogDescription className="flex items-center justify-between w-full text-primary">
-              <strong className="flex items-center">
-                <span>Poise regen delay</span>
-                <Tooltip defaultOpen={false} delayDuration={400}>
-                  <TooltipTrigger>
-                    <Icons.circleHelp className="w-4 h-4 ml-2 text-primary" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-[300px]">
-                    <p className="p-1 font-medium">
-                      Enemy poice will start regenerating at a rate of 13 per
-                      second after {enemy.poise.regenDelay} seconds of not being
-                      hit.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </strong>
-              <span>{enemy.poise.regenDelay}s</span>
-            </DialogDescription>
-            <DialogDescription className="flex items-center justify-between w-full text-primary">
-              <strong className="relative flex items-center">
-                <span>DLC Clear Health</span>
-                <Tooltip defaultOpen={false} delayDuration={400}>
-                  <TooltipTrigger>
-                    <Icons.circleHelp className="w-4 h-4 ml-2 text-primary" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-[300px]">
-                    <p className="p-1 font-medium">
-                      Health value used if Promised Consort Radahn was killed in
-                      a previous NG cycle.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </strong>
-              <span>
-                {enemy.dlcClearHealthPoints
-                  ? numberWithCommas(enemy.dlcClearHealthPoints)
-                  : ""}
-              </span>
-            </DialogDescription>
-            {attackRating && weaponAffinityOptions && setWeaponInfo && (
-              <DialogDescription className="flex items-center justify-between w-full text-primary">
-                <strong>Affinity</strong>
-
-                <Select
-                  disabled={weaponAffinityOptions.length === 1}
-                  onValueChange={(value) => {
-                    setWeaponInfo(
-                      weaponAffinityOptions.find(
-                        (weapon) => weapon.affinityId === +value
-                      ) ?? attackRating.weapon
-                    );
-                  }}
-                  defaultValue={
-                    String(attackRating.weapon.affinityId) || "Default"
-                  }
-                >
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Weapons Level" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    <SelectGroup>
-                      {weaponAffinityOptions
-                        .map((weapon) => weapon.affinityId)
-                        .map((affinity) => {
-                          const affinityOption = affinityOptions.get(affinity);
-
-                          if (!affinityOption) {
-                            return null;
-                          }
-
-                          return (
-                            <SelectItem
-                              key={affinityOption.text}
-                              value={String(affinity)}
-                            >
-                              {affinityOption.text}
-                            </SelectItem>
-                          );
-                        })}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </DialogDescription>
-            )}
-          </div>
-        </div>
-
-        <EnemyInfoTables attackRating={attackRating} enemy={enemy} />
-
-        {attackRating?.enemyDamages && buffSelection && (
-          <EnemyDamage
-            buffSelection={buffSelection}
-            attackRating={attackRating}
-            enemy={enemy}
-          />
-        )}
-
-        <h2 className="text-xl font-semibold">Drops</h2>
-        <div className="flex flex-wrap items-center w-full gap-3">
-          {enemy.drops.length > 0 &&
-            enemy.drops.map((drop) => (
-              <div
-                key={drop.drop}
-                className="flex flex-col p-2 px-3 rounded-md bg-secondary"
-              >
-                {drop.drop} {drop.quantity && `x${drop.quantity}`} (
-                {drop.baseDropChance}%){" "}
-                {drop.isAffectedByDiscovery && "(Discovery)"}
-              </div>
-            ))}
-        </div>
-        <DialogFooter className="mt-auto">
-          <Button size="sm" onClick={() => setIsOpen(false)}>
-            Close
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </span>
+      </div>
+      <span>{value}</span>
+    </div>
   );
 }

@@ -15,7 +15,6 @@ interface WeaponTableProps {
 }
 
 export default function WeaponDamageTable({ attackRating }: WeaponTableProps) {
-  console.log(attackRating);
   const weaponDamages = allDamageTypes.map(
     (type) => attackRating.attackPower[type]?.weapon
   );

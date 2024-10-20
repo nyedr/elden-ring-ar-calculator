@@ -1,8 +1,8 @@
 "use client";
 
-import useCharacter from "@/hooks/useCharacter";
+import useCharacter, { getAttackAttributes } from "@/hooks/useCharacter";
 import CharacterStats from "@/components/character-stats";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { Weapon } from "@/lib/data/weapon";
 import WeaponsTableControl from "@/components/weapons-table-control";
 import WeaponsTable from "@/components/weapons-table";
@@ -20,13 +20,13 @@ import {
 } from "@/lib/utils";
 import { useDebouncedValue } from "@/hooks/useDebounceValue";
 import WeaponChart from "@/components/weapon-chart";
-import { WeaponInfoProps } from "@/components/weapon-info";
 import { SelectItem } from "@/components/ui/combobox";
 import useEnemies from "@/hooks/useEnemies";
 import useWeapons from "@/hooks/useWeapons";
 import {
   calculateDamageAgainstEnemy,
   getWeaponAttack,
+  WeaponAttackResult,
 } from "@/lib/calc/calculator";
 import ExtraInfo from "@/components/extra-info";
 import { applyBuffs, filterApplicableBuffs } from "@/lib/data/buffs";
@@ -36,19 +36,13 @@ export interface WeaponState {
   selectedWeapons: Weapon[];
   selectedChartWeapon: Weapon | null;
   weaponInfo: Weapon | null;
-  selectedWeaponLevel: [number, number, string];
   weaponMove: string | null;
 }
 
 // TODO!: Application is too laggy when changes are being made
 
 export default function Home() {
-  const {
-    character,
-    setCharacterAttribute,
-    setIsTwoHanding,
-    getAttackAttributes,
-  } = useCharacter();
+  const { character, setCharacterAttribute, setIsTwoHanding } = useCharacter();
 
   const weaponsData = useWeapons();
 
@@ -59,12 +53,16 @@ export default function Home() {
     selectedWeapons: [],
     selectedChartWeapon: null,
     weaponInfo: null,
-    selectedWeaponLevel:
-      specialAndRegularLevelsDict[specialAndRegularLevelsDict.length - 1],
     weaponMove: null,
   });
+  const [selectedWeaponLevel, setSelectedWeaponLevel] = useState<
+    [number, number, string]
+  >(specialAndRegularLevelsDict[specialAndRegularLevelsDict.length - 1]);
   const [buffs, setBuffs] = useState<BuffSelection>(defaultBuffSelection);
   const [isExtraInfoOpen, setIsExtraInfoOpen] = useState(false);
+  const weaponAttackRatingCache = useRef<Map<string, WeaponAttackResult>>(
+    new Map()
+  );
 
   const {
     enemiesData,
@@ -80,8 +78,8 @@ export default function Home() {
       const isWeaponUpgradeable =
         weapon.name !== "Unarmed" && weapon.name !== "Meteorite Staff";
       const maxUpgradeLevel = weapon.isSpecialWeapon
-        ? weaponState.selectedWeaponLevel[1]
-        : weaponState.selectedWeaponLevel[0];
+        ? selectedWeaponLevel[1]
+        : selectedWeaponLevel[0];
 
       const attackRating = getWeaponAttack({
         weapon,
@@ -110,15 +108,36 @@ export default function Home() {
       return applyBuffs(validBuffs, attackRating);
     },
     [
-      character,
+      character.attributes,
+      character.isTwoHanding,
       selectedEnemy,
       isDamageOnEnemy,
-      getAttackAttributes,
-      weaponState.selectedWeaponLevel,
+      selectedWeaponLevel,
       buffs,
       weaponState.weaponMove,
     ]
   );
+
+  const getCachedWeaponAttackRating = useCallback(
+    (weapon: Weapon) => {
+      const cacheKey = `${weapon.name}_${
+        selectedEnemy?.id || "no_enemy"
+      }_${isDamageOnEnemy}`;
+
+      if (weaponAttackRatingCache.current.has(cacheKey)) {
+        return weaponAttackRatingCache.current.get(cacheKey);
+      } else {
+        const rating = getWeaponAttackRating(weapon);
+        weaponAttackRatingCache.current.set(cacheKey, rating);
+        return rating;
+      }
+    },
+    [getWeaponAttackRating, selectedEnemy?.id, isDamageOnEnemy]
+  );
+
+  useEffect(() => {
+    weaponAttackRatingCache.current.clear();
+  }, [character.attributes, buffs, selectedWeaponLevel]);
 
   const updateWeaponInfo = useCallback(
     (name: string) => {
@@ -144,8 +163,6 @@ export default function Home() {
     },
     [weaponsData, isDamageOnEnemy, selectedEnemy]
   );
-
-  useEffect(() => {}, [character.attributes, selectedEnemy, isDamageOnEnemy]);
 
   const weaponSearchOptions: SelectItem[] = weaponsData.weapons.map(
     (weapon) => ({
@@ -186,6 +203,29 @@ export default function Home() {
     }));
   }, []);
 
+  const allWeaponAttackRatings = useMemo(() => {
+    return filterWeapons(
+      weaponsData.weapons.reduce((acc, weapon) => {
+        const attackRating = getCachedWeaponAttackRating(weapon);
+
+        if (!attackRating) return acc;
+
+        return [...acc, attackRating];
+      }, [] as WeaponAttackResult[]),
+      weaponFilter
+    );
+  }, [
+    weaponsData.weapons,
+    weaponFilter,
+    getCachedWeaponAttackRating,
+    character,
+  ]);
+
+  console.log(
+    "%cRendering",
+    "color: red; font-weight: bold; font-size: 1.5rem"
+  );
+
   return (
     <main className="flex flex-col gap-4 items-center w-full max-w-[1420px] px-5 lg:px-0 mx-auto py-4 max-[800px]:px-[calc(10vw/2)]">
       <Header />
@@ -198,35 +238,33 @@ export default function Home() {
           buffs={buffs}
         />
 
-        <ExtraInfo
-          enemy={
-            selectedEnemy && weaponState.weaponInfo
-              ? {
-                  enemy: selectedEnemy,
-                  attackRating: getWeaponAttackRating(weaponState.weaponInfo),
-                  buffSelection: buffs,
-                }
-              : undefined
-          }
-          buffSelection={buffs}
-          weapon={
-            weaponState.weaponInfo
-              ? ({
-                  weapon: weaponState.weaponInfo,
-                  character,
-                } as Omit<WeaponInfoProps, "isOpen" | "setIsOpen">)
-              : undefined
-          }
-          setWeaponInfo={(weapon: Weapon) => {
-            setWeaponState((prev) => ({ ...prev, weaponInfo: weapon }));
-          }}
-          setIsOpen={setIsExtraInfoOpen}
-          isOpen={isExtraInfoOpen}
-          weaponAffinityOptions={weaponsData.weapons.filter(
-            (weapon) => weapon.weaponName === weaponState.weaponInfo?.weaponName
-          )}
-          isDamageOnEnemy={isDamageOnEnemy}
-        />
+        {isExtraInfoOpen && weaponState.weaponInfo && (
+          <ExtraInfo
+            enemy={selectedEnemy ?? undefined}
+            buffSelection={buffs}
+            weaponAttackRating={
+              isDamageOnEnemy && selectedEnemy
+                ? calculateDamageAgainstEnemy(
+                    getCachedWeaponAttackRating(weaponState.weaponInfo)!,
+                    selectedEnemy
+                  )
+                : (getCachedWeaponAttackRating(
+                    weaponState.weaponInfo
+                  ) as WeaponAttackResult)
+            }
+            character={character}
+            setWeaponInfo={(weapon: Weapon) => {
+              setWeaponState((prev) => ({ ...prev, weaponInfo: weapon }));
+            }}
+            setIsOpen={setIsExtraInfoOpen}
+            isOpen={isExtraInfoOpen}
+            weaponAffinityOptions={weaponsData.weapons.filter(
+              (weapon) =>
+                weapon.weaponName === weaponState.weaponInfo?.weaponName
+            )}
+            isDamageOnEnemy={isDamageOnEnemy}
+          />
+        )}
 
         <WeaponsTableControl
           {...{
@@ -237,7 +275,8 @@ export default function Home() {
             setWeaponFilter,
             weaponFilter,
             updateWeaponInfo,
-            weaponState,
+            selectedWeaponLevel,
+            setSelectedWeaponLevel,
             setWeaponState,
             isTwoHanding: character.isTwoHanding,
             setIsTwoHanding,
@@ -287,10 +326,7 @@ export default function Home() {
         updateWeaponInfo={updateWeaponInfo}
         selectedWeapons={weaponState.selectedWeapons}
         character={useDebouncedValue(character)}
-        weaponAttackRatings={filterWeapons(
-          weaponsData.weapons.map(getWeaponAttackRating),
-          weaponFilter
-        )}
+        weaponAttackRatings={allWeaponAttackRatings}
         isLoading={weaponsData.isLoading && weaponsData.weapons.length === 0}
         setNewGame={setNewGame}
         setSelectedWeapons={updateSelectedWeapons}

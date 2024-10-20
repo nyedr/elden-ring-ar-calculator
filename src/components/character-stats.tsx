@@ -1,3 +1,5 @@
+"use client";
+
 import {
   useState,
   useRef,
@@ -63,17 +65,17 @@ export const AttributeInput = memo(function AttributeInput({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <Label htmlFor={attribute} className="flex gap-3 text-sm font-medium">
+        <Label htmlFor={attribute} className="text-sm font-medium">
           {metadata.name}
-          <p className="text-sm text-muted-foreground">
-            {metadata.description}
-          </p>
+          <span className="ml-1 text-xs text-muted-foreground">
+            ({metadata.description})
+          </span>
         </Label>
       </div>
       <div className="flex items-center space-x-2">
         <NumberTextField
           id={attribute}
-          className="w-16 text-center"
+          className="w-full text-center sm:w-16"
           value={internalValue}
           min={1}
           max={99}
@@ -84,7 +86,7 @@ export const AttributeInput = memo(function AttributeInput({
           min={1}
           max={99}
           step={1}
-          className="flex-grow"
+          className="flex-grow hidden md:flex"
           onValueChange={([val]) => handleChange(val)}
         />
       </div>
@@ -101,14 +103,14 @@ export default function CharacterStats({
 }: CharacterStatsProps) {
   return (
     <div className="flex flex-col w-full gap-4">
-      <h2 className="flex items-center justify-between text-2xl font-semibold leading-none tracking-tight">
+      <h2 className="flex items-center justify-between text-xl font-semibold leading-none tracking-tight sm:text-2xl">
         <span>Character Stats</span>
-        <Badge variant="secondary" className="text-lg">
+        <Badge variant="secondary" className="text-base sm:text-lg">
           Level: {getCharacterLevel(character.attributes)}
         </Badge>
       </h2>
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-4 md:gap-6">
         {(
           Object.entries(character.attributes) as [
             keyof CharacterAttributes,
@@ -133,7 +135,7 @@ export default function CharacterStats({
           );
         })}
       </div>
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center space-x-2">
           <Switch
             id="isTwoHanding"
