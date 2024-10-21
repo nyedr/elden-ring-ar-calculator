@@ -7,7 +7,6 @@ import { CustomSelectItem, CustomSelect } from "@/components/ui/select";
 import { MultiSelect, MultiSelectOption } from "./ui/multi-select";
 import { Label } from "./ui/label";
 import { mapToEntries, specialAndRegularLevelsDict } from "@/lib/utils";
-import { WeaponState } from "@/app/page";
 import { EnemySearch } from "./enemy-search";
 import AppManual from "./app-manual";
 import { WeaponFilter } from "@/lib/filters/weapons-filter";
@@ -33,7 +32,6 @@ export interface WeaponsTableControlProps
   weaponSearchOptions: CustomSelectItem[];
   selectedWeaponLevel: [number, number, string];
   setSelectedWeaponLevel: Dispatch<SetStateAction<[number, number, string]>>;
-  setWeaponState: Dispatch<SetStateAction<WeaponState>>;
   isDamageOnEnemy: boolean;
   setIsDamageOnEnemy: React.Dispatch<React.SetStateAction<boolean>>;
   enemySearchOptions: CustomSelectItem[];
@@ -48,7 +46,6 @@ export default function WeaponsTableControl({
   updateWeaponInfo,
   setWeaponFilter,
   weaponFilter,
-  setWeaponState,
   selectedWeaponLevel,
   setSelectedWeaponLevel,
   isDamageOnEnemy,

@@ -2,7 +2,7 @@
 
 import useCharacter, { getAttackAttributes } from "@/hooks/useCharacter";
 import CharacterStats from "@/components/character-stats";
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Weapon } from "@/lib/data/weapon";
 import WeaponsTableControl from "@/components/weapons-table-control";
 import WeaponsTable from "@/components/weapons-table";
@@ -18,7 +18,6 @@ import {
   specialAndRegularLevelsDict,
   getWeaponsLevelsData,
 } from "@/lib/utils";
-import { useDebouncedValue } from "@/hooks/useDebounceValue";
 import WeaponChart from "@/components/weapon-chart";
 import { SelectItem } from "@/components/ui/combobox";
 import useEnemies from "@/hooks/useEnemies";
@@ -40,6 +39,7 @@ export interface WeaponState {
 }
 
 // TODO!: Application is too laggy when changes are being made
+// TODO: Weapons should use their own motion values for attack power calculations
 
 export default function Home() {
   const { character, setCharacterAttribute, setIsTwoHanding } = useCharacter();
@@ -60,9 +60,9 @@ export default function Home() {
   >(specialAndRegularLevelsDict[specialAndRegularLevelsDict.length - 1]);
   const [buffs, setBuffs] = useState<BuffSelection>(defaultBuffSelection);
   const [isExtraInfoOpen, setIsExtraInfoOpen] = useState(false);
-  const weaponAttackRatingCache = useRef<Map<string, WeaponAttackResult>>(
-    new Map()
-  );
+  const [weaponAttackRatings, setWeaponAttackRatings] = useState<
+    WeaponAttackResult[]
+  >([]);
 
   const {
     enemiesData,
@@ -74,7 +74,7 @@ export default function Home() {
   } = useEnemies();
 
   const getWeaponAttackRating = useCallback(
-    (weapon: Weapon) => {
+    (weapon: Weapon): WeaponAttackResult => {
       const isWeaponUpgradeable =
         weapon.name !== "Unarmed" && weapon.name !== "Meteorite Staff";
       const selectedUpgradeLevel = weapon.isSpecialWeapon
@@ -118,35 +118,22 @@ export default function Home() {
     ]
   );
 
-  const getCachedWeaponAttackRating = useCallback(
-    (weapon: Weapon) => {
-      const cacheKey = `${weapon.name}_${
-        selectedEnemy?.id || "no_enemy"
-      }_${isDamageOnEnemy}`;
-
-      if (weaponAttackRatingCache.current.has(cacheKey)) {
-        return weaponAttackRatingCache.current.get(cacheKey);
-      } else {
-        const rating = getWeaponAttackRating(weapon);
-        weaponAttackRatingCache.current.set(cacheKey, rating);
-        return rating;
-      }
-    },
-    [
-      getWeaponAttackRating,
-      selectedEnemy?.id,
-      isDamageOnEnemy,
-      character.isTwoHanding,
-    ]
-  );
-
   useEffect(() => {
-    weaponAttackRatingCache.current.clear();
+    const computeWeaponAttackRatings = () => {
+      const ratings = weaponsData.weapons.map((weapon) => {
+        return getWeaponAttackRating(weapon);
+      });
+
+      const filteredRatings = filterWeapons(ratings, weaponFilter);
+
+      setWeaponAttackRatings(filteredRatings);
+    };
+
+    computeWeaponAttackRatings();
   }, [
-    character.attributes,
-    buffs,
-    selectedWeaponLevel,
-    character.isTwoHanding,
+    weaponsData.weapons,
+    getWeaponAttackRating, // This includes all dependencies
+    weaponFilter,
   ]);
 
   const updateWeaponInfo = useCallback(
@@ -213,30 +200,10 @@ export default function Home() {
     }));
   }, []);
 
-  const allWeaponAttackRatings = useMemo(() => {
-    return filterWeapons(
-      weaponsData.weapons.reduce((acc, weapon) => {
-        const attackRating = getCachedWeaponAttackRating(weapon);
-
-        if (!attackRating) return acc;
-
-        return [...acc, attackRating];
-      }, [] as WeaponAttackResult[]),
-      weaponFilter
-    );
-  }, [
-    weaponsData.weapons,
-    weaponFilter,
-    getCachedWeaponAttackRating,
-    character,
-  ]);
-
   console.log(
     "%cRendering",
     "color: red; font-weight: bold; font-size: 1.5rem"
   );
-
-  // TODO: TwoHanding needs to be switched on twice to update the attack rating
 
   return (
     <main className="flex flex-col gap-4 items-center w-full max-w-[1420px] px-5 lg:px-0 mx-auto py-4 max-[800px]:px-[calc(10vw/2)]">
@@ -252,22 +219,13 @@ export default function Home() {
 
         {isExtraInfoOpen && weaponState.weaponInfo && (
           <ExtraInfo
-            enemy={selectedEnemy ?? undefined}
+            enemy={selectedEnemy}
             buffSelection={buffs}
-            weaponAttackRating={
-              isDamageOnEnemy && selectedEnemy
-                ? calculateDamageAgainstEnemy(
-                    getCachedWeaponAttackRating(weaponState.weaponInfo)!,
-                    selectedEnemy
-                  )
-                : (getCachedWeaponAttackRating(
-                    weaponState.weaponInfo
-                  ) as WeaponAttackResult)
-            }
+            weaponAttackRating={getWeaponAttackRating(weaponState.weaponInfo)}
             character={character}
-            setWeaponInfo={(weapon: Weapon) => {
-              setWeaponState((prev) => ({ ...prev, weaponInfo: weapon }));
-            }}
+            setWeaponInfo={(weapon) =>
+              setWeaponState((prev) => ({ ...prev, weaponInfo: weapon }))
+            }
             setIsOpen={setIsExtraInfoOpen}
             isOpen={isExtraInfoOpen}
             weaponAffinityOptions={weaponsData.weapons.filter(
@@ -279,31 +237,27 @@ export default function Home() {
         )}
 
         <WeaponsTableControl
-          {...{
-            findWeapon: weaponsData.findWeapon,
-            weaponSearchOptions,
-            setSelectedWeapons: updateSelectedWeapons,
-            setSelectedChartWeapon: updateSelectedChartWeapon,
-            setWeaponFilter,
-            weaponFilter,
-            updateWeaponInfo,
-            selectedWeaponLevel,
-            setSelectedWeaponLevel,
-            setWeaponState,
-            isTwoHanding: character.isTwoHanding,
-            setIsTwoHanding,
-            enemySearchOptions: removeDuplicateNames(enemiesData).map(
-              (enemy) => ({
-                label: enemy.name,
-                value: enemy.name,
-              })
-            ),
-            isDamageOnEnemy,
-            setIsDamageOnEnemy,
-            setSelectedEnemy,
-          }}
+          findWeapon={weaponsData.findWeapon}
+          weaponSearchOptions={weaponSearchOptions}
+          setSelectedWeapons={updateSelectedWeapons}
+          setSelectedChartWeapon={updateSelectedChartWeapon}
+          setWeaponFilter={setWeaponFilter}
+          weaponFilter={weaponFilter}
+          updateWeaponInfo={updateWeaponInfo}
+          selectedWeaponLevel={selectedWeaponLevel}
+          setSelectedWeaponLevel={setSelectedWeaponLevel}
+          enemySearchOptions={removeDuplicateNames(enemiesData).map(
+            (enemy) => ({
+              label: enemy.name,
+              value: enemy.name,
+            })
+          )}
+          isDamageOnEnemy={isDamageOnEnemy}
+          setIsDamageOnEnemy={setIsDamageOnEnemy}
+          setSelectedEnemy={setSelectedEnemy}
         />
       </div>
+
       {weaponState.selectedChartWeapon && (
         <WeaponChart
           character={character}
@@ -337,8 +291,9 @@ export default function Home() {
       <WeaponsTable
         updateWeaponInfo={updateWeaponInfo}
         selectedWeapons={weaponState.selectedWeapons}
-        character={useDebouncedValue(character)}
-        weaponAttackRatings={allWeaponAttackRatings}
+        characterIsTwoHanding={character.isTwoHanding}
+        characterAttributes={character.attributes}
+        weaponAttackRatings={weaponAttackRatings}
         isLoading={weaponsData.isLoading && weaponsData.weapons.length === 0}
         setNewGame={setNewGame}
         setSelectedWeapons={updateSelectedWeapons}

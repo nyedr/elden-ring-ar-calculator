@@ -22,9 +22,7 @@ import {
   getWeaponAttack,
   WeaponAttackResult,
 } from "@/lib/calc/calculator";
-import { Icons } from "./icons";
 import { getDamageValues, parseMove, parseValue } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { BuffSelection } from "./buffs-dialog";
 import { applyBuffs, filterApplicableBuffs } from "@/lib/data/buffs";
 import { Label } from "./ui/label";
@@ -90,8 +88,9 @@ export default function WeaponInfo({
       attributes: getAttackAttributes(character.attributes),
       upgradeLevel: weaponLevel,
       weapon: weapon,
+      twoHanding: isTwoHanding,
     });
-  }, [character.attributes, weaponLevel, weapon]);
+  }, [character.attributes, weaponLevel, weapon, isTwoHanding]);
 
   const validBuffs = useMemo(() => {
     return filterApplicableBuffs({

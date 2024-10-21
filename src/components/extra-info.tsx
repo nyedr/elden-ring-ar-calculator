@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 import EnemyInfo from "./enemy-info";
 
 type ExtraInfoProps = {
-  enemy?: Enemy;
+  enemy: Enemy | null;
   weaponAttackRating: WeaponAttackResult;
   isDamageOnEnemy: boolean;
   setWeaponInfo: (info: any) => void;
@@ -85,7 +85,7 @@ export default function ExtraInfo({
             </TabsTrigger>
             <TabsTrigger
               value="damage"
-              disabled={enemy === undefined}
+              disabled={enemy == null}
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm px-1 sm:px-2 h-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Target className="w-3 h-3 mr-1 sm:w-4 sm:h-4 sm:mr-2" />
@@ -94,7 +94,7 @@ export default function ExtraInfo({
             </TabsTrigger>
             <TabsTrigger
               value="enemy"
-              disabled={enemy === undefined}
+              disabled={enemy == null}
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm px-1 sm:px-2 h-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Shield className="w-3 h-3 mr-1 sm:w-4 sm:h-4 sm:mr-2" />
@@ -121,7 +121,7 @@ export default function ExtraInfo({
                   value="damage"
                   className="mt-0 data-[state=active]:flex data-[state=active]:flex-col"
                 >
-                  {enemy !== undefined && (
+                  {enemy != null && (
                     <EnemyDamageInfo
                       attackRating={weaponAttackRating}
                       enemy={enemy}
@@ -135,7 +135,7 @@ export default function ExtraInfo({
                   value="enemy"
                   className="mt-0 data-[state=active]:flex data-[state=active]:flex-col"
                 >
-                  {enemy !== undefined && <EnemyInfo enemy={enemy} />}
+                  {enemy != null && <EnemyInfo enemy={enemy} />}
                 </TabsContent>
               </div>
             </ScrollArea>

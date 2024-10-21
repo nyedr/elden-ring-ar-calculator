@@ -338,7 +338,8 @@ export default function AppManual({ isOpen, closeManual }: AppManualProps) {
             </p>
             <div className="w-full">
               <WeaponsTable
-                character={dummyCharacter}
+                characterIsTwoHanding={false}
+                characterAttributes={dummyCharacter.attributes}
                 isDamageOnEnemy={false}
                 selectedWeapons={[]}
                 setSelectedWeapons={() => {}}
