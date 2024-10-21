@@ -77,7 +77,7 @@ export default function Home() {
     (weapon: Weapon) => {
       const isWeaponUpgradeable =
         weapon.name !== "Unarmed" && weapon.name !== "Meteorite Staff";
-      const maxUpgradeLevel = weapon.isSpecialWeapon
+      const selectedUpgradeLevel = weapon.isSpecialWeapon
         ? selectedWeaponLevel[1]
         : selectedWeaponLevel[0];
 
@@ -85,7 +85,7 @@ export default function Home() {
         weapon,
         attributes: getAttackAttributes(character.attributes),
         twoHanding: character.isTwoHanding,
-        upgradeLevel: Math.min(isWeaponUpgradeable ? maxUpgradeLevel : 0),
+        upgradeLevel: isWeaponUpgradeable ? selectedUpgradeLevel : 0,
       });
 
       const validBuffs = filterApplicableBuffs({
@@ -132,12 +132,22 @@ export default function Home() {
         return rating;
       }
     },
-    [getWeaponAttackRating, selectedEnemy?.id, isDamageOnEnemy]
+    [
+      getWeaponAttackRating,
+      selectedEnemy?.id,
+      isDamageOnEnemy,
+      character.isTwoHanding,
+    ]
   );
 
   useEffect(() => {
     weaponAttackRatingCache.current.clear();
-  }, [character.attributes, buffs, selectedWeaponLevel]);
+  }, [
+    character.attributes,
+    buffs,
+    selectedWeaponLevel,
+    character.isTwoHanding,
+  ]);
 
   const updateWeaponInfo = useCallback(
     (name: string) => {
@@ -225,6 +235,8 @@ export default function Home() {
     "%cRendering",
     "color: red; font-weight: bold; font-size: 1.5rem"
   );
+
+  // TODO: TwoHanding needs to be switched on twice to update the attack rating
 
   return (
     <main className="flex flex-col gap-4 items-center w-full max-w-[1420px] px-5 lg:px-0 mx-auto py-4 max-[800px]:px-[calc(10vw/2)]">
